@@ -1,18 +1,18 @@
 # Online backend proposal
 
-Status: proposed; no cloud resources have been created, no credentials have been requested, and no online functionality is deployed. The browser game remains on Vercel. The user confirmed that no backend exists.
+Status: the user chose to build and test locally first. A loopback-only Node backend now exists under backend/, using embedded PostgreSQL through PGlite. It implements local authentication, owner-scoped saves, shared authoritative rooms, reconnect/restart recovery, server settlement and ranked records, clans, escrow trading, crafting and a fixed-price market. See backend/README.md for runnable commands, protocol, tests and limits. No cloud resources have been created and no online backend is deployed. The Vercel game does not yet integrate these APIs.
 
 ## Deployment shape
 
 The proposed hosted setup uses Supabase for authentication and PostgreSQL persistence, and a separate Render Node service for persistent WebSocket rooms and authoritative game simulation. Vercel continues serving the static game. Long-lived co-op rooms do not fit static hosting or short-lived request handlers.
 
-A local-first implementation can use the same Node service and a local PostgreSQL instance before connecting either provider. Provider selection and resource creation require the user's deployment choice. The free tiers have provider-specific limits and may sleep; continuous multiplayer hosting may cost money. No price or free production capacity is promised.
+The local implementation runs real PostgreSQL in-process without Docker. Production migration still needs a PostgreSQL connection adapter and Supabase authentication. Resource creation and hosting costs need separate approval. The free tiers have provider-specific limits and may sleep; continuous multiplayer hosting may cost money. No price or free production capacity is promised.
 
 ## Trust boundaries
 
 - The browser sends player input and requested actions. It never supplies authoritative damage, loot rolls, currency balances, ranked scores or reward amounts.
-- The service validates sign-in tokens against the configured issuer, audience, expiry and signing keys. An invalid token cannot join a private room or access another player's saves.
-- PostgreSQL holds profiles, versioned saves, collections, build plans, room snapshots, clan membership and trade state. Private tables use row-level policies. Server-only credentials never enter browser assets or Git.
+- The local service hashes passwords and validates expiring opaque cookie sessions. Hosted Supabase integration will validate issuer, audience, expiry and signing keys. An invalid session cannot join a private room or access another player's saves.
+- Local PostgreSQL holds authoritative profiles, inventory, versioned saves, room snapshots, clan membership and trade state. Only the Node service accesses this embedded database, through owner-scoped operations. Production row-level policies and build-plan persistence remain future work. Server-only credentials never enter browser assets or Git.
 - The server runs the shared simulation for co-op and ranked sessions. It bounds input rates, sequence numbers, movement deltas and action frequency. Client prediction is presentation, not authority.
 - Local offline saves remain usable for casual play. Importing a local save cannot manufacture an authoritative ranked record or tradable inventory.
 

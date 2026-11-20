@@ -28,9 +28,9 @@ Reference version inspected: PokéBonk v0.10.15, November 21, 2026. Evidence inc
 | Training | Non-counting sandbox, configurable builds and rivals | All six heroes, 24 map/stages, level, invulnerability, four-weapon/five-charm builds, treasure stacks and manual rivals | Relic editor, attack rarities, recurring spawns and remaining sandbox tools |
 | Expedition | Permanent extraction mode, crafting, market | Not implemented | Inventory, extraction, recipes and trade settlement |
 | Progression | Friendship, archive, builds, league and collections | Local rupees, permanent upgrades, unlocks, equipment discoveries and achievements | Friendship, archive, build plans and expanded progression |
-| Saves | Reference local/cloud saves and reconnect | Validated local saves, legacy migration, backups, safe checkpoints and cross-tab ownership | Cloud accounts, co-op reconnect and server persistence |
-| Accounts and social | Reference accounts, clans, trading, global records | No backend exists; no online functionality is claimed | Real authentication, authorization, persistent database and social workflows |
-| Co-op and ranked | Reference relay/daily/boss co-op and server validation | Not implemented | Authoritative server simulation, rooms, reconnect, validation and leaderboards |
+| Saves | Reference local/cloud saves and reconnect | Browser saves plus tested local account-save API, revision conflicts, persisted co-op snapshots and restart/reconnect | Browser/API integration and hosted cloud persistence |
+| Accounts and social | Reference accounts, clans, trading, global records | Local PostgreSQL accounts/sessions, ownership checks, clan API, escrow trade/craft/shop transactions | Browser flows, hosted authentication, clan missions/chat, player-listed market and production hardening |
+| Co-op and ranked | Reference relay/daily/boss co-op and server validation | Tested local authoritative one-to-four-player rooms, shared combat/XP, reconnect and server-only ranked settlement | Browser multiplayer rendering/lobby, remaining modes, hosted service, multi-process coordination and production validation |
 | Settings | Live options and public controls | Graphics, audio, volume, rebindable keys, camera sensitivity, inversion, FOV, distance and reduced motion | Additional input devices and remaining accessibility/settings parity |
 
 ## Mechanical evidence and authored choices

@@ -5,6 +5,8 @@
   "description": "A Zelda survivor with connected realms, physical terrain, treasure combat, and non-counting training.",
   "scripts": {
     "test": "node --test",
-    "start": "node server.cjs"
+    "start": "node server.cjs",
+    "backend": "node backend/server.cjs",
+    "test:backend": "node --test backend/tests/*.test.cjs"
   }
 }

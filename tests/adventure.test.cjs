@@ -17,7 +17,7 @@ test('bosses have distinct telegraphed attacks and retain HP through phase chang
  for(const id of Object.keys(BOSSES)){const g=new Game();g.spawnTimer=999;g.player.hp=g.player.maxHp=1e6;const boss=g.spawnBoss(id,true);const hp=boss.hp;boss.hp=hp*.3;g.updateBoss(boss,.02);assert.equal(boss.stage,3);assert.equal(boss.hp,hp*.3);boss.spawnTime=0;boss.attackTimer=0;g.updateBoss(boss,.02);assert.ok(boss.windup>0);assert.ok(BOSSES[id].patterns.includes(boss.intent));assert.equal(boss.actionAge,0);for(let i=0;i<70;i++)g.updateBoss(boss,.02);assert.ok(g.projectiles.length+g.hazards.length+g.enemies.length>0);assert.ok(Number.isFinite(boss.x));}
 });
 test('Bombs hit a group once and Boomerangs return for a second hit',()=>{
- const g=new Game();g.ranks={bomb:1};const a=g.spawnEnemy('boar',3,0),b=g.spawnEnemy('boar',4,0);a.hp=b.hp=1000;const projectile={x:3,z:0,blastRadius:3,damage:60};g.explode(projectile);assert.equal(a.hp,940);assert.equal(b.hp,940);g.explode(projectile);assert.equal(a.hp,940);
+ const g=new Game();g.random=()=>.99;g.ranks={bomb:1};const a=g.spawnEnemy('boar',3,0),b=g.spawnEnemy('boar',4,0);a.hp=b.hp=1000;const projectile={x:3,z:0,blastRadius:3,damage:60};g.explode(projectile);assert.equal(a.hp,940);assert.equal(b.hp,940);g.explode(projectile);assert.equal(a.hp,940);
  const h=new Game();h.ranks={boomerang:1};h.spawnTimer=999;const e=h.spawnEnemy('boar',4,0);e.hp=e.maxHp=1000;e.speed=0;h.fire('boomerang',e);for(let i=0;i<130;i++)h.step(.02);assert.ok(e.hp<=1000-h.weaponStats('boomerang').damage*2);assert.equal(h.projectiles.filter(p=>p.type==='boomerang').length<=2,true);
 });
 test('safe checkpoints round-trip progression and retain pending XP',()=>{

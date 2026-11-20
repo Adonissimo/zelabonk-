@@ -3,5 +3,9 @@
   "framework": null,
   "buildCommand": "",
   "installCommand": "",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "rewrites": [
+    {"source": "/backend/:path*", "destination": "/local-backend-not-deployed"},
+    {"source": "/.local-data/:path*", "destination": "/local-backend-not-deployed"}
+  ]
 }

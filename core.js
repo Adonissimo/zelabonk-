@@ -77,7 +77,8 @@
   const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   function seeded(seed) {
-    return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const roll=function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    roll.getState=()=>seed|0;roll.setState=value=>{seed=value|0;};return roll;
   }
   class Game {
     constructor(hero = 'link', seed = Date.now(), options = {}) {
@@ -103,6 +104,16 @@
       this.player.maxHp+=this.permanent.heart*8;this.player.hp=this.player.maxHp;this.player.action='idle';this.player.actionTime=0;this.player.actionAge=0;this.player.attackKind=null;
     }
     groundAt(x,z){return this.flatTerrain?0:Terrain.height(this.realm,this.stage,x,z);}
+    targetFor(){return this.player;}
+    damageTargets(){return[this.player];}
+    pickupTarget(){return this.player;}
+    pickupRadius(){return this.magnetRadius;}
+    collectLootFor(drop){return this.collectLoot(drop.id);}
+    projectileOwner(){return this.player;}
+    hitProjectile(enemy,projectile,knock=1.2){return this.hitEnemy(enemy,projectile.damage,projectile.type,knock);}
+    hitStatus(enemy,effect){return this.hitEnemy(enemy,effect.power*.18,effect.source,0,true);}
+    updateActors(dt,input){this.updatePlayer(dt,input);}
+    updateAllWeapons(dt){this.updateWeapons(dt);}
     configureTraining(config){
       if(this.mode!=='training'||!['running','paused'].includes(this.state)||!config||typeof config!=='object')return false;
       const {realm,stage,level,invulnerable}=config,hero=config.hero??this.hero;
@@ -181,7 +192,7 @@
       let duration=Combat.STATUS[id].duration*this.stats.duration;
       if(id==='freeze'&&wet){duration*=1.5;delete effects.wet;}
       if(enemy.type==='boss'&&(id==='freeze'||id==='shock'))duration*=.25;
-      const old=effects[id];effects[id]={time:Math.max(old?.time||0,duration),tick:old?.tick??.5,power:Math.max(old?.power||0,power),source};
+      const old=effects[id];effects[id]={time:Math.max(old?.time||0,duration),tick:old?.tick??.5,power:Math.max(old?.power||0,power),source,ownerId:this.actorId||null};
       this.emit('status',{status:id,x:enemy.x,z:enemy.z});
       if(id==='shock'&&wet){
         delete effects.wet;this.reactions++;this.emit('reaction',{name:'Chain shock',x:enemy.x,z:enemy.z,color:'#f1db82'});
@@ -192,7 +203,7 @@
     updateStatuses(enemy,dt){
       for(const [id,effect]of Object.entries(enemy.statuses||{})){
         effect.time-=dt;
-        if(id==='burn'){effect.tick-=dt;if(effect.tick<=0){effect.tick+=.5;this.hitEnemy(enemy,effect.power*.18,effect.source,0,true);}}
+        if(id==='burn'){effect.tick-=dt;if(effect.tick<=0){effect.tick+=.5;this.hitStatus(enemy,effect);}}
         if(effect.time<=0)delete enemy.statuses[id];if(enemy.dead)break;
       }
     }
@@ -244,11 +255,11 @@
     }
     enemyBolt(enemy,angle,speed=7) {
       if(this.projectiles.length>=300)return;
-      const y=this.groundAt(enemy.x,enemy.z)+1,d=Math.max(1,distance(enemy,this.player));
-      this.projectiles.push({id:this.nextId++,ownerId:enemy.id,type:'hostile',hostile:true,x:enemy.x,z:enemy.z,y,vy:(this.player.y+this.player.ground+1-y)/d,vx:Math.cos(angle),vz:Math.sin(angle),speed,life:3.4,age:0,damage:enemy.damage*.8,radius:.28,hits:new Set(),color:BOSSES[enemy.bossId]?.color||'#d894b1'});
+      const target=this.targetFor(enemy),y=this.groundAt(enemy.x,enemy.z)+1,d=Math.max(1,distance(enemy,target));
+      this.projectiles.push({id:this.nextId++,ownerId:enemy.id,type:'hostile',hostile:true,x:enemy.x,z:enemy.z,y,vy:(target.y+target.ground+1-y)/d,vx:Math.cos(angle),vz:Math.sin(angle),speed,life:3.4,age:0,damage:enemy.damage*.8,radius:.28,hits:new Set(),color:BOSSES[enemy.bossId]?.color||'#d894b1'});
     }
     updateBoss(enemy,dt) {
-      const spec=BOSSES[enemy.bossId]||BOSSES.phantom,p=this.player;
+      const spec=BOSSES[enemy.bossId]||BOSSES.phantom,p=this.targetFor(enemy);
       const stage=enemy.hp<enemy.maxHp*.33?3:enemy.hp<enemy.maxHp*.66?2:1;
       if(stage>enemy.stage){enemy.stage=stage;enemy.attackTimer=Math.min(enemy.attackTimer,.7);this.emit('bossPhase',{id:enemy.bossId,name:enemy.name,stage,x:enemy.x,z:enemy.z});}
       enemy.actionAge=(enemy.actionAge||0)+dt;
@@ -299,9 +310,9 @@
       return 'Damage '+Math.round(stats.damage*(this.stats[Combat.WEAPONS[id]]||1))+' · '+stats.count+(id==='orbit'?' relics':' shots')+' · '+stats.cooldown.toFixed(2)+'s'+(id==='nova'||id==='bomb'?' · radius '+stats.radius.toFixed(1):'');
     }
     explode(projectile) {
-      if(projectile.exploded)return;projectile.exploded=true;
+      if(projectile.exploded)return;projectile.exploded=true;projectile.type='bomb';
       this.emit('explosion',{x:projectile.x,z:projectile.z,radius:projectile.blastRadius||3,color:'#f0b46d'});
-      for(const enemy of this.enemies)if(distance(enemy,projectile)<(projectile.blastRadius||3)+enemy.radius)this.hitEnemy(enemy,projectile.damage,'bomb',5);
+      for(const enemy of this.enemies)if(distance(enemy,projectile)<(projectile.blastRadius||3)+enemy.radius)this.hitProjectile(enemy,projectile,5);
     }
     get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade'].includes(this.state)&&this.player.hp>0&&!this.boss;}
     checkpoint(){
@@ -521,7 +532,7 @@
       if(this.projectiles.length>=300)return;
       const p=this.player,stats=this.weaponStats(type),angle=Math.atan2(target.z-p.z,target.x-p.x)+angleOffset;
       const y=p.y+(p.ground||0)+1,vy=(this.groundAt(target.x,target.z)+1-y)/Math.max(1,distance(p,target));
-      this.projectiles.push({id:this.nextId++,type,x:p.x,z:p.z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:type==='bomb'?1.15:type==='boomerang'?2.4:type==='leaf'?1.65:2.5,age:0,speed:(type==='bomb'?7:type==='boomerang'?15:type==='leaf'?14:17)*this.stats.projectileSpeed,damage:stats.damage,radius:stats.radius>1?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,hits:new Set(),targetId:target.id,returning:false});
+      this.projectiles.push({id:this.nextId++,actorId:this.actorId||null,type,x:p.x,z:p.z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:type==='bomb'?1.15:type==='boomerang'?2.4:type==='leaf'?1.65:2.5,age:0,speed:(type==='bomb'?7:type==='boomerang'?15:type==='leaf'?14:17)*this.stats.projectileSpeed,damage:stats.damage,radius:stats.radius>1?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,hits:new Set(),targetId:target.id,returning:false});
       this.setAction(type==='leaf'||type==='bomb'?'cast':'attack',.42);this.player.attackKind=type;
     }
     updateWeapons(dt) {
@@ -539,23 +550,20 @@
       }}
       this.orbitAngle+=dt*(2.4+this.rank('haste')*.3);
       if(this.rank('orbit')){const stats=this.weaponStats('orbit');for(const enemy of this.enemies){
-        enemy.orbitHit-=dt;if(enemy.dead||enemy.orbitHit>0)continue;
+        const key=this.actorId||'solo';enemy.orbitHits=enemy.orbitHits||{};enemy.orbitHits[key]=(enemy.orbitHits[key]||0)-dt;if(enemy.dead||enemy.orbitHits[key]>0)continue;
         for(let i=0;i<stats.count;i++){const angle=this.orbitAngle+i*TAU/stats.count,rock={x:p.x+Math.cos(angle)*stats.radius,z:p.z+Math.sin(angle)*stats.radius};
-          if(distance(enemy,rock)<enemy.radius+.5){this.hitEnemy(enemy,stats.damage,'orbit',2.5);enemy.orbitHit=stats.cooldown;break;}
+          if(distance(enemy,rock)<enemy.radius+.5){this.hitEnemy(enemy,stats.damage,'orbit',2.5);enemy.orbitHits[key]=stats.cooldown;break;}
         }
       }}
     }
 
-    step(dt, input = { x: 0, y: 0 }) {
-      if (this.state !== 'running' || !Number.isFinite(dt) || dt <= 0) return;
-      dt = Math.min(dt, .05); this.time += dt;
+    updatePlayer(dt, input = { x: 0, y: 0 }) {
       const p = this.player;
       p.actionTime=Math.max(0,p.actionTime-dt);p.actionAge+=dt;
       if(p.actionTime===0)p.action=p.y>0?(p.gliding?'glide':'jump'):p.dash>0?'dash':Math.hypot(input.x||0,input.y||0)>.05?'walk':'idle';
       this.energy = Math.min(100, this.energy + dt * .75*(1+this.permanent.magic*.08));
       this.streakTimer = Math.max(0, this.streakTimer - dt); if (!this.streakTimer) this.streak = 0;
       this.cameraYaw = Number.isFinite(input.cameraYaw) ? input.cameraYaw : this.cameraYaw;
-      this.travelCooldown = Math.max(0, this.travelCooldown - dt);
       p.gliding = p.y > .1 && p.vy < 0 && !!input.glide && p.stamina > 0;
       if (p.y > 0) { p.vy -= (p.gliding ? 4 : 23) * dt; if (p.gliding) { p.vy = Math.max(p.vy, -.9); p.stamina = Math.max(0, p.stamina - dt * .38); } p.y += p.vy * dt; if (p.y <= 0) { p.y = 0; p.vy = 0; p.gliding = false; } }
       else p.stamina = Math.min(1, p.stamina + dt * .65);
@@ -569,6 +577,11 @@
       const moved=this.flatTerrain?{x:clamp(p.x+dx*speed*dt,-ARENA_LIMIT,ARENA_LIMIT),z:clamp(p.z+dz*speed*dt,-ARENA_LIMIT,ARENA_LIMIT),ground:0}:Terrain.resolve(this.realm,this.stage,p.x,p.z,p.x+dx*speed*dt,p.z+dz*speed*dt,p.y,p.radius);
       p.y=Math.max(0,p.y+(p.ground||0)-moved.ground);p.x=moved.x;p.z=moved.z;p.ground=moved.ground;
       if (this.rank('regen')||this.stats.regen) this.heal((this.rank('regen')+this.stats.regen)*dt);
+    }
+    step(dt,input={x:0,y:0}){
+      if(this.state!=='running'||!Number.isFinite(dt)||dt<=0)return;
+      dt=Math.min(dt,.05);this.time+=dt;this.travelCooldown=Math.max(0,this.travelCooldown-dt);this.updateActors(dt,input);
+      const p=this.player;
       this.spawnTimer -= dt;
       if (this.mode!=='training'&&(this.mode==='adventure'||this.time<240) && this.spawnTimer <= 0) {
         const batch = Math.min(this.mode==='adventure'?2:3,1+Math.floor(this.time/85));
@@ -582,7 +595,7 @@
       for(const enemy of this.enemies){
         if(enemy.dead)continue;this.updateStatuses(enemy,dt);if(enemy.dead)continue;const oldX=enemy.x,oldZ=enemy.z;
         if(enemy.dummy||enemy.statuses?.freeze||enemy.statuses?.shock){enemy.hitFlash=Math.max(0,enemy.hitFlash-dt);enemy.action='idle';continue;}
-        let d=Math.max(.01,distance(p,enemy));const towardX=(p.x-enemy.x)/d,towardZ=(p.z-enemy.z)/d;
+        const p=this.targetFor(enemy);let d=Math.max(.01,distance(p,enemy));const towardX=(p.x-enemy.x)/d,towardZ=(p.z-enemy.z)/d;
         enemy.hitFlash=Math.max(0,enemy.hitFlash-dt);enemy.phase+=dt;if(enemy.type!=='boss')enemy.actionAge=(enemy.actionAge||0)+dt;
         if(enemy.type==='boss')this.updateBoss(enemy,dt);
         else if(enemy.type==='mushroom'&&d<17){
@@ -590,7 +603,7 @@
           if(enemy.attackTimer<=0){this.enemyBolt(enemy,Math.atan2(p.z-enemy.z,p.x-enemy.x),5.5);enemy.attackTimer=2.4;enemy.action='attack';enemy.actionAge=0;}
         }else if(enemy.type==='boar'&&d<enemy.radius+p.radius+1.25){
           enemy.attackTimer-=dt;
-          if(enemy.windup>0){enemy.windup=Math.max(0,enemy.windup-dt);enemy.action='windup';if(enemy.windup===0){enemy.action='attack';enemy.actionAge=0;if(d<enemy.radius+p.radius+1.1&&p.y<1.1)this.hurtPlayer(enemy.damage,enemy);}}
+          if(enemy.windup>0){enemy.windup=Math.max(0,enemy.windup-dt);enemy.action='windup';if(enemy.windup===0){enemy.action='attack';enemy.actionAge=0;if(d<enemy.radius+p.radius+1.1&&p.y<1.1)this.hurtPlayer(enemy.damage,enemy,p);}}
           else if(enemy.attackTimer<=0){enemy.windup=.48;enemy.attackTimer=1.6;enemy.actionAge=0;}
           else enemy.action=enemy.actionAge<.3?'attack':'idle';
         }else{
@@ -601,7 +614,7 @@
         enemy.ground=this.groundAt(enemy.x,enemy.z);
         enemy.x+=enemy.knockX*dt;enemy.z+=enemy.knockZ*dt;enemy.knockX*=Math.exp(-10*dt);enemy.knockZ*=Math.exp(-10*dt);
         d=distance(p,enemy);
-        if(enemy.type!=='boar'&&d<p.radius+enemy.radius&&(p.y<1.1||enemy.type==='bat'||enemy.type==='boss'))this.hurtPlayer(enemy.damage,enemy);
+        if(enemy.type!=='boar'&&d<p.radius+enemy.radius&&(p.y<1.1||enemy.type==='bat'||enemy.type==='boss'))this.hurtPlayer(enemy.damage,enemy,p);
       }
       // A spatial hash separates local pairs without an all-pairs crowd cost.
       const cells = new Map();
@@ -618,8 +631,9 @@
         }
         const key = cx + ',' + cz; if (!cells.has(key)) cells.set(key, []); cells.get(key).push(e);
       }
-      this.updateWeapons(dt);
+      this.updateAllWeapons(dt);
       for(const projectile of this.projectiles){
+        const p=this.projectileOwner(projectile);
         projectile.life-=dt;projectile.age=(projectile.age||0)+dt;
         if(projectile.type==='bomb'){
           projectile.speed*=Math.exp(-dt*1.4);projectile.x+=projectile.vx*projectile.speed*dt;projectile.z+=projectile.vz*projectile.speed*dt;
@@ -637,25 +651,26 @@
         projectile.x+=projectile.vx*projectile.speed*dt;projectile.z+=projectile.vz*projectile.speed*dt;
         projectile.y+=(projectile.vy||0)*projectile.speed*dt;
         if(projectile.y!==undefined&&projectile.y<this.groundAt(projectile.x,projectile.z)+.08){projectile.life=0;continue;}
-        if(projectile.hostile){if(distance(projectile,p)<projectile.radius+p.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(p.y+(p.ground||0)+1))<1.3){this.hurtPlayer(projectile.damage,this.enemies.find(enemy=>enemy.id===projectile.ownerId));projectile.life=0;}continue;}
+        if(projectile.hostile){for(const target of this.damageTargets())if(distance(projectile,target)<projectile.radius+target.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(target.y+(target.ground||0)+1))<1.3){this.hurtPlayer(projectile.damage,this.enemies.find(enemy=>enemy.id===projectile.ownerId),target);projectile.life=0;break;}continue;}
         for(const enemy of this.enemies){
           if(enemy.dead||projectile.hits.has(enemy.id))continue;
-          if(distance(projectile,enemy)<projectile.radius+enemy.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(this.groundAt(enemy.x,enemy.z)+1))<Math.max(1.4,enemy.radius)){this.hitEnemy(enemy,projectile.damage,projectile.type,1.2);projectile.hits.add(enemy.id);if(projectile.type==='ember'){projectile.life=0;break;}}
+          if(distance(projectile,enemy)<projectile.radius+enemy.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(this.groundAt(enemy.x,enemy.z)+1))<Math.max(1.4,enemy.radius)){this.hitProjectile(enemy,projectile);projectile.hits.add(enemy.id);if(projectile.type==='ember'){projectile.life=0;break;}}
         }
       }
       this.projectiles=this.projectiles.filter(projectile=>projectile.life>0);
-      for (const h of this.hazards) { h.timer -= dt; h.life -= dt; if (h.timer <= 0 && !h.fired) { h.fired = true; this.emit('slam', { x: h.x, z: h.z }); if (distance(p, h) < h.radius + p.radius && p.y < 1.1) this.hurtPlayer(h.damage||30); } }
+      for (const h of this.hazards) { h.timer -= dt; h.life -= dt; if (h.timer <= 0 && !h.fired) { h.fired = true; this.emit('slam', { x: h.x, z: h.z }); for(const target of this.damageTargets())if (distance(target, h) < h.radius + target.radius && target.y < 1.1) this.hurtPlayer(h.damage||30,null,target); } }
       this.hazards = this.hazards.filter(h => h.life > 0);
       for (const s of this.shards) {
+        const p=this.pickupTarget(s);
         const d = distance(s, p);
-        if (d < this.magnetRadius + .5 && d > .01) { const pull = Math.min(d, (13 + 18 / Math.max(d, .2)) * dt); s.x += (p.x - s.x) / d * pull; s.z += (p.z - s.z) / d * pull; }
+        if (d < this.pickupRadius(p) + .5 && d > .01) { const pull = Math.min(d, (13 + 18 / Math.max(d, .2)) * dt); s.x += (p.x - s.x) / d * pull; s.z += (p.z - s.z) / d * pull; }
         if (distance(s, p) < .65) { s.collected = true; this.collect(s.value); this.emit('collect'); }
       }
       this.shards = this.shards.filter(s => !s.collected);
-      for(const drop of [...this.loot])if(distance(drop,p)<1.25)this.collectLoot(drop.id);
+      for(const drop of [...this.loot]){const target=this.pickupTarget(drop);if(distance(drop,target)<1.25)this.collectLootFor(drop,target);}
       this.enemies = this.enemies.filter(e => !e.dead);
       // Reposition distant enemies so the bounded arena stays active.
-      for (const e of this.enemies) if (e.type !== 'boss' && distance(e, p) > 50) { const a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
+      for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
     }
   }
   return { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, seeded, clamp };

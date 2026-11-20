@@ -78,9 +78,18 @@ Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, cam
 
 Touch has a movement stick, jump/glide, dash, aim, Ultimate and contextual Activate. Buttons keep native Space/Enter activation. Focus loss pauses gameplay. Nested inventory, map and settings dialogs preserve their parent's pause state.
 
+## Optional local backend
+
+The local Node backend uses embedded PostgreSQL, so Docker and provider accounts are not required. From this folder, install its pinned dependencies with `npm ci --prefix backend --ignore-scripts`, then run `npm run backend -- --data-dir 'C:\path\to\private\zeldabonk-data'`. Its health endpoint is http://127.0.0.1:4180/health . `npm run test:backend` exercises real HTTP/WebSocket clients, persistence, authorization and transactional economy.
+
+Local accounts, saves, shared authoritative rooms, ranked settlement, clans, escrow trades, crafting and a fixed-price shop are implemented. The current game menus are not wired to those APIs yet. No online backend is deployed. [Backend documentation](backend/README.md) describes the API, local ruleset and remaining production work.
+
 ## Source and verification
 
+    npm ci --prefix backend --ignore-scripts
     npm test
+
+The complete test suite requires Node.js 24 and the optional backend dependencies. Frontend-only simulation tests can run separately with `node --test tests/*.test.cjs`.
 
 Deterministic tests cover the 24-level campaign, map enemy pools, progression, terminal results, checkpoints, migration/import, purchases, unlocks, bounded entities, projectile families, targeting and baseline combat. Browser checks cover menus, changing animation poses, keyboard/touch, campaign event flow, safe reload and responsive layouts. Forced encounter completion verifies integration, rather than balance. Touch is verified through emulation; physical-device performance varies.
 

@@ -41,11 +41,13 @@ The official v0.10.15 landing screen, public client, and Season 4 notes were ins
 
 ## Boundaries
 
-These are compact arena interpretations, not complete original Zelda maps. Central progression shrines, stage layouts, some balance formulas, unlock conditions, crossover loadouts, and animations are authored for this adaptation. Capture, full move/item catalogs, fusion, forms, additional modes, accounts, co-op, clans, trading and authoritative ranked records remain requested but unfinished. The user confirmed no backend exists. Touch is verified through emulation; physical-device performance varies.
+These are compact arena interpretations, not complete original Zelda maps. Central progression shrines, stage layouts, some balance formulas, unlock conditions, crossover loadouts, and animations are authored for this adaptation. Full catalogs, fusion, forms and additional modes remain unfinished. Accounts, co-op, clans, trading and ranked records now have a tested local backend; their browser flows and hosted deployment are unfinished. Touch is verified through emulation; physical-device performance varies.
 
 ## Stack and Delivery
 
-Static HTML/CSS/JavaScript with vendored Three.js. No build step, account, backend, runtime network requests, or environment variables. Confirmed repository: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . Commit and push after meaningful checks; verify Vercel separately.
+The user selected local backend development first. backend/ now contains a loopback-only Node service with embedded PostgreSQL, local accounts/sessions, owner-scoped versioned saves, authoritative co-op simulation, reconnect/restart snapshots, server-issued ranked results and rewards, clans, escrow trading, crafting and a fixed-price market. Its APIs are tested independently; browser sign-in/lobby/network rendering is not connected yet. Supabase/Render deployment, production auth and database integration remain unconfigured. No cloud resources were created.
+
+The production game uses static HTML/CSS/JavaScript with vendored Three.js, with no build step or required backend. The optional local backend uses Node.js 24, PGlite and ws, with pinned dependencies in its own package. Confirmed repository: https://github.com/Adonissimo/zelabonk- . Static production: https://zelabonk.vercel.app . Commit and push after meaningful checks; verify Vercel separately. The user's local-first choice does not authorize creating cloud backend resources.
 
 ## Principles
 
