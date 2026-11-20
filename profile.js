@@ -4,7 +4,7 @@
   else root.BonkProfile=factory(root.BonkCore);
 })(typeof globalThis!=='undefined'?globalThis:this,function(Core){
   'use strict';
-  const {Game,HEROES,REALMS,UPGRADES,PERMANENT}=Core;
+  const {Game,HEROES,REALMS,UPGRADES,PERMANENT,Combat}=Core;
   const integer=(value,max=1e9)=>Number.isFinite(value)?Math.max(0,Math.min(max,Math.floor(value))):0;
   const unique=(value,allowed,limit=512)=>Array.isArray(value)?[...new Set(value.filter(item=>typeof item==='string'&&allowed(item)))].slice(-limit):[];
   const validRunId=value=>typeof value==='string'&&/^[-a-zA-Z0-9]{1,80}$/.test(value);
@@ -22,6 +22,7 @@
       this.bindings={...DEFAULT_BINDINGS};if(raw.bindings&&Object.keys(DEFAULT_BINDINGS).every(key=>validBinding(raw.bindings[key]))&&new Set(Object.values(raw.bindings)).size===Object.keys(DEFAULT_BINDINGS).length)for(const key of Object.keys(DEFAULT_BINDINGS))this.bindings[key]=raw.bindings[key];
       this.upgrades={};for(const item of PERMANENT)this.upgrades[item.id]=integer(raw.upgrades?.[item.id],item.max);
       this.guardians=unique(raw.guardians,id=>guardianIds.includes(id),REALMS.length);this.items=unique(raw.items,id=>UPGRADES.some(item=>item.id===id),UPGRADES.length);
+      this.gear=unique(raw.gear,id=>!!Combat.item(id),Combat.GEAR.length);
       this.rewardedRuns=unique(raw.rewardedRuns,validRunId);this.activeRunId=validRunId(raw.activeRunId)?raw.activeRunId:'';this.checkpoint=null;
       if(raw.checkpoint){const game=Game.fromCheckpoint(raw.checkpoint);if(!this.rewardedRuns.includes(game.runId)){
         this.checkpoint=raw.checkpoint;this.activeRunId=game.runId;
@@ -42,11 +43,13 @@
     upgradeCost(id){const item=PERMANENT.find(item=>item.id===id);return !item||this.upgrades[id]>=item.max?null:20*(this.upgrades[id]+1);}
     purchase(id){const cost=this.upgradeCost(id);if(cost===null||this.rupees<cost)return false;this.rupees-=cost;this.upgrades[id]++;return true;}
     recordItem(id){if(!UPGRADES.some(item=>item.id===id)||this.items.includes(id))return false;this.items.push(id);return true;}
+    recordGear(id){if(!Combat.item(id)||this.gear.includes(id))return false;this.gear.push(id);return true;}
     recordGuardian(id){
       if(!guardianIds.includes(id)||this.guardians.includes(id))return[];
       const before=new Set(this.unlocked);this.guardians.push(id);return this.unlocked.filter(id=>!before.has(id));
     }
     beginRun(game,expectedCheckpointId=null){
+      if(game.mode==='training')throw new Error('Training cannot replace a saved adventure.');
       if(!this.unlocked.includes(game.hero))throw new Error('This hero is still locked.');
       if(this.checkpoint&&this.checkpoint.runId!==expectedCheckpointId&&this.checkpoint.runId!==game.runId)throw new Error('Your saved adventure changed. Review it before replacing it.');
       this.activeRunId=game.runId;this.checkpoint=game.checkpoint();this.recordItem(HEROES[game.hero].weapon);return true;
@@ -54,10 +57,11 @@
     saveCheckpoint(game){
       if(this.activeRunId!==game.runId)return false;
       const checkpoint=game.checkpoint();if(!checkpoint)return false;
-      this.checkpoint=checkpoint;for(const id of Object.keys(game.ranks))this.recordItem(id);return true;
+      this.checkpoint=checkpoint;for(const id of Object.keys(game.ranks))this.recordItem(id);for(const id of Object.keys(game.gear))this.recordGear(id);return true;
     }
     resume(){if(!this.checkpoint)throw new Error('There is no adventure checkpoint.');return Game.fromCheckpoint(this.checkpoint);}
     settle(game){
+      if(game.mode==='training')throw new Error('Training cannot grant permanent progress.');
       if(!['won','lost'].includes(game.state))throw new Error('The run has not ended.');
       if(this.rewardedRuns.includes(game.runId))return{reward:0,unlocks:[],duplicate:true};
       const before=new Set(this.unlocked),won=game.state==='won';
@@ -67,12 +71,13 @@
       if(won){this.wins++;if(game.mode==='adventure')this.adventureWins++;else this.survivalWins++;}
       if(game.mode==='adventure')for(const index of game.shrines)this.recordGuardian(REALMS[index].boss);
       for(const id of Object.keys(game.ranks))this.recordItem(id);
+      for(const id of Object.keys(game.gear))this.recordGear(id);
       this.rewardedRuns.push(game.runId);this.rewardedRuns=this.rewardedRuns.slice(-512);
       if(this.checkpoint?.runId===game.runId)this.checkpoint=null;if(this.activeRunId===game.runId)this.activeRunId='';
       return{reward,unlocks:this.unlocked.filter(id=>!before.has(id)),duplicate:false};
     }
     toJSON(){
-      return{game:'ZeldaBonk',version:2,rupees:this.rupees,runs:this.runs,wins:this.wins,adventureWins:this.adventureWins,survivalWins:this.survivalWins,bestKills:this.bestKills,bestTime:this.bestTime,totalKills:this.totalKills,sound:this.sound,volume:this.volume,motion:this.motion,graphics:this.graphics,sensitivity:this.sensitivity,invertY:this.invertY,mouseMode:this.mouseMode,cameraFov:this.cameraFov,cameraDistance:this.cameraDistance,bindings:{...this.bindings},upgrades:{...this.upgrades},guardians:[...this.guardians],items:[...this.items],rewardedRuns:[...this.rewardedRuns],activeRunId:this.activeRunId,checkpoint:this.checkpoint};
+      return{game:'ZeldaBonk',version:2,rupees:this.rupees,runs:this.runs,wins:this.wins,adventureWins:this.adventureWins,survivalWins:this.survivalWins,bestKills:this.bestKills,bestTime:this.bestTime,totalKills:this.totalKills,sound:this.sound,volume:this.volume,motion:this.motion,graphics:this.graphics,sensitivity:this.sensitivity,invertY:this.invertY,mouseMode:this.mouseMode,cameraFov:this.cameraFov,cameraDistance:this.cameraDistance,bindings:{...this.bindings},upgrades:{...this.upgrades},guardians:[...this.guardians],items:[...this.items],gear:[...this.gear],rewardedRuns:[...this.rewardedRuns],activeRunId:this.activeRunId,checkpoint:this.checkpoint};
     }
     static migrate(old){const profile=new Profile(old);profile.rupees=integer(profile.wins*40+Math.floor(profile.bestKills/5));return profile;}
     static import(text){
@@ -83,6 +88,7 @@
       if(!raw.upgrades||typeof raw.upgrades!=='object'||Array.isArray(raw.upgrades))throw new Error('The save has invalid upgrades.');
       for(const item of PERMANENT)if(!Number.isInteger(raw.upgrades[item.id])||raw.upgrades[item.id]<0||raw.upgrades[item.id]>item.max)throw new Error('The save has an invalid upgrade rank.');
       for(const key of ['guardians','items','rewardedRuns'])if(!Array.isArray(raw[key])||raw[key].length>512)throw new Error('The save has invalid collections.');
+      if(raw.gear!==undefined&&(!Array.isArray(raw.gear)||raw.gear.length>Combat.GEAR.length||raw.gear.some(id=>!Combat.item(id))))throw new Error('The save has invalid equipment discoveries.');
       if(raw.bindings&&(!Object.keys(DEFAULT_BINDINGS).every(key=>validBinding(raw.bindings[key]))||new Set(Object.values(raw.bindings)).size!==Object.keys(DEFAULT_BINDINGS).length))throw new Error('The save has invalid control bindings.');
       return new Profile(raw);
     }

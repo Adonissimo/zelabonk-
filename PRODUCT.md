@@ -8,7 +8,7 @@ web
 
 ## Confirmed Direction
 
-The user wants PokéBonk as the mechanics, graphics, and overall presentation reference. The user explicitly replaced a merely Zelda-inspired theme with an actual Legend of Zelda theme. The realms must connect and share progression.
+The user wants PokéBonk as the mechanics, graphics, and overall presentation reference, with all functionality rebuilt independently under an actual Legend of Zelda theme. The realms must connect and share progression. Full parity is the active target and is not complete; PARITY.md tracks implemented and missing systems.
 
 ## Current Game
 
@@ -18,7 +18,7 @@ Characters and foliage use independently drawn pixel-art billboards in a texture
 
 ## Reference Evidence
 
-The official landing screen was inspected. Guest entry encountered a human-verification check, so live combat could not be played. Public captures of the original game's combat, selection, menu, and upgrades were visually inspected. Control guides supply secondary evidence. REFERENCE-ANALYSIS.md separates findings from limits.
+The official v0.10.15 landing screen, public client, and Season 4 notes were inspected. After the user completed verification, the explicitly non-counting Training Grounds was inspected in Brave. Public captures and control guides provide additional evidence. PARITY.md separates verified facts, authored rules, implemented coverage, and remaining work.
 
 ## Capabilities
 
@@ -31,13 +31,17 @@ The official landing screen was inspected. Guest entry encountered a human-verif
 - Survival: immediate shrine rewards and the four-minute Phantom Ganon encounter; boss health persists through travel.
 - Normal and Hard difficulty, six weapon families, three boss health phases, telegraphed patterns and map-specific enemy species.
 - Original idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat and victory animations.
+- Deterministic plateaus and ramps share height sampling with the renderer; trees, rocks and shrine structures have physical collisions.
+- Twenty-four stackable Zelda treasures across five rarities. Physical/magic damage, criticals/mega-criticals, armor, evasion, regeneration, lifesteal, thorns and damage breakdown.
+- Burn, freeze, shock and wet effects with steam and chain-shock reactions. Menus freeze their simulation clocks.
+- Non-counting Training Grounds with all six heroes, map/stage/level selection, four-weapon/five-charm builds, treasure stack editing, stationary dummies, groups, elites, alphas and map guardians.
 - Rupees, five capped permanent upgrades, three hero unlocks, records, equipment/enemy journal and six achievements.
 - Safe map and pending-choice checkpoints, import/export with backup, legacy-record migration and cross-tab checkpoint ownership.
 - Low/Balanced/High graphics, sound/volume, key rebinding, mouse sensitivity, inverted Y, field of view, camera distance, optional cursor capture, system or manual reduced motion, nested native dialogs and focus-loss pause.
 
 ## Boundaries
 
-These are compact arena interpretations, not complete original Zelda maps. Central progression shrines, stage layouts, balance formulas, unlock conditions, crossover loadouts, and animations are authored for this adaptation. Creature capture, multiplayer, accounts, the exhaustive roster, and complete platforming terrain are outside scope. Public reference images do not establish current live formulas. Touch is verified through emulation; physical-device performance varies.
+These are compact arena interpretations, not complete original Zelda maps. Central progression shrines, stage layouts, some balance formulas, unlock conditions, crossover loadouts, and animations are authored for this adaptation. Capture, full move/item catalogs, fusion, forms, additional modes, accounts, co-op, clans, trading and authoritative ranked records remain requested but unfinished. The user confirmed no backend exists. Touch is verified through emulation; physical-device performance varies.
 
 ## Stack and Delivery
 
@@ -53,3 +57,5 @@ Static HTML/CSS/JavaScript with vendored Three.js. No build step, account, backe
 - Keep the character, combat feedback, charge, and choices readable.
 - Retain keyboard, mouse, native button semantics, and touch support.
 - Separate reference observations from unverified behavior.
+- Training cannot replace an Adventure checkpoint, grant rewards, record permanent discoveries or unlock characters.
+- Pending chests and acquired equipment serialize separately; each pickup grants its reward once. Secondary proc/reaction damage cannot recursively trigger more procs.

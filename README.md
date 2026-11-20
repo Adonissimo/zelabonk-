@@ -43,6 +43,16 @@ Link, Zelda and Midna start unlocked. Helmaroc King unlocks Tetra; three differe
 
 Completed runs grant rupees. The Great Fairy camp sells five capped permanent upgrades: Heart Container, Power Bracelet, Mirror Shield, Wallet and Magic Jar. Custom bonuses apply to new runs. A journal tracks heroes, bosses, equipment, local enemies, and six achievements.
 
+## Treasure and Training Grounds
+
+Elites and every twentieth defeated enemy drop treasure; guardians drop a Rare-or-better chest. Walk over a chest to collect it. Twenty-four Zelda treasures cover five rarities and stack up to their listed limit, normally ten. Uncollected chests bank before travel, and checkpoints preserve pending rewards separately from acquired stacks.
+
+Equipment modifies physical/magic damage, critical chance and damage, movement, projectile speed, armor, evasion, healing, regeneration, lifesteal, thorns and XP collection. Critical chance starts at 5%, with 175% critical damage. Above 100%, additional critical chance becomes mega-critical probability, capped at 200%. Fire, ice, splash and shock fruits add statuses; opposing fire/water effects produce steam, and shock chains from soaked targets. Inventory shows actual damage per weapon and effect.
+
+Choose **Training grounds** from the title. Try any of six heroes on any map/stage. Edit up to four weapons at ranks 0–8 and five charms at ranks 0–10, change treasure stacks, and manually spawn a stationary dummy, groups, elites, alphas or a map guardian. Inventory reopens Training controls. Incoming damage is disabled by default and can be enabled. Applying a build resets the arena; setting treasure alone preserves it. Training grants no rewards, discoveries or unlocks, and never replaces a saved Adventure. Training itself is not saved.
+
+These are independently authored Zelda equivalents. PARITY.md identifies verified reference formulas and remaining differences; this release does not claim full PokéBonk parity.
+
 ## Saves and settings
 
 Safe checkpoints preserve map levels and pending upgrade choices. Boss encounters restart from the preceding safe checkpoint. Pause and return to title to save safe progress. Starting a new run protects an existing checkpoint with a replacement choice.
@@ -75,10 +85,13 @@ Touch has a movement stick, jump/glide, dash, aim, Ultimate and contextual Activ
 Deterministic tests cover the 24-level campaign, map enemy pools, progression, terminal results, checkpoints, migration/import, purchases, unlocks, bounded entities, projectile families, targeting and baseline combat. Browser checks cover menus, changing animation poses, keyboard/touch, campaign event flow, safe reload and responsive layouts. Forced encounter completion verifies integration, rather than balance. Touch is verified through emulation; physical-device performance varies.
 
 - core.js: simulation, campaign and checkpoint invariants.
+- terrain.js: shared deterministic terrain, collision geometry and spatial lookup.
+- combat.js: Zelda treasure catalog, stat aggregation, critical rules and equipment validation.
 - profile.js: progression, purchases, migration, validation and once-per-run settlement.
 - art.js: original pixel art, animation frames, textures and material cache.
 - app.js: 3D rendering, effects, input, dialogs, sound and persistence.
 - REFERENCE-ANALYSIS.md: reference evidence and scope limits.
+- PARITY.md: active feature coverage, evidence and missing systems.
 
 ## Vercel
 
@@ -86,6 +99,6 @@ The repository is connected to https://zelabonk.vercel.app . Static hosting uses
 
 ## Credits and scope
 
-Unofficial fan game, unaffiliated with Nintendo. Zelda's characters, names and settings belong to their respective owners. Pixel artwork and animations are independently authored. No Nintendo or PokéBonk sprites, music, models or source were extracted. Three.js uses MIT; Lilita One and Nunito use SIL Open Font License. License texts ship alongside those files.
+Unofficial fan game, unaffiliated with Nintendo. Zelda's characters, names and settings belong to their respective owners. Pixel artwork and animations are independently authored. No Nintendo or PokéBonk sprites, music, models or source are bundled. Three.js uses MIT; Lilita One and Nunito use SIL Open Font License. License texts ship alongside those files.
 
-Reference: https://pokebonk.com/ . Guest entry encountered human verification; analysis uses public captures and labeled secondary guides. These eight maps are compact interpretations. Creature capture, multiplayer, accounts, exhaustive franchise maps and the full franchise roster are outside this game.
+Reference: https://pokebonk.com/ . The public v0.10.15 client, official notes, and non-counting Training Grounds were inspected. These eight maps remain compact interpretations. Capture, fusion, transformations, additional modes, expanded catalogs, multiplayer, accounts and social systems are requested work that remains unfinished. No online backend exists yet.

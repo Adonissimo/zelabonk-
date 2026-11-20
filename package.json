@@ -1,8 +1,8 @@
 {
   "name": "zeldabonk",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "An animated Zelda survivor across eight connected maps and 24 campaign levels.",
+  "description": "A Zelda survivor with connected realms, physical terrain, treasure combat, and non-counting training.",
   "scripts": {
     "test": "node --test",
     "start": "node server.cjs"

@@ -1,5 +1,7 @@
 # PokéBonk reference analysis
 
+Update, November 21, 2026: the user completed verification and non-counting Training Grounds was subsequently inspected in Brave at v0.10.15. Public client data and official Season 4 notes were also reviewed. PARITY.md is the current feature/evidence matrix. The earlier landing-screen audit below remains historical evidence; its former bounded scope does not replace the active full-parity target.
+
 ## Evidence
 
 Inspected November 20, 2026. The official landing screen displayed beta v0.10.14. Guest entry stopped at a human-verification check. No live combat playtest is claimed.

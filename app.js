@@ -2,7 +2,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   if(!window.BonkCore||!window.BonkProfile||!window.RelicArt||!window.THREE){$('error-screen').hidden=false;return;}
-  const { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, ARENA_LIMIT, seeded, clamp } = BonkCore;
+  const { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, seeded, clamp } = BonkCore;
   const {Profile,DEFAULT_BINDINGS,validBinding}=BonkProfile;
   const ICONS = {
     relic:'<path d="m12 2 5 8H7Zm-5 8 5 9H2Zm10 0 5 9H12Z"/>',
@@ -103,7 +103,7 @@
       this.sun = new THREE.DirectionalLight('#fff2d1', 1.1); this.sun.position.set(-17, 35, 12); this.sun.castShadow = true; this.sun.shadow.mapSize.set(1024, 1024); Object.assign(this.sun.shadow.camera, { left: -35, right: 35, top: 35, bottom: -35, near: 1, far: 100 }); this.sun.shadow.normalBias = .08; this.sun.shadow.bias = -.0005; this.scene.add(this.sun); this.scene.add(this.sun.target);
       this.geometries = { sphere: new THREE.IcosahedronGeometry(1, 1), lowSphere: new THREE.IcosahedronGeometry(1, 0), box: new THREE.BoxGeometry(1, 1, 1), cone: new THREE.ConeGeometry(1, 1, 6), cylinder: new THREE.CylinderGeometry(1, 1, 1, 8), disc: new THREE.CircleGeometry(1, 20), diamond: new THREE.OctahedronGeometry(1), torus: new THREE.TorusGeometry(1, .09, 5, 24) };
       this.materials = new Map(); this.environment = new THREE.Group(); this.scene.add(this.environment); this.entities = new THREE.Group(); this.scene.add(this.entities);
-      this.enemies = new Map(); this.projectiles = new Map(); this.shards = new Map(); this.hazards = new Map(); this.effects = []; this.orbits = [];
+      this.enemies = new Map(); this.projectiles = new Map(); this.shards = new Map(); this.hazards = new Map(); this.loot = new Map(); this.effects = []; this.orbits = [];
       this.dummy = new THREE.Object3D(); this.realm = -1; this.hero = null; this.heroId = null; this.cameraTarget = new THREE.Vector3(); this.lastPlayer = { x: 0, z: 0 }; this.shake = 0; this.elapsed = 0; this.yaw = Math.PI / 4; this.pitch = .78; this.distance = storage.cameraDistance;
       this.damageCanvas = document.createElement('canvas'); this.damageCanvas.width = 128; this.damageCanvas.height = 64;
       this.makeHero('link'); this.buildRealm(6); this.resize(); this.titlePose(0);
@@ -120,7 +120,7 @@
       return this.materials.get(key);
     }
     mesh(type, color, scale = [1, 1, 1], pos = [0, 0, 0], parent = null, options = {}) {
-      const mesh = new THREE.Mesh(this.geometries[type], this.mat(color, options)); mesh.scale.set(...scale); mesh.position.set(...pos); if (parent) parent.add(mesh); return mesh;
+      const mesh = new THREE.Mesh(this.geometries[type], this.mat(color, options)); mesh.scale.set(...scale); mesh.position.set(...pos);if(parent===this.environment)mesh.position.y+=Terrain.height(this.realm,this.levelStage||1,pos[0],pos[2]); if (parent) parent.add(mesh); return mesh;
     }
     shadow(parent, radius = .65, opacity = .18) { const m = this.mesh('disc', '#183b37', [radius, radius * .7, 1], [0, .025, 0], parent, { basic: true, opacity }); m.rotation.x = -Math.PI / 2; return m; }
     terrainMaterial(index,stone=false) { const key='terrain:'+index+':'+stone;if(!this.materials.has(key))this.materials.set(key,new THREE.MeshLambertMaterial({map:RelicArt.terrain(index,stone)}));return this.materials.get(key); }
@@ -139,7 +139,7 @@
     instanced(type, color, transforms, parent = this.environment, castShadow = false) {
       if (!transforms.length) return;
       const inst = new THREE.InstancedMesh(this.geometries[type], this.mat(color), transforms.length);
-      transforms.forEach((t, i) => { this.dummy.position.set(t.x, t.y, t.z); this.dummy.scale.set(t.sx || 1, t.sy || 1, t.sz || 1); this.dummy.rotation.set(t.rx || 0, t.ry || 0, t.rz || 0); this.dummy.updateMatrix(); inst.setMatrixAt(i, this.dummy.matrix); if (t.color) inst.setColorAt(i, new THREE.Color(t.color)); });
+      transforms.forEach((t, i) => { this.dummy.position.set(t.x, t.y+(parent===this.environment?Terrain.height(this.realm,this.levelStage||1,t.x,t.z):0), t.z); this.dummy.scale.set(t.sx || 1, t.sy || 1, t.sz || 1); this.dummy.rotation.set(t.rx || 0, t.ry || 0, t.rz || 0); this.dummy.updateMatrix(); inst.setMatrixAt(i, this.dummy.matrix); if (t.color) inst.setColorAt(i, new THREE.Color(t.color)); });
       inst.castShadow = castShadow; inst.receiveShadow = true; parent.add(inst); return inst;
     }
     clearGroup(group) { while (group.children.length) { const child=group.children[0];child.traverse(mesh=>{if(mesh.isInstancedMesh)mesh.dispose();});group.remove(child); } }
@@ -148,14 +148,15 @@
       const r = REALMS[index], rand = seeded(1977 + index * 391+stage*577), env = this.environment;
       this.scene.background.set(r.sky); this.scene.fog.color.set(r.fog); this.ambient.color.set(index === 2 ? '#c7c7ef' : index === 4 ? '#ffe2bc' : '#fff8e3'); this.ambient.groundColor.set(index === 2 ? '#4d4365' : '#657354'); this.sun.color.set(index === 2 || index === 5 ? '#e1dcff' : '#fff0ca');
       const groundTexture = RelicArt.terrain(index); groundTexture.repeat.set(72,72);
-      if(!this.geometries.ground)this.geometries.ground=new THREE.PlaneGeometry(320,320);
+      if(!this.geometries.ground)this.geometries.ground=new THREE.PlaneGeometry(320,320,160,160);
+      const vertices=this.geometries.ground.attributes.position;for(let i=0;i<vertices.count;i++)vertices.setZ(i,Terrain.height(index,stage,vertices.getX(i),-vertices.getY(i)));vertices.needsUpdate=true;this.geometries.ground.computeVertexNormals();
       const ground = new THREE.Mesh(this.geometries.ground, this.terrainMaterial(index));
       ground.rotation.x = -Math.PI/2; ground.position.y = -.03; ground.receiveShadow = true; env.add(ground);
       const wallMaterial = this.terrainMaterial(index,true);
       for (let tier=0;tier<3;tier++) {
         for (let x=-ARENA_LIMIT-30;x<=ARENA_LIMIT+30;x+=10) {
           const wall = new THREE.Mesh(this.geometries.box,wallMaterial); wall.scale.set(10,2.2+tier*1.3,7); wall.position.set(x,1+tier*.65,-ARENA_LIMIT-6-tier*7); wall.castShadow=true; wall.receiveShadow=true; env.add(wall);
-          const top = this.mesh('box',r.ground,[10.1,.18,7.1],[x,2.2+tier*1.3,-31-tier*7],env); top.receiveShadow=true;
+          const top = this.mesh('box',r.ground,[10.1,.18,7.1],[x,2.2+tier*1.3,-ARENA_LIMIT-6-tier*7],env); top.receiveShadow=true;
         }
       }
       for(const side of [-1,1]) for(let z=-ARENA_LIMIT;z<=ARENA_LIMIT;z+=10){const wall=new THREE.Mesh(this.geometries.box,wallMaterial);wall.scale.set(5,2.1,10);wall.position.set(side*(ARENA_LIMIT+6),1,z);wall.castShadow=true;env.add(wall);this.mesh('box',r.ground,[5.1,.2,10.1],[side*(ARENA_LIMIT+6),2.12,z],env);}
@@ -169,12 +170,11 @@
         if (i % 6 === 0) flowers.push({x:x+.3,y:.19,z:z+.2,sx:.12,sy:.12,sz:.12,color:index===2?'#e9b6de':index===4?'#f8c580':i%2?'#fcf3c7':'#e7bd91'});
       }
       this.instanced('lowSphere', '#9da58d', rocks, env, true);
-      for (let i=0;i<(touch?80:120);i++) {
-        const a=rand()*Math.PI*2, rad=11+rand()*78, x=Math.cos(a)*rad,z=Math.sin(a)*rad;
-        if(GATES.some(g=>Math.hypot(g.x-x,g.z-z)<4)||Math.hypot(x,z+7)<6||index===1&&x>20)continue;
-        const tree=RelicArt.sprite('tree',index===6?0:index,4.1,5.75);tree.position.set(x,0,z);const size=.75+rand()*.6;tree.scale.multiplyScalar(size);env.add(tree);
+      for(const obstacle of Terrain.layout(index,stage).obstacles){
+        if(obstacle.kind==='tree'){const tree=RelicArt.sprite('tree',index===6?0:index,4.1,5.75);tree.position.set(obstacle.x,Terrain.height(index,stage,obstacle.x,obstacle.z),obstacle.z);tree.scale.multiplyScalar(obstacle.scale);env.add(tree);}
+        else if(obstacle.kind==='rock')this.mesh('lowSphere','#919a82',[obstacle.radius*1.5,obstacle.height,obstacle.radius*1.5],[obstacle.x,.2,obstacle.z],env);
       }
-      for(let i=0;i<(touch?120:190);i++){const x=(rand()-.5)*145,z=(rand()-.5)*145;if(Math.hypot(x,z)<3)continue;const flower=RelicArt.sprite('plant',index,.7,.7);flower.position.set(x,.02,z);env.add(flower);}
+      for(let i=0;i<(touch?120:190);i++){const x=(rand()-.5)*145,z=(rand()-.5)*145;if(Math.hypot(x,z)<3)continue;const flower=RelicArt.sprite('plant',index,.7,.7);flower.position.set(x,Terrain.height(index,stage,x,z)+.02,z);env.add(flower);}
       for (let i=0;i<3;i++) {
         const g = GATES[i]; for(let k=1;k<12;k++) {const t=k/12;path.push({x:g.x*t+(rand()-.5),y:.015,z:g.z*t+(rand()-.5),sx:.6+rand()*.4,sy:.045,sz:.7+rand()*.4,ry:rand()*6});}
       }
@@ -232,7 +232,7 @@
       this.makeMotes(r,index);
     }
     buildRuin(x,z,s,parent) {
-      const group=new THREE.Group();group.position.set(x,0,z);group.scale.setScalar(s);parent.add(group);
+      const group=new THREE.Group();group.position.set(x,Terrain.height(this.realm,this.levelStage||1,x,z),z);group.scale.setScalar(s);parent.add(group);
       this.mesh('box','#a6b09c',[5,.4,3],[0,.15,0],group);
       for(const dx of [-1.7,1.7]){this.mesh('box','#c3c6ac',[.85,4,1],[dx,2.2,0],group).castShadow=true;this.mesh('box','#e0d9b7',[1.3,.4,1.4],[dx,4.3,0],group);}
       this.mesh('box','#cdd0b2',[5,.8,1.5],[0,4.7,0],group).castShadow=true;
@@ -271,7 +271,7 @@
     defeatEffect(event) {
       if(this.effects.length>100)return;
       const type=event.enemyType||'slime',boss=type==='boss',height=boss?(BOSSES[event.bossId]?.height||5):type==='boar'?2.5:1.7;
-      const mesh=RelicArt.sprite(boss?'boss':'enemy',event.bossId||event.enemyId||type,height*.89,height);mesh.position.set(event.x,0,event.z);mesh.material=mesh.material.clone();this.entities.add(mesh);
+      const mesh=RelicArt.sprite(boss?'boss':'enemy',event.bossId||event.enemyId||type,height*.89,height);mesh.position.set(event.x,Terrain.height(this.realm,this.levelStage||1,event.x,event.z),event.z);mesh.material=mesh.material.clone();this.entities.add(mesh);
       this.effects.push({mesh,time:boss?1:.65,duration:boss?1:.65,kind:'ghost',actorKind:boss?'boss':'enemy',actorId:event.bossId||event.enemyId||type,material:mesh.material});
       this.popEffect(event.x,event.z,boss?'#f5dc9b':'#d5e6b8');
     }
@@ -279,8 +279,8 @@
       const hero=game.hero,count=reducedMotion||storage.graphics==='low'?3:hero==='midna'?16:10;
       for(let i=0;i<count&&this.effects.length<120;i++){
         const angle=i*Math.PI*2/count,id=hero==='tetra'?'bomb':hero==='sheik'?'boomerang':hero==='zelda'?'leaf':'ember';
-        const mesh=RelicArt.sprite('projectile',id,.85,.85);mesh.position.set(event.x,.8,event.z);this.entities.add(mesh);
-        this.effects.push({mesh,time:.85,duration:.85,kind:'ultimate',hero,angle,x:event.x,z:event.z,radius:reducedMotion?2:event.radius*.75});
+        const mesh=RelicArt.sprite('projectile',id,.85,.85);mesh.position.set(event.x,Terrain.height(this.realm,this.levelStage||1,event.x,event.z)+.8,event.z);this.entities.add(mesh);
+        this.effects.push({mesh,time:.85,duration:.85,kind:'ultimate',ground:Terrain.height(this.realm,this.levelStage||1,event.x,event.z),hero,angle,x:event.x,z:event.z,radius:reducedMotion?2:event.radius*.75});
       }
       if(hero==='zelda'||hero==='skullkid')this.ringEffect(event.x,event.z,event.color,event.radius*.45,1);
     }
@@ -290,20 +290,20 @@
     }
     ringEffect(x,z,color,radius,duration=.5) {
       if(this.effects.length>120)return;
-      const mesh=this.mesh('torus',color,[.1,.1,.1],[x,.15,z],this.entities,{basic:true,opacity:.75});mesh.rotation.x=-Math.PI/2;
+      const mesh=this.mesh('torus',color,[.1,.1,.1],[x,Terrain.height(this.realm,this.levelStage||1,x,z)+.15,z],this.entities,{basic:true,opacity:.75});mesh.rotation.x=-Math.PI/2;
       this.effects.push({mesh,time:duration,duration,radius,kind:'ring'});
     }
     popEffect(x,z,color) {
       if(storage.graphics==='low'||this.effects.length>120)return;
-      for(let i=0;i<4;i++){const mesh=this.mesh('lowSphere',color,[.12,.12,.12],[x,.55,z],this.entities,{basic:true});const a=i*Math.PI/2+Math.random();this.effects.push({mesh,time:.4,duration:.4,kind:'particle',vx:Math.cos(a)*2.4,vz:Math.sin(a)*2.4,vy:3});}
+      for(let i=0;i<4;i++){const mesh=this.mesh('lowSphere',color,[.12,.12,.12],[x,Terrain.height(this.realm,this.levelStage||1,x,z)+.55,z],this.entities,{basic:true});const a=i*Math.PI/2+Math.random();this.effects.push({mesh,time:.4,duration:.4,kind:'particle',vx:Math.cos(a)*2.4,vz:Math.sin(a)*2.4,vy:3});}
     }
-    damageText(x,z,damage) {
+    damageText(x,z,damage,critical=0) {
       if(storage.graphics==='low'||reducedMotion||this.effects.filter(e=>e.kind==='text').length>14)return;
-      const canvas=document.createElement('canvas');canvas.width=96;canvas.height=64;const ctx=canvas.getContext('2d');ctx.textAlign='center';ctx.font='900 35px Nunito,sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#344b43';ctx.strokeText(String(damage),48,43);ctx.fillStyle='#fff3ce';ctx.fillText(String(damage),48,43);
-      const texture=new THREE.CanvasTexture(canvas),material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false});const mesh=new THREE.Sprite(material);mesh.position.set(x,2,z);mesh.scale.set(1.15,.77,1);this.entities.add(mesh);this.effects.push({mesh,time:.65,duration:.65,kind:'text',texture,material});
+      const canvas=document.createElement('canvas');canvas.width=192;canvas.height=64;const ctx=canvas.getContext('2d');ctx.textAlign='center';ctx.font='900 '+(typeof damage==='string'?22:35)+'px Nunito,sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#344b43';const label=String(damage)+(critical===2?'!!':critical?'!':'');ctx.strokeText(label,96,43);ctx.fillStyle=critical===2?'#f0b8f5':critical?'#ffe37c':'#fff3ce';ctx.fillText(label,96,43);
+      const texture=new THREE.CanvasTexture(canvas),material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false});const mesh=new THREE.Sprite(material);mesh.position.set(x,Terrain.height(this.realm,this.levelStage||1,x,z)+2,z);mesh.scale.set(2.3,.77,1);this.entities.add(mesh);this.effects.push({mesh,time:.65,duration:.65,kind:'text',texture,material});
     }
     clearDynamic() {
-      this.clearGroup(this.entities);for(const map of [this.enemies,this.projectiles,this.shards,this.hazards])map.clear();this.orbits=[];this.lockRing=null;for(const e of this.effects){if(e.texture)e.texture.dispose();if(e.material)e.material.dispose();}this.terminalAge=0;this.effects=[];
+      this.clearGroup(this.entities);for(const map of [this.enemies,this.projectiles,this.shards,this.hazards,this.loot])map.clear();this.orbits=[];this.lockRing=null;for(const e of this.effects){if(e.texture)e.texture.dispose();if(e.material)e.material.dispose();}this.terminalAge=0;this.effects=[];
     }
     resize() { this.renderer.setSize(innerWidth,innerHeight);this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix(); }
     titlePose(time) {
@@ -320,7 +320,7 @@
       this.elapsed=game?game.time:time;time=this.elapsed;
       if(game){
         if(this.realm!==game.realm||this.levelStage!==game.stage){this.portalGroups.forEach(p=>{p.texture.dispose();p.material.dispose();});this.clearDynamic();this.buildRealm(game.realm,game.stage);}
-        const p=game.player;this.hero.scale.setScalar(1);this.hero.position.set(p.x,p.y,p.z);
+        const p=game.player;this.hero.scale.setScalar(1);this.hero.position.set(p.x,p.y+(p.ground||0),p.z);
         const angle=p.facing-this.hero.rotation.y;this.hero.rotation.y+=Math.atan2(Math.sin(angle),Math.cos(angle))*Math.min(1,dt*13);
         const moving=Math.hypot(p.x-this.lastPlayer.x,p.z-this.lastPlayer.z)>.001;this.lastPlayer={x:p.x,z:p.z};
         const walking=moving&&p.y===0&&game.state==='running';const action=terminal?(game.state==='won'?'victory':'death'):p.action|| (walking?'walk':'idle');const age=terminal?(this.terminalAge||0):p.actionAge;
@@ -328,27 +328,35 @@
         this.heroSprite.material=RelicArt.material('hero',this.heroId,direction,RelicArt.animationFrame(action,age),p.action==='hurt',action);
         this.heroRig.position.y=walking&&!reducedMotion?Math.abs(Math.sin(time*14))*.035:0;
         this.glider.visible=p.gliding;this.glider.rotation.z=Math.sin(time*2)*.04;this.hero.visible=true;this.heroSprite.material.opacity=p.invincible>0&&p.dash<=0?.65+Math.abs(Math.sin(time*15))*.35:1;
-        this.heroShadow.position.set(p.x,0,p.z);this.heroShadow.scale.setScalar(Math.max(.3,1-p.y*.08));
-        const zoom=innerWidth<600?1.12:1,range=this.distance*zoom;const camPos=new THREE.Vector3(p.x+Math.sin(this.yaw)*Math.cos(this.pitch)*range,Math.sin(this.pitch)*range,p.z+Math.cos(this.yaw)*Math.cos(this.pitch)*range);this.camera.position.lerp(camPos,1-Math.exp(-6*dt));this.cameraTarget.lerp(new THREE.Vector3(p.x,.4,p.z),1-Math.exp(-8*dt));
+        this.heroShadow.position.set(p.x,p.ground||0,p.z);this.heroShadow.scale.setScalar(Math.max(.3,1-p.y*.08));
+        const zoom=innerWidth<600?1.12:1,range=this.distance*zoom;const camPos=new THREE.Vector3(p.x+Math.sin(this.yaw)*Math.cos(this.pitch)*range,Math.sin(this.pitch)*range+(p.ground||0),p.z+Math.cos(this.yaw)*Math.cos(this.pitch)*range);this.camera.position.lerp(camPos,1-Math.exp(-6*dt));this.cameraTarget.lerp(new THREE.Vector3(p.x,.4+(p.ground||0),p.z),1-Math.exp(-8*dt));
         if(!reducedMotion&&this.shake>0){this.camera.position.x+=(Math.random()-.5)*this.shake;this.camera.position.z+=(Math.random()-.5)*this.shake;this.shake*=Math.exp(-8*dt);}
-        this.camera.lookAt(this.cameraTarget);this.sun.position.set(p.x-17,35,p.z+12);this.sun.target.position.set(p.x,0,p.z);
+        this.camera.lookAt(this.cameraTarget);this.sun.position.set(p.x-17,35+(p.ground||0),p.z+12);this.sun.target.position.set(p.x,p.ground||0,p.z);
         this.syncMap(this.enemies,game.enemies.filter(e=>!e.dead),e=>this.enemyModel(e),(m,e)=>{
-          m.position.set(e.x,0,e.z);const sprite=m.userData.sprite,kind=e.type==='boss'?'boss':'enemy',id=e.bossId||e.enemyId||e.type,action=e.hitFlash>0?'hurt':e.action||'walk';
+          m.position.set(e.x,game.groundAt(e.x,e.z),e.z);const sprite=m.userData.sprite,kind=e.type==='boss'?'boss':'enemy',id=e.bossId||e.enemyId||e.type,action=e.hitFlash>0?'hurt':e.action||'walk';
           sprite.position.y=BOSSES[e.bossId]?.flying?.5+Math.sin(time*3+e.id)*.12:e.type==='bat'?1+Math.sin(time*7+e.id)*.13:0;
           sprite.material=RelicArt.material(kind,id,0,RelicArt.animationFrame(action,e.actionAge||time),e.hitFlash>0,action);
+          const status=['freeze','shock','burn','wet'].find(id=>e.statuses?.[id]);
+          if(status&&!m.userData.statusRing){const ring=this.mesh('torus','#9ce2ef',[e.radius+.18,e.radius+.18,e.radius+.18],[0,.16,0],m,{basic:true});ring.rotation.x=-Math.PI/2;m.userData.statusRing=ring;}
+          if(m.userData.statusRing){m.userData.statusRing.visible=!!status;if(status){m.userData.statusRing.material=this.mat(Combat.STATUS[status].color,{basic:true});m.userData.statusRing.position.y=.16+(reducedMotion?0:Math.sin(time*5)*.07);}}
         });
         if(!this.lockRing){this.lockRing=this.mesh('torus','#ffc778',[1,1,1],[0,.08,0],this.entities,{basic:true});this.lockRing.rotation.x=-Math.PI/2;}
-        const locked=game.enemies.find(e=>e.id===game.lockedTarget&&!e.dead);this.lockRing.visible=!!locked;if(locked){this.lockRing.position.set(locked.x,.08,locked.z);this.lockRing.scale.setScalar(locked.radius+.35);}
-        this.syncMap(this.shards,game.shards,s=>{const m=this.mesh('diamond',s.value>4?'#e8cd85':'#a5edce',[.17,.3,.17],[s.x,.4,s.z],this.entities,{basic:true});return m;},(m,s)=>{m.position.set(s.x,.38+Math.sin(time*3+s.id)*.08,s.z);m.rotation.y=time*1.8+s.id;m.scale.setScalar(s.value>4?.4:.25);});
+        const locked=game.enemies.find(e=>e.id===game.lockedTarget&&!e.dead);this.lockRing.visible=!!locked;if(locked){this.lockRing.position.set(locked.x,game.groundAt(locked.x,locked.z)+.08,locked.z);this.lockRing.scale.setScalar(locked.radius+.35);}
+        this.syncMap(this.shards,game.shards,s=>{const m=this.mesh('diamond',s.value>4?'#e8cd85':'#a5edce',[.17,.3,.17],[s.x,.4,s.z],this.entities,{basic:true});return m;},(m,s)=>{m.position.set(s.x,game.groundAt(s.x,s.z)+.38+Math.sin(time*3+s.id)*.08,s.z);m.rotation.y=time*1.8+s.id;m.scale.setScalar(s.value>4?.4:.25);});
+        this.syncMap(this.loot,game.loot,drop=>{
+          const group=new THREE.Group(),color=Combat.RARITIES[Combat.item(drop.gearId).rarity].color;this.entities.add(group);
+          this.mesh('box','#745137',[.9,.55,.65],[0,.3,0],group);this.mesh('box',color,[.98,.22,.72],[0,.68,0],group);
+          this.mesh('box','#f0d78b',[.13,.65,.75],[0,.38,0],group);const ring=this.mesh('torus',color,[.8,.8,.8],[0,.04,0],group,{basic:true});ring.rotation.x=-Math.PI/2;return group;
+        },(m,drop)=>{m.position.set(drop.x,game.groundAt(drop.x,drop.z)+(reducedMotion?0:Math.sin(time*2+drop.id)*.05),drop.z);});
         this.syncMap(this.projectiles,game.projectiles,b=>{const sprite=RelicArt.sprite('projectile',b.type,b.type==='hostile'?.65:1,b.type==='hostile'?.65:1);this.entities.add(sprite);return sprite;},(m,b)=>{
           const direction=(Math.round(Math.atan2(b.vz,b.vx)*4/Math.PI)+8)%8,frame=Math.floor((b.age||0)*12)%8;
           m.material=RelicArt.material('projectile',b.type,direction,frame);
-          m.position.set(b.x,b.type==='bomb'?1+Math.sin(Math.min(1,b.age/1.15)*Math.PI)*2:1,b.z);
+          m.position.set(b.x,(b.y??game.groundAt(b.x,b.z)+1)+(b.type==='bomb'?Math.sin(Math.min(1,b.age/1.15)*Math.PI)*2:0),b.z);
         });
-        this.syncMap(this.hazards,game.hazards,h=>{const group=new THREE.Group();this.entities.add(group);const disc=this.mesh('disc','#d66b55',[h.radius,h.radius,1],[0,.05,0],group,{basic:true,opacity:.38});disc.rotation.x=-Math.PI/2;const ring=this.mesh('torus','#f6a086',[h.radius,h.radius,h.radius],[0,.06,0],group,{basic:true});ring.rotation.x=-Math.PI/2;group.userData.disc=disc;group.userData.ring=ring;return group;},(m,h)=>{m.position.set(h.x,0,h.z);m.userData.ring.scale.setScalar(h.radius*clamp(1-h.timer/h.duration,.05,1));m.visible=!h.fired||Math.sin(time*35)>0;});
+        this.syncMap(this.hazards,game.hazards,h=>{const group=new THREE.Group();this.entities.add(group);const disc=this.mesh('disc','#d66b55',[h.radius,h.radius,1],[0,.05,0],group,{basic:true,opacity:.38});disc.rotation.x=-Math.PI/2;const ring=this.mesh('torus','#f6a086',[h.radius,h.radius,h.radius],[0,.06,0],group,{basic:true});ring.rotation.x=-Math.PI/2;group.userData.disc=disc;group.userData.ring=ring;return group;},(m,h)=>{m.position.set(h.x,game.groundAt(h.x,h.z),h.z);m.userData.ring.scale.setScalar(h.radius*clamp(1-h.timer/h.duration,.05,1));m.visible=!h.fired||Math.sin(time*35)>0;});
         const count=game.rank('orbit')?game.rank('orbit')+1:0;
         while(this.orbits.length<count){const m=this.mesh('diamond',game.rank('orbit')===7?'#f5d390':'#c5d4d0',[.3,.44,.3],[0,1,0],this.entities);this.orbits.push(m);}
-        this.orbits.forEach((m,i)=>{m.visible=i<count;const a=game.orbitAngle+i*Math.PI*2/count;m.position.set(p.x+Math.cos(a)*2.6,1+Math.sin(time*3+i)*.15,p.z+Math.sin(a)*2.6);m.rotation.set(time,time*.6,0);});
+        this.orbits.forEach((m,i)=>{m.visible=i<count;const a=game.orbitAngle+i*Math.PI*2/count;m.position.set(p.x+Math.cos(a)*2.6,(p.ground||0)+1+Math.sin(time*3+i)*.15,p.z+Math.sin(a)*2.6);m.rotation.set(time,time*.6,0);});
         const shrineReady=!game.shrines.has(game.realm)||(game.mode==='adventure'&&game.realm===0&&game.shrines.size===REALMS.length&&!terminal);this.shrineGem.visible=shrineReady&&!game.boss;this.shrineRing.visible=shrineReady&&!game.boss;this.portalGroups.forEach(portal=>{portal.surface.material.opacity=game.mode==='adventure'&&game.boss?.dead===false?.2:.78;});
       }else this.titlePose(time);
       this.shrineGem.rotation.y=time*.7;this.shrineGem.position.y=2.5+Math.sin(time*1.8)*.16;this.shrineRing.rotation.z=time*.25;
@@ -360,12 +368,12 @@
         if(e.kind==='ring')e.mesh.scale.setScalar(.1+e.radius*t);
         else if(e.kind==='particle'){e.mesh.position.x+=e.vx*effectDt;e.mesh.position.z+=e.vz*effectDt;e.mesh.position.y+=e.vy*effectDt;e.vy-=12*effectDt;e.mesh.scale.setScalar(.15*(1-t));}
         else if(e.kind==='text'){e.mesh.position.y+=effectDt*1.7;e.mesh.material.opacity=1-t;}
-        else if(e.kind==='ghost'){e.material.map=RelicArt.material(e.actorKind,e.actorId,0,RelicArt.animationFrame('death',t),'','death').map;e.material.opacity=1-t;e.mesh.position.y=reducedMotion?0:t*.4;}
-        else if(e.kind==='ultimate'){const a=e.angle+(e.hero==='link'||e.hero==='midna'?t*5:0),radius=e.radius*Math.sin(t*Math.PI/2);e.mesh.position.set(e.x+Math.cos(a)*radius,e.hero==='zelda'?1+t*7:e.hero==='tetra'?1+Math.sin(t*Math.PI)*4:1+Math.sin(a*2)*.5,e.z+Math.sin(a)*radius);e.mesh.scale.setScalar(.9*(1-t)+.2);}
+        else if(e.kind==='ghost'){e.material.map=RelicArt.material(e.actorKind,e.actorId,0,RelicArt.animationFrame('death',t),'','death').map;e.material.opacity=1-t;e.mesh.position.y=Terrain.height(this.realm,this.levelStage||1,e.mesh.position.x,e.mesh.position.z)+(reducedMotion?0:t*.4);}
+        else if(e.kind==='ultimate'){const a=e.angle+(e.hero==='link'||e.hero==='midna'?t*5:0),radius=e.radius*Math.sin(t*Math.PI/2);e.mesh.position.set(e.x+Math.cos(a)*radius,(e.ground||0)+(e.hero==='zelda'?1+t*7:e.hero==='tetra'?1+Math.sin(t*Math.PI)*4:1+Math.sin(a*2)*.5),e.z+Math.sin(a)*radius);e.mesh.scale.setScalar(.9*(1-t)+.2);}
       }
       this.effects=this.effects.filter(e=>{if(e.time>0)return true;this.entities.remove(e.mesh);if(e.texture)e.texture.dispose();if(e.material)e.material.dispose();return false;});
       this.renderer.render(this.scene,this.camera);
-      if(game){const projected=new THREE.Vector3(game.player.x,game.player.y-.25,game.player.z);projected.project(this.camera);$('player-health').style.left=((projected.x*.5+.5)*innerWidth)+'px';$('player-health').style.top=((-projected.y*.5+.5)*innerHeight)+'px';}
+      if(game){const projected=new THREE.Vector3(game.player.x,game.player.y+(game.player.ground||0)-.25,game.player.z);projected.project(this.camera);$('player-health').style.left=((projected.x*.5+.5)*innerWidth)+'px';$('player-health').style.top=((-projected.y*.5+.5)*innerHeight)+'px';}
     }
   }
 
@@ -381,7 +389,7 @@
   }
   function closeDialog(){
     pendingBinding=null;const id=dialogStack.pop();if(id)$(id).close();
-    if(currentDialog())$(currentDialog()).showModal();
+    if(currentDialog()){if(currentDialog()==='inventory-dialog')renderInventory();$(currentDialog()).showModal();}
     else{if(dialogOwnsPause&&game?.state==='paused')game.resume();dialogOwnsPause=false;focusWorld();}
     clearInput();
   }
@@ -405,11 +413,11 @@
     catch(error){toast(error.message);}finally{checkpointSaving=false;}
   }
   function setupRun(run){
-    closeAll();game=run;selectedHero=run.hero;selectedMode=run.mode;selectedDifficulty=run.difficulty;endingShown=false;endReadyAt=0;upgradeReadyAt=0;lastOutcome=null;banishMode=false;accumulator=0;loadoutKey='';checkpointSavedRevision=run.checkpointRevision;
+    closeAll();game=run;if(run.mode!=='training'){selectedHero=run.hero;selectedMode=run.mode;selectedDifficulty=run.difficulty;}endingShown=false;endReadyAt=0;upgradeReadyAt=0;lastOutcome=null;banishMode=false;accumulator=0;loadoutKey='';checkpointSavedRevision=run.checkpointRevision;
     view.clearDynamic();view.portalGroups.forEach(portal=>{portal.texture.dispose();portal.material.dispose();});view.buildRealm(run.realm,run.stage);view.makeHero(run.hero);view.applySettings();view.hero.visible=true;view.cameraTarget.set(0,.4,0);view.camera.position.set(15,20,15);view.lastPlayer={x:0,z:0};
     document.body.classList.add('playing');for(const id of ['menu','menu-footer','menu-landmark'])$(id).hidden=true;for(const id of ['hud','pause-button'])$(id).hidden=false;$('touch-controls').hidden=!touch;$('damage-flash').style.opacity=0;
-    updateHud();announce({...REALMS[run.realm],name:REALMS[run.realm].name+(run.mode==='adventure'?' '+run.stageLabel:'')});sound('choose');focusWorld();if(run.state==='upgrade')showUpgrade();
-    setTimeout(()=>{if(game===run&&run.state==='running')toast(run.mode==='adventure'?'Clear each level’s wave. The central shrine opens the next level.':touch?'Move with the stick. Weapons cast automatically.':'WASD moves. Weapons cast automatically.');},2300);
+    $('checkpoint-indicator').textContent=run.mode==='training'?'Training · never saved':'Checkpoint ready';updateHud();announce({...REALMS[run.realm],name:REALMS[run.realm].name+(run.mode==='adventure'?' '+run.stageLabel:'')});sound('choose');focusWorld();if(run.state==='upgrade')showUpgrade();
+    setTimeout(()=>{if(game===run&&run.state==='running')toast(run.mode==='training'?'Inventory opens your build and training controls.':run.mode==='adventure'?'Clear each level’s wave. The central shrine opens the next level.':touch?'Move with the stick. Weapons cast automatically.':'WASD moves. Weapons cast automatically.');},2300);
   }
   async function beginFresh(expectedCheckpointId=null){
     if(profileBusy)return;profileBusy=true;
@@ -429,7 +437,7 @@
     document.body.classList.remove('playing');for(const id of ['menu','menu-footer','menu-landmark'])$(id).hidden=false;for(const id of ['hud','pause-button','touch-controls','boss-hud','interaction'])$(id).hidden=true;
     $('realm-announcement').classList.remove('visible');$('toast').classList.remove('visible');$('damage-flash').style.opacity=0;updateProfileUI();$('start-button').focus({preventScroll:true});
   }
-  function pause(){if(game?.state!=='running'||currentDialog())return;openDialog('pause-dialog');$('pause-description').textContent=game.boss?'Boss encounters restart from the previous safe checkpoint.':'Your adventure is paused. Safe progress is checkpointed.';$('quit-button').textContent=game.boss?'Return to the last checkpoint':'Save and return to title';saveCheckpoint(true);}
+  function pause(){if(game?.state!=='running'||currentDialog())return;openDialog('pause-dialog');$('pause-description').textContent=game.mode==='training'?'Training is paused. Your saved adventure is unchanged.':game.boss?'Boss encounters restart from the previous safe checkpoint.':'Your adventure is paused. Safe progress is checkpointed.';$('quit-button').textContent=game.mode==='training'?'Exit training':game.boss?'Return to the last checkpoint':'Save and return to title';saveCheckpoint(true);}
   function selectHero(id){
     if(!Object.hasOwn(HEROES,id))return;
     if(!storage.unlocked.includes(id)){toast(HEROES[id].unlockText);return;}
@@ -477,15 +485,46 @@
   function renderJournal(){
     const root=$('journal-content');root.textContent='';document.querySelectorAll('[data-journal]').forEach(button=>button.classList.toggle('selected',button.dataset.journal===journalTab));
     const entries=journalTab==='enemies'?Object.entries(ENEMIES).map(([id,item])=>({id,name:item.name,detail:item.origin,status:REALMS.filter(realm=>realm.enemies.includes(id)).map(realm=>realm.name).join(' · '),kind:'enemy'})):journalTab==='heroes'?Object.entries(HEROES).map(([id,item])=>({id,name:item.name,detail:item.origin,status:storage.unlocked.includes(id)?'Unlocked':item.unlockText,kind:'hero'})):journalTab==='bosses'?Object.entries(BOSSES).map(([id,item])=>({id,name:item.name,detail:item.origin,status:storage.guardians.includes(id)||(id==='ganondorf'&&storage.adventureWins>0)||(id==='phantom'&&storage.survivalWins>0)?'Defeated':'Not yet defeated',kind:'boss'})):journalTab==='items'?UPGRADES.map(item=>({id:item.id,name:item.name,detail:item.origin,status:storage.items.includes(item.id)?'Discovered':'Find in a run',icon:item.icon})):storage.achievements.map(item=>({id:item.id,name:item.name,detail:item.desc,status:item.complete?'Complete':'In progress',icon:item.complete?'relic':'lock'}));
+    if(journalTab==='items')entries.push(...Combat.GEAR.map(item=>({id:item.id,name:item.name,detail:item.desc+' · '+item.origin,status:Combat.RARITIES[item.rarity].name+' · '+(storage.gear.includes(item.id)?'Discovered':'Find in treasure'),icon:item.icon})));
     for(const entry of entries){const row=document.createElement('div');row.className='journal-row';row.innerHTML=(entry.kind?'<img alt="" src="'+artURL(entry.kind,entry.id)+'">':icon(entry.icon))+'<div><strong>'+entry.name+'</strong><small>'+entry.detail+'</small></div><span>'+entry.status+'</span>';root.appendChild(row);}
   }
   function openHeroes(){renderHeroes();openDialog('heroes-dialog');}
   function openCamp(){renderCamp();openDialog('camp-dialog');}
   function openJournal(){renderJournal();openDialog('journal-dialog');}
-  function openInventory(){
-    if(!game)return;const p=game.player;$('inventory-stats').innerHTML='<span><b>'+Math.ceil(p.hp)+' / '+p.maxHp+'</b>Health</span><span><b>'+game.level+'</b>Level</span><span><b>'+Math.round(game.damageMultiplier*100)+'%</b>Damage</span><span><b>'+game.shrines.size+' / '+REALMS.length+'</b>Seals</span>';$('inventory-items').textContent='';
-    for(const item of UPGRADES)if(game.rank(item.id)){const row=document.createElement('div');row.className='journal-row';row.innerHTML=icon(item.icon)+'<div><strong>'+item.name+' · Rank '+game.rank(item.id)+'</strong><small>'+(item.category==='WEAPON'?game.upgradeSummary(item.id):item.desc)+'</small></div>';$('inventory-items').appendChild(row);}openDialog('inventory-dialog');
+  function beginTraining(){
+    const run=new Game(selectedHero,Date.now(),{mode:'training'});run.configureTraining({realm:6,stage:1,level:40,invulnerable:true});run.setTrainingBuild({[HEROES[run.hero].weapon]:8},{});setupRun(run);openTraining();
   }
+  function openTraining(){
+    if(game?.mode!=='training')return;
+    $('training-hero').innerHTML=Object.entries(HEROES).map(([id,hero])=>'<option value="'+id+'">'+hero.name+'</option>').join('');$('training-hero').value=game.hero;
+    $('training-realm').innerHTML=REALMS.map((realm,index)=>'<option value="'+index+'">'+realm.name+'</option>').join('');$('training-realm').value=game.realm;$('training-stage').value=game.stage;$('training-level').value=game.level;$('training-invulnerable').checked=game.training.invulnerable;
+    $('training-ranks').textContent='';for(const item of UPGRADES){const label=document.createElement('label'),input=document.createElement('input');label.textContent=item.name;input.type='number';input.min=0;input.max=item.category==='WEAPON'?8:10;input.step=1;input.required=true;input.value=game.rank(item.id);input.dataset.trainingRank=item.id;label.appendChild(input);$('training-ranks').appendChild(label);}
+    $('training-gear').innerHTML=Combat.GEAR.map(item=>'<option value="'+item.id+'">'+item.name+'</option>').join('');$('training-stacks').max=Combat.item($('training-gear').value).max;$('training-stacks').value=game.gear[$('training-gear').value]||1;$('training-status').textContent='World paused. Spawn a rival, then choose To training.';openDialog('training-dialog');
+  }
+  function applyTraining(event){
+    event.preventDefault();if(game?.mode!=='training'||!$('training-form').reportValidity())return;
+    const ranks=Object.fromEntries([...document.querySelectorAll('[data-training-rank]')].map(input=>[input.dataset.trainingRank,Number(input.value)]));
+    if(!game.setTrainingBuild(ranks,game.gear)){$('training-status').textContent='Use up to four weapons and five charms. Remove another rank before adding a new one.';return;}
+    game.configureTraining({hero:$('training-hero').value,realm:Number($('training-realm').value),stage:Number($('training-stage').value),level:Number($('training-level').value),invulnerable:$('training-invulnerable').checked});
+    view.clearDynamic();view.makeHero(game.hero);loadoutKey='';updateHud();$('training-status').textContent='Build applied. Arena cleared. Spawn a rival to test it.';
+  }
+  function renderInventory(){
+    if(!game)return;$('training-controls-button').hidden=game.mode!=='training';const p=game.player,s=game.stats,percent=value=>(value*100).toFixed(0)+'%';
+    const entries=[['Health',Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp)],['Level',game.level],['Seals',game.shrines.size+' / '+REALMS.length],['Physical damage',percent(game.damageMultiplier*s.physical)],['Magic damage',percent(game.damageMultiplier*s.magic)],['Critical chance',percent(s.critChance)],['Critical damage',percent(s.critDamage)],['Armor',s.armor.toFixed(1)],['Evasion',percent(s.evasion)],['Regeneration',((game.rank('regen')+s.regen)*s.healing).toFixed(1)+'/s'],['Lifesteal',percent(s.lifesteal)],['XP gain',percent(s.xpGain)]];
+    $('inventory-stats').textContent='';for(const [label,value]of entries){const cell=document.createElement('span'),bold=document.createElement('b');bold.textContent=value;cell.append(bold,document.createTextNode(label));$('inventory-stats').appendChild(cell);}
+    $('inventory-items').textContent='';
+    for(const item of UPGRADES)if(game.rank(item.id)){const row=document.createElement('div');row.className='journal-row';row.innerHTML=icon(item.icon)+'<div><strong>'+item.name+' · Rank '+game.rank(item.id)+'</strong><small>'+(item.category==='WEAPON'?game.weaponSummary(item.id):item.desc)+'</small></div>';$('inventory-items').appendChild(row);}
+    $('inventory-gear').textContent='';const equipment=Combat.GEAR.filter(item=>game.gear[item.id]);
+    $('inventory-loot-note').textContent=equipment.length?'Each stack applies its listed effect. Status chances cap at 80%.':'Elites and every twentieth enemy drop treasure. Walk over a chest to collect equipment.';
+    for(const item of equipment){const row=document.createElement('div');row.className='journal-row';row.innerHTML=icon(item.icon)+'<div><strong>'+item.name+' ×'+game.gear[item.id]+'</strong><small>'+item.desc+' · '+item.origin+'</small></div><span>'+Combat.RARITIES[item.rarity].name+'<br>'+game.gear[item.id]+' / '+item.max+'</span>';$('inventory-gear').appendChild(row);}
+    $('inventory-damage').textContent='';const sources=Object.entries(game.damageBySource).sort((a,b)=>b[1]-a[1]);
+    if(!sources.length)$('inventory-damage').textContent='Damage from weapons, treasure effects, and reactions appears here.';
+    for(const [id,value]of sources){const row=document.createElement('div');row.className='damage-source';const label=document.createElement('span'),amount=document.createElement('b'),meter=document.createElement('meter');
+      label.textContent=UPGRADES.find(item=>item.id===id)?.name||Combat.item(id)?.name||({ultimate:HEROES[game.hero].ultimateName,shrine:'Shrine blessing',reaction:'Elemental reactions',thorns:'Reflected damage',other:'Other damage'})[id]||id;
+      amount.textContent=Math.round(value).toLocaleString();meter.max=Math.max(1,game.damageDealt);meter.value=value;meter.setAttribute('aria-label',label.textContent+' damage');row.append(label,amount,meter);$('inventory-damage').appendChild(row);
+    }
+  }
+  function openInventory(){if(!game)return;renderInventory();openDialog('inventory-dialog');}
   function openSettings(){
     $('sound-setting').checked=soundEnabled;$('volume-setting').value=storage.volume;$('motion-setting').value=storage.motion;$('import-button').disabled=!!game;$('graphics-setting').value=storage.graphics;$('mouse-mode-setting').value=storage.mouseMode;$('sensitivity-setting').value=storage.sensitivity;$('sensitivity-value').textContent=storage.sensitivity.toFixed(1)+'×';$('invert-setting').checked=storage.invertY;$('fov-setting').value=storage.cameraFov;$('fov-value').textContent=storage.cameraFov+'°';$('distance-setting').value=Math.round(storage.cameraDistance);$('distance-value').textContent=Math.round(storage.cameraDistance);renderBindings();$('save-status').textContent=storageWarning||(!storageAvailable?'Progress is in memory. Export it before closing.':game?'Export is available now. Return to title before importing.':'Progress is saved in this browser. Export a backup before changing devices.');openDialog('settings-dialog');
   }
@@ -494,13 +533,14 @@
     for(let n=-3;n<=3;n++){c.beginPath();c.moveTo(0,center+n*40);c.lineTo(220,center+n*40);c.moveTo(center+n*40,0);c.lineTo(center+n*40,220);c.stroke();}
     const point=(x,z,color,radius,pin=false)=>{let dx=(x-p.x)*scale,dz=(z-p.z)*scale;const length=Math.hypot(dx,dz);if(pin&&length>94){dx*=94/length;dz*=94/length;}c.fillStyle=color;c.beginPath();c.arc(center+dx,center+dz,radius,0,Math.PI*2);c.fill();};
     for(const enemy of game.enemies)if(!enemy.dead)point(enemy.x,enemy.z,enemy.type==='boss'?'#ffc4d8':'#ee7e82',enemy.type==='boss'?5:2);
+    for(const drop of game.loot)point(drop.x,drop.z,'#f4d575',4,true);
     for(let i=0;i<GATES.length;i++){point(GATES[i].x,GATES[i].z,'#fff8df',7,true);point(GATES[i].x,GATES[i].z,REALMS[REALMS[game.realm].links[i]].color,4.5,true);}
     if(!game.shrines.has(game.realm)||(game.mode==='adventure'&&game.realm===0&&game.shrines.size===REALMS.length))point(0,-7,'#edcd6a',5);
     c.translate(center,center);c.rotate(-view.yaw);c.fillStyle='#fff8e3';c.beginPath();c.moveTo(0,-7);c.lineTo(5,6);c.lineTo(0,3);c.lineTo(-5,6);c.closePath();c.fill();c.restore();c.strokeStyle='#fff7dc';c.lineWidth=6;c.beginPath();c.arc(center,center,105,0,Math.PI*2);c.stroke();c.fillStyle='#fff7dc';c.font='900 11px Nunito,sans-serif';c.textAlign='center';c.fillText('N',110,18);
   }
   function updateHud(){
-    if(!game)return;const p=game.player,hero=HEROES[game.hero];$('hero-name').textContent=hero.name;$('hero-title').textContent=hero.title;$('hero-portrait').src=artURL('hero',game.hero);$('health-text').textContent=Math.ceil(p.hp)+' / '+p.maxHp;$('health-fill').style.width=p.hp/p.maxHp*100+'%';$('stamina-fill').style.width=p.stamina*100+'%';$('timer').textContent=formatTime(game.time);$('kills').textContent=game.kills;$('realm-name').textContent=REALMS[game.realm].name+(game.mode==='adventure'?' '+game.stageLabel:'');$('shrines-count').textContent=game.shrines.size+' / '+REALMS.length+' '+(game.mode==='adventure'?'seals':'shrines');$('xp-fill').style.width=Math.min(100,game.xp/game.xpNeed*100)+'%';$('level-label').textContent='LV. '+game.level;$('xp-label').textContent=Math.floor(game.xp)+' / '+game.xpNeed;
-    $('objective').textContent=game.boss?'DEFEAT '+game.boss.name.toUpperCase():game.mode==='adventure'?game.shrines.size===REALMS.length?'RETURN TO HYRULE · GANONDORF':game.stage<3?'LEVEL '+game.stageLabel+' · '+Math.min(game.stageTarget,game.stageKills[game.realm])+'/'+game.stageTarget+' ENEMIES':'LEVEL '+game.stageLabel+' · CHALLENGE GUARDIAN':'PHANTOM GANON AT 4:00';
+    if(!game)return;const p=game.player,hero=HEROES[game.hero];$('hero-name').textContent=hero.name;$('hero-title').textContent=hero.title;$('hero-portrait').src=artURL('hero',game.hero);$('health-text').textContent=Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp);$('health-fill').style.width=p.hp/p.maxHp*100+'%';$('stamina-fill').style.width=p.stamina*100+'%';$('timer').textContent=formatTime(game.time);$('kills').textContent=game.kills;$('realm-name').textContent=REALMS[game.realm].name+(game.mode==='adventure'?' '+game.stageLabel:'');$('shrines-count').textContent=game.shrines.size+' / '+REALMS.length+' '+(game.mode==='adventure'?'seals':'shrines');$('xp-fill').style.width=Math.min(100,game.xp/game.xpNeed*100)+'%';$('level-label').textContent='LV. '+game.level;$('xp-label').textContent=game.mode==='training'?'PRACTICE':Math.floor(game.xp)+' / '+game.xpNeed;
+    $('objective').textContent=game.mode==='training'?'TRAINING · NO PROGRESS SAVED':game.boss?'DEFEAT '+game.boss.name.toUpperCase():game.mode==='adventure'?game.shrines.size===REALMS.length?'RETURN TO HYRULE · GANONDORF':game.stage<3?'LEVEL '+game.stageLabel+' · '+Math.min(game.stageTarget,game.stageKills[game.realm])+'/'+game.stageTarget+' ENEMIES':'LEVEL '+game.stageLabel+' · CHALLENGE GUARDIAN':'PHANTOM GANON AT 4:00';
     $('dash-label').textContent=p.dashCooldown>0?'Dash '+p.dashCooldown.toFixed(1)+'s':'Dash ready';$('touch-dash').style.opacity=p.dashCooldown>0?'.5':'1';$('boss-hud').hidden=!game.boss||game.boss.dead;
     if(game.boss){$('boss-name').textContent=game.boss.name.toUpperCase();$('boss-phase').textContent='PHASE '+game.boss.stage;$('boss-fill').style.width=Math.max(0,game.boss.hp/game.boss.maxHp*100)+'%';}
     const nearby=game.interaction;$('interaction').hidden=!nearby||game.state!=='running';if(nearby)$('interaction-label').textContent=nearby.kind==='gate'?(nearby.blockedReason||'Travel to '+nearby.name):nearby.kind==='guardian'||nearby.kind==='final'||nearby.kind==='stage'?nearby.name:'Recover '+nearby.name;
@@ -509,6 +549,7 @@
   }
   async function prepareOutcome(run){
     if(lastOutcome)return;lastOutcome={pending:true,reward:0,unlocks:[]};
+    if(run.mode==='training'){lastOutcome={reward:0,unlocks:[]};return;}
     try{lastOutcome=await profileTransaction(profile=>profile.settle(run));}catch(error){lastOutcome={reward:0,unlocks:[]};toast(error.message);}
   }
   function showEnd(){
@@ -519,7 +560,12 @@
   function handleEvents(){
     if(!game)return;let collectPlayed=false,popPlayed=false;
     for(const event of game.drainEvents()){
-      if(event.type==='hit'){view.damageText(event.x,event.z,event.damage);continue;}
+      if(event.type==='hit'){view.damageText(event.x,event.z,event.damage,event.critical);continue;}
+      if(event.type==='gear'){sound('purchase');toast(Combat.RARITIES[event.rarity].name+' treasure: '+event.name+' ×'+event.count);if(game.mode!=='training')profileTransaction(profile=>profile.recordGear(event.id)).catch(error=>toast(error.message));continue;}
+      if(event.type==='lootDrop'){view.ringEffect(event.x,event.z,Combat.RARITIES[event.rarity].color,2,.6);continue;}
+      if(event.type==='status'){view.ringEffect(event.x,event.z,Combat.STATUS[event.status].color,1,.35);continue;}
+      if(event.type==='reaction'){view.ringEffect(event.x,event.z,event.color,3,.5);view.damageText(event.x,event.z,event.name);continue;}
+      if(event.type==='evade'){view.damageText(event.x,event.z,'Evaded');continue;}
       if(event.type==='pop'){view.defeatEffect(event);if(!popPlayed){sound('pop');popPlayed=true;}continue;}
       if(event.type==='collect'){if(!collectPlayed){sound('collect');collectPlayed=true;}continue;}
       if(event.type==='hurt'){view.shake=reducedMotion?0:.35;$('damage-flash').style.opacity=reducedMotion?.2:.6;}
@@ -582,6 +628,12 @@
   $('heroes-button').addEventListener('click',openHeroes);$('camp-button').addEventListener('click',openCamp);$('journal-button').addEventListener('click',openJournal);$('credits-button').addEventListener('click',()=>openDialog('credits-dialog'));document.querySelectorAll('[data-journal]').forEach(button=>button.addEventListener('click',()=>{journalTab=button.dataset.journal;renderJournal();}));
   $('map-button').addEventListener('click',openMap);$('pause-map-button').addEventListener('click',openMap);$('world-preview-button').addEventListener('click',openMap);$('inventory-button').addEventListener('click',openInventory);$('help-button').addEventListener('click',()=>openDialog('help-dialog'));$('help-done').addEventListener('click',closeDialog);$('settings-button').addEventListener('click',openSettings);$('pause-settings-button').addEventListener('click',openSettings);
   document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',closeDialog));
+  $('training-button').addEventListener('click',beginTraining);$('training-controls-button').addEventListener('click',openTraining);$('training-form').addEventListener('submit',applyTraining);
+  $('training-resume').addEventListener('click',()=>{if(game?.mode!=='training')return;closeAll();game.resume();focusWorld();});
+  $('training-gear').addEventListener('change',()=>{const item=Combat.item($('training-gear').value);$('training-stacks').max=item.max;$('training-stacks').value=game?.gear[item.id]||1;});
+  $('training-add-gear').addEventListener('click',()=>{if(game?.mode!=='training'||!$('training-stacks').reportValidity())return;const id=$('training-gear').value,count=Number($('training-stacks').value),gear={...game.gear};if(count)gear[id]=count;else delete gear[id];if(game.setTrainingBuild(game.ranks,gear)){$('training-status').textContent='Treasure stack updated. Inspect all active equipment in Inventory.';updateHud();}else $('training-status').textContent='Choose a valid equipment stack within its limit.';});
+  $('training-spawn').addEventListener('click',()=>{if(game?.mode!=='training')return;$('training-status').textContent=game.spawnTrainingRivals($('training-rival').value)?'Rivals ready. Choose To training to resume.':'Clear the current guardian or some rivals before spawning more.';});
+  $('training-reset').addEventListener('click',()=>{if(game?.resetTraining()){$('training-status').textContent='Arena and damage totals cleared. Build kept.';updateHud();}});
   $('sound-button').addEventListener('click',async()=>{await setPreference('sound',!soundEnabled);sound('choose');});$('sound-setting').addEventListener('change',event=>setPreference('sound',event.target.checked));$('volume-setting').addEventListener('input',event=>{const value=Number(event.target.value);if(Number.isFinite(value))setPreference('volume',clamp(value,0,1));});$('motion-setting').addEventListener('change',event=>setPreference('motion',event.target.value==='reduced'?'reduced':'system'));systemMotion.addEventListener('change',applyPreferences);
   $('graphics-setting').addEventListener('change',event=>setPreference('graphics',event.target.value));$('mouse-mode-setting').addEventListener('change',event=>setPreference('mouseMode',event.target.value));$('sensitivity-setting').addEventListener('input',event=>{const value=Number(event.target.value);$('sensitivity-value').textContent=value.toFixed(1)+'×';setPreference('sensitivity',value);});$('invert-setting').addEventListener('change',event=>setPreference('invertY',event.target.checked));$('fov-setting').addEventListener('input',event=>{const value=Number(event.target.value);$('fov-value').textContent=value+'°';setPreference('cameraFov',value);});$('distance-setting').addEventListener('input',event=>{const value=Number(event.target.value);$('distance-value').textContent=value;setPreference('cameraDistance',value);});
   $('reset-controls-button').addEventListener('click',()=>{pendingBinding=null;setPreference('bindings',{...DEFAULT_BINDINGS}).then(()=>{renderBindings();$('binding-status').textContent='Default keys restored.';});});
