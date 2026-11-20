@@ -1,7 +1,10 @@
 {
   "name": "zeldabonk",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "An unofficial Zelda pixel-art survivor across six connected realms.",
-  "scripts": { "test": "node --test tests/core.test.cjs", "start": "node server.cjs" }
+  "description": "An animated Zelda survivor across eight connected maps and 24 campaign levels.",
+  "scripts": {
+    "test": "node --test",
+    "start": "node server.cjs"
+  }
 }

@@ -1,74 +1,91 @@
 # ZeldaBonk
 
-An unofficial Legend of Zelda survivor. PokéBonk is the gameplay and presentation reference. Play Link, Zelda, or Midna in a world of pixel sprites, textured 3D terrain, and six connected Zelda realms.
+An unofficial single-player Legend of Zelda survivor, using PokéBonk as its gameplay and presentation reference. Animated pixel actors inhabit eight connected 3D arenas. Adventure has 24 numbered levels and a final Ganondorf encounter. Survival has a four-minute Phantom Ganon challenge.
 
-Project: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . Check deployment status for each revision.
+Repository: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . A Git push and a live deployment are separate events; verify the current revision before treating it as deployed.
 
 ## Play
 
-Open index.html in a current WebGL-capable browser. Keep the folder together. No installation, backend, account, build step, or runtime network access is required. The separately delivered ZeldaBonk.html embeds the game, art generator, engine, and fonts.
+Open index.html in a current WebGL-capable browser with the source folder intact. The separately delivered ZeldaBonk.html embeds scripts, fonts and art for offline play. No account, backend, environment variables, installation or build step is required.
 
-With Node.js 18 or newer:
+For a local server with Node.js 18 or newer:
 
     npm start
 
-Open http://127.0.0.1:4173 . PORT selects another local port.
+Open http://127.0.0.1:4173 . PORT selects another port. Serving the game gives browser storage a stable origin.
+
+## Adventure: eight maps, three levels each
+
+Each map has an independent level state. Defeat 12 enemies in its first level and 18 in its second. Reach the central shrine and press E or tap Activate to advance. The third level ends with a guardian. Restore all eight seals, return to Hyrule Field, and challenge Ganondorf. Gates are sealed during Adventure boss encounters.
+
+| Map and levels | Local enemies | Guardian | Landmark interpretation |
+|---|---|---|---|
+| Kokiri Forest 1-1, 1-2, 1-3 | Deku Baba, Deku Scrub, Skulltula | Gohma | Great Deku Tree and tree houses |
+| Lake Hylia 2-1, 2-2, 2-3 | Octorok, Tektite, Lizalfos | Morpha | Lakeshore and Water Temple ruins |
+| Hyrule Field 3-1, 3-2, 3-3 | Chuchu, Keese, Bokoblin | King Bulblin | Hyrule Castle skyline |
+| Great Sea 4-1, 4-2, 4-3 | Blue ChuChu, Bokoblin, Seahat | Helmaroc King | Red sailing boat and Tower of the Gods |
+| Twilight Realm 5-1, 5-2, 5-3 | Shadow Vermin, Shadow Kargarok, Shadow Beast | Zant | Twilight architecture and mirror |
+| Skyloft 6-1, 6-2, 6-3 | Chuchu, Keese, Remlit | Ghirahim | Statue of the Goddess and sky islands |
+| Depths 7-1, 7-2, 7-3 | Little Frox, Gloom Bokoblin, Evermean | Colgera | Lightroot and gloom fissures |
+| Termina Field 8-1, 8-2, 8-3 | Blue ChuChu, Deku Baba, Takkuri | Majora's Mask | Clock Tower and moon |
+
+Kokiri Forest is the canonical name of the village location. Stage layouts, central progression shrines, crossover encounters and combat formulas are authored for this game, rather than exact reproductions of Zelda maps. Map changes preserve health, XP, equipment, charge and each map's unfinished level progress. Each arena measures 128 by 128 playable units, about six times the prior area. Stage layouts vary while retaining the location's terrain and landmarks.
+
+Survival uses the connected map network with immediate shrine rewards and the timed final boss. It does not require Adventure's three-level campaign progression. Phantom Ganon follows you through gates without recovering health.
+
+## Combat and progression
+
+Weapons cast automatically. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Rank 7 awakens weapons. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
+
+Bosses change phase at two-thirds and one-third health. Warnings precede slams, charges, volleys, summons and teleports. Time and enemy defeats charge your Ultimate. Animation states include idle, locomotion, attacks, casting, Ultimates, hurt, jump/glide, dash, spawn, wind-up, defeat and victory.
+
+Link, Zelda and Midna start unlocked. Helmaroc King unlocks Tetra; three different guardians unlock Sheik; Majora's Mask unlocks Skull Kid. Their automatic loadouts and survivor effects are crossover adaptations.
+
+Completed runs grant rupees. The Great Fairy camp sells five capped permanent upgrades: Heart Container, Power Bracelet, Mirror Shield, Wallet and Magic Jar. Custom bonuses apply to new runs. A journal tracks heroes, bosses, equipment, local enemies, and six achievements.
+
+## Saves and settings
+
+Safe checkpoints preserve map levels and pending upgrade choices. Boss encounters restart from the preceding safe checkpoint. Pause and return to title to save safe progress. Starting a new run protects an existing checkpoint with a replacement choice.
+
+Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, camera sensitivity, inverted Y, field of view, camera distance, free or captured cursor, keyboard rebinding, export and import. Move the mouse to look without holding a button. Touch uses an arena swipe. Duplicate key assignments are rejected; camera and keys have reset actions. Import validates data and backs up the current profile in browser storage before replacement. Profiles do not sync across devices; export before moving. Old basic records migrate automatically. If storage fails, play continues in memory and export remains available. Web Locks serialize profile mutations in browsers that support them. A stale run cannot overwrite another run's checkpoint.
 
 ## Controls
 
 | Input | Action |
 |---|---|
-| WASD / arrows | Move relative to the camera |
-| Drag game view | Orbit camera |
-| Mouse wheel | Zoom |
+| WASD / arrows | Move relative to camera |
+| Mouse movement / mouse wheel | Look without holding a button / zoom |
 | Space | Jump; hold while descending to glide |
-| Shift | Slide/dash with brief protection |
-| Q | Auto/manual camera-directed aim |
-| Right-click | Lock/unlock nearest enemy; a ring marks it |
-| R | Use fully charged Ultimate |
-| E | Gate or shrine interaction |
-| M | Open/close realm map |
-| Escape / P | Pause/resume |
+| Shift | Dash with brief protection |
+| Q / right-click | Aim mode / nearest-target lock |
+| R | Fully charged Ultimate |
+| E | Gate, level shrine or guardian interaction |
+| M | Realm map and level status |
+| I / Tab | Inventory |
+| Escape / P | Pause; Escape closes auxiliary dialogs |
 | 1, 2, 3 | Choose upgrade |
-| F / X / Z | Refresh / skip / toggle banish during level-up |
+| F / X / Z | Refresh / skip / toggle banish during upgrades |
 
-Touch controls include a movement stick, jump/glide, dash, contextual interaction, aim toggle, and tappable Ultimate. Drag the arena to orbit. Focused interface buttons retain native keyboard activation; gameplay focus returns after menus close.
+Touch has a movement stick, jump/glide, dash, aim, Ultimate and contextual Activate. Buttons keep native Space/Enter activation. Focus loss pauses gameplay. Nested inventory, map and settings dialogs preserve their parent's pause state.
 
-## Run
-
-Weapons cast automatically. Defeat enemies, collect green shards, and choose upgrades. Weapons evolve at rank 7. Each run has two refreshes, two skips, and one banish. Banish removes a selected choice from future offers without removing an equipped weapon.
-
-Time and defeated enemies charge the Ultimate. Link uses Great Spin. Midna uses Fused Shadow and gains longer protection. Zelda uses Triforce Light and restores health. A kill streak expires after four seconds without another defeat.
-
-After four minutes, Phantom Ganon appears. Dodge telegraphed circles and defeat him to win. The clock continues during the fight. All numerical balance is original to this survivor mode.
-
-Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field each have three gates and a shrine. Health, time, XP, weapons, charge, shrine blessings, and boss health persist across gates. Loose XP is banked once on crossing. Gates recharge for five seconds.
-
-These are compact connected arenas with decorative stone rims and landmarks. They are not full recreations of Zelda's maps or complete platforming levels.
-
-## Source and checks
+## Source and verification
 
     npm test
 
-Nineteen deterministic tests cover simulation invariants, camera-relative movement, leveling, targeting, Ultimates, streaks, choice resources, realm connectivity, shrines, bounded entities, boss persistence, and terminal states.
+Deterministic tests cover the 24-level campaign, map enemy pools, progression, terminal results, checkpoints, migration/import, purchases, unlocks, bounded entities, projectile families, targeting and baseline combat. Browser checks cover menus, changing animation poses, keyboard/touch, campaign event flow, safe reload and responsive layouts. Forced encounter completion verifies integration, rather than balance. Touch is verified through emulation; physical-device performance varies.
 
-- core.js: simulation and run invariants.
-- art.js: independently drawn pixel sprites and procedural texture cache.
-- app.js: Three.js scene, camera, input, sound, interface, local records.
-- REFERENCE-ANALYSIS.md: evidence, sources, differences, and remaining gaps.
-
-Local storage optionally retains best records and sound preference. Runs do not persist across page reloads. Touch checks use browser emulation; performance is not established on every physical device.
+- core.js: simulation, campaign and checkpoint invariants.
+- profile.js: progression, purchases, migration, validation and once-per-run settlement.
+- art.js: original pixel art, animation frames, textures and material cache.
+- app.js: 3D rendering, effects, input, dialogs, sound and persistence.
+- REFERENCE-ANALYSIS.md: reference evidence and scope limits.
 
 ## Vercel
 
-Import Adonissimo/zelabonk- at https://vercel.com/new . Keep the repository root. vercel.json configures a static project, no install/build command, and output directory dot. No environment variables are needed. Wait for Ready before treating a push as deployed.
+The repository is connected to https://zelabonk.vercel.app . Static hosting uses the repository root, no install/build command, and output directory dot, as set in vercel.json. No environment variables are needed. Successful GitHub deployment status and matching public source hashes establish a deployed revision.
 
 ## Credits and scope
 
-Unofficial fan game; unaffiliated with Nintendo. Zelda characters, names, and setting belong to their respective owners. Pixel depictions are independently drawn in art.js. No official sprites, audio, models, or PokéBonk source/assets are bundled.
+Unofficial fan game, unaffiliated with Nintendo. Zelda's characters, names and settings belong to their respective owners. Pixel artwork and animations are independently authored. No Nintendo or PokéBonk sprites, music, models or source were extracted. Three.js uses MIT; Lilita One and Nunito use SIL Open Font License. License texts ship alongside those files.
 
-Reference: https://pokebonk.com/ . Guest entry encountered human verification; analysis uses public captures and labeled secondary guides. Collection/capture, permanent upgrade shop, multiplayer, accounts, an exhaustive roster, and full franchise map coverage are not implemented.
-
-- Three.js 0.160.1, MIT: vendor/THREE-LICENSE.txt. Its classic-script warning is expected; direct offline file launch is supported.
-- Lilita One, SIL Open Font License: assets/LILITA-OFL.txt.
-- Nunito Extra Bold, SIL Open Font License: assets/NUNITO-OFL.txt.
+Reference: https://pokebonk.com/ . Guest entry encountered human verification; analysis uses public captures and labeled secondary guides. These eight maps are compact interpretations. Creature capture, multiplayer, accounts, exhaustive franchise maps and the full franchise roster are outside this game.

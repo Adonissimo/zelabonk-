@@ -1,12 +1,12 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {Game,REALMS,GATES,UPGRADES}=require('../core.js');
+const {Game,REALMS,GATES,UPGRADES,ARENA_LIMIT}=require('../core.js');
 const advance=(g,seconds,input={x:0,y:0})=>{for(let i=0;i<Math.round(seconds/.02);i++){g.step(.02,input);g.drainEvents();}};
 
 test('movement is normalized and stays inside the arena',()=>{
   const a=new Game('link',1),b=new Game('link',1);a.step(.05,{x:1,y:0});b.step(.05,{x:1,y:1});
   assert.ok(Math.abs(Math.hypot(a.player.x,a.player.z)-Math.hypot(b.player.x,b.player.z))<1e-10);
-  a.player.x=26;a.player.z=-26;a.step(.05,{x:1,y:0});assert.equal(a.player.x,26);assert.equal(a.player.z,-26);
+  a.player.x=ARENA_LIMIT;a.player.z=-ARENA_LIMIT;a.step(.05,{x:1,y:0});assert.equal(a.player.x,ARENA_LIMIT);assert.equal(a.player.z,-ARENA_LIMIT);
 });
 test('pause and upgrade states freeze all simulation clocks',()=>{
   const g=new Game('link',2);g.pause();advance(g,2);assert.equal(g.time,0);g.resume();g.collect(100);assert.equal(g.state,'upgrade');const xp=g.xp;advance(g,3);assert.equal(g.time,0);assert.equal(g.xp,xp);
@@ -28,8 +28,8 @@ test('an enemy death awards one kill and one shard',()=>{
 test('leaving shards behind bounds their count while preserving XP',()=>{
   const g=new Game('link',22);for(let i=0;i<500;i++){const e=g.spawnEnemy('slime',i%25,Math.floor(i/25));g.hurtEnemy(e,1e6);g.enemies=[];}assert.equal(g.shards.length,350);assert.equal(g.shards.reduce((n,s)=>n+s.value,0),1000);
 });
-test('all six realms form a symmetric connected network',()=>{
-  const seen=new Set([0]),queue=[0];while(queue.length){const i=queue.shift();assert.equal(REALMS[i].links.length,GATES.length);for(const j of REALMS[i].links){assert.ok(REALMS[j].links.includes(i));if(!seen.has(j)){seen.add(j);queue.push(j);}}}assert.equal(seen.size,6);
+test('all eight maps form a symmetric connected network',()=>{
+  const seen=new Set([0]),queue=[0];while(queue.length){const i=queue.shift();assert.equal(REALMS[i].links.length,GATES.length);for(const j of REALMS[i].links){assert.ok(REALMS[j].links.includes(i));if(!seen.has(j)){seen.add(j);queue.push(j);}}}assert.equal(seen.size,REALMS.length);
 });
 test('gates preserve the run, bank shards once, and enforce adjacency',()=>{
   const g=new Game('link',7);g.time=77;g.player.hp=62;g.ranks.power=2;g.shards=[{id:1,x:12,z:0,value:4}];assert.equal(g.travel(2),false);assert.equal(g.travel(1),true);assert.equal(g.time,77);assert.equal(g.player.hp,62);assert.equal(g.rank('power'),2);assert.equal(g.xp,4);assert.equal(g.shards.length,0);assert.equal(g.travel(0),false);assert.ok(g.visited.has(1));

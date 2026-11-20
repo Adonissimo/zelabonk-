@@ -28,20 +28,46 @@ Secondary guides report automatic regular attacks, camera movement, jump/slide, 
 | Area | Implemented response |
 |---|---|
 | Art | Independently drawn directional Zelda pixel sprites, foliage, grass and stone textures |
-| Camera | Drag orbit, wheel zoom, camera-relative movement |
+| Camera | Mouse look without dragging, wheel zoom, camera-relative movement |
 | Combat | Retained auto-casting; added manual camera-directed aim, target lock and its ring |
-| Ultimate | Great Spin, Fused Shadow, Triforce Light, charge cost and visible meter |
+| Ultimate | Six character-specific survivor adaptations, original poses, charge cost and visible meter |
 | Upgrade decisions | Two refreshes, two skips, one banish per run; banished choices stay excluded |
 | HUD | Hero portrait, minimap, follow-health bar, loadout names, charge, and kill streak |
-| Actual Zelda identity | Link, Zelda, Midna, canonical realm names, Zelda items, landmarks, Phantom Ganon |
-| Interconnection | Retained the tested six-realm gate graph and shared run state |
+| Actual Zelda identity | Six playable heroes, ten bosses, canonical equipment/location names and independently drawn fan depictions |
+| Interconnection | Eight-map gate graph; shared run state and persistent unfinished map levels |
+| Campaign | Three numbered stages per map; enemy waves, guardian seals, then Ganondorf |
+| Map ecology | Distinct local species pools for normal spawns, elites and boss summons |
+| Permanent progress | Rupees, five capped upgrades, hero unlocks, journal, records and achievements |
+| Recovery | Map/upgrade checkpoints, import/export, backups and legacy-record migration |
+| Motion | Locomotion, casts, Ultimates, hurt, jump/glide, dash, boss warnings, projectiles, defeat and victory |
 
 Reused the responsible simulation, rendering, and interface layers. The first prototype's art approach was the main mismatch; the actor and environment renderer was changed instead of adding decoration around the same primitive models.
 
 ## Theme and limits
 
-The user's final theme instruction is actual Zelda, not invented names with a similar mood. The build uses Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Landmarks include a Great Deku Tree depiction, a red sailing boat, a winged goddess statue, gloom fissures, a clock tower, and an expressive moon.
+The user's final theme instruction is actual Zelda. The build uses Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Kokiri Forest is the canonical name for the village location. The 24 level numbers and central progression shrines are this game's structure. Landmarks include the Great Deku Tree, lakeside temple ruins, Hyrule Castle skyline, red sailing boat, Tower of the Gods, twilight architecture, winged goddess statue, lightroot, gloom fissures, clock tower, and expressive moon.
 
 Artwork is independently drawn in code. No assets were extracted from Nintendo or PokéBonk. This is an unofficial fan game, unaffiliated with Nintendo.
 
-Exact reference balance is unverified and not copied. Complete feature parity still requires collection, permanent progression, more content, and richer terrain traversal. The six maps are compact arena interpretations, not exhaustive canonical maps. Multiplayer and accounts are not implemented.
+Exact reference balance is unverified and not copied. This is a bounded single-player game, without full PokéBonk parity. Creature capture, multiplayer, accounts, richer platforming terrain, exhaustive maps and the full franchise roster remain outside scope.
+
+## Zelda names versus custom behavior
+
+The journal labels games where entities are seen; it does not claim first appearance. Nintendo's Zelda overview and Hyrule Warriors roster establish official character context. Zelda Wiki supplies item and enemy context.
+
+- https://zelda.nintendo.com/about/
+- https://www.nintendo.com/en-gb/Games/Wii-U-games/Hyrule-Warriors-891849.html
+- https://zeldawiki.wiki/
+
+Named characters, bosses, locations and equipment belong to Zelda. Automatic casting, formulas, stage waves, shrine rewards, unlock requirements, permanent bonuses, connected layouts and animations are ZeldaBonk adaptations. Skull Kid using Din's Fire and Sheik carrying a Boomerang are crossover builds, not claims about their original move sets. Each map's enemy pool uses species associated with its game/location. Boss placements are crossover guardian encounters rather than original dungeon reproductions.
+
+
+## Camera and settings evidence
+
+Public controls guides describe turning the camera by moving the mouse after focus, with optional pointer capture, wheel zoom, sensitivity, inverted Y, field of view, camera distance and rebinding. ZeldaBonk now uses mouse movement without a held button, with optional cursor capture and touch swiping. Exact current reference camera curves remain unverified because live guest entry required human verification.
+
+- https://pokebonk.app/controls/
+- https://pokebonk.gg/controls
+- https://pokebonk.cc/guides/controls
+
+The playable bounds increased from 52 by 52 to 128 by 128 units. Low/Balanced/High presets change render resolution, shadows and optional effects. The map-size and camera values are authored for this adaptation.

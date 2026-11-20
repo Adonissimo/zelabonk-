@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-20T14:03:33.769Z",
+  "generatedAt": "2026-11-20T16:02:17.699Z",
   "title": "Design System: ZeldaBonk",
   "extensions": {
     "colorMeta": {
@@ -297,16 +297,142 @@
           "oklch(84% 0.0306 27.76)",
           "oklch(95% 0.0306 27.76)"
         ]
+      },
+      "form-accent": {
+        "role": "secondary",
+        "displayName": "Form Accent",
+        "tonalRamp": [
+          "oklch(15% 0.0510 171.85)",
+          "oklch(26% 0.0510 171.85)",
+          "oklch(38% 0.0510 171.85)",
+          "oklch(49% 0.0510 171.85)",
+          "oklch(61% 0.0510 171.85)",
+          "oklch(72% 0.0510 171.85)",
+          "oklch(84% 0.0510 171.85)",
+          "oklch(95% 0.0510 171.85)"
+        ]
+      },
+      "form-focus": {
+        "role": "secondary",
+        "displayName": "Form Focus",
+        "tonalRamp": [
+          "oklch(15% 0.0677 176.57)",
+          "oklch(26% 0.0677 176.57)",
+          "oklch(38% 0.0677 176.57)",
+          "oklch(49% 0.0677 176.57)",
+          "oklch(61% 0.0677 176.57)",
+          "oklch(72% 0.0677 176.57)",
+          "oklch(84% 0.0677 176.57)",
+          "oklch(95% 0.0677 176.57)"
+        ]
+      },
+      "form-border": {
+        "role": "neutral",
+        "displayName": "Form Border",
+        "tonalRamp": [
+          "oklch(15% 0.0213 295.07)",
+          "oklch(26% 0.0213 295.07)",
+          "oklch(38% 0.0213 295.07)",
+          "oklch(49% 0.0213 295.07)",
+          "oklch(61% 0.0213 295.07)",
+          "oklch(72% 0.0213 295.07)",
+          "oklch(84% 0.0213 295.07)",
+          "oklch(95% 0.0213 295.07)"
+        ]
+      },
+      "row-divider": {
+        "role": "neutral",
+        "displayName": "Row Divider",
+        "tonalRamp": [
+          "oklch(15% 0.0100 305.39)",
+          "oklch(26% 0.0100 305.39)",
+          "oklch(38% 0.0100 305.39)",
+          "oklch(49% 0.0100 305.39)",
+          "oklch(61% 0.0100 305.39)",
+          "oklch(72% 0.0100 305.39)",
+          "oklch(84% 0.0100 305.39)",
+          "oklch(95% 0.0100 305.39)"
+        ]
+      },
+      "control-surface": {
+        "role": "neutral",
+        "displayName": "Control Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0068 295.45)",
+          "oklch(26% 0.0068 295.45)",
+          "oklch(38% 0.0068 295.45)",
+          "oklch(49% 0.0068 295.45)",
+          "oklch(61% 0.0068 295.45)",
+          "oklch(72% 0.0068 295.45)",
+          "oklch(84% 0.0068 295.45)",
+          "oklch(95% 0.0068 295.45)"
+        ]
+      },
+      "stage-surface": {
+        "role": "neutral",
+        "displayName": "Stage Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0041 301.42)",
+          "oklch(26% 0.0041 301.42)",
+          "oklch(38% 0.0041 301.42)",
+          "oklch(49% 0.0041 301.42)",
+          "oklch(61% 0.0041 301.42)",
+          "oklch(72% 0.0041 301.42)",
+          "oklch(84% 0.0041 301.42)",
+          "oklch(95% 0.0041 301.42)"
+        ]
+      },
+      "stage-current": {
+        "role": "neutral",
+        "displayName": "Stage Current",
+        "tonalRamp": [
+          "oklch(15% 0.0221 123.64)",
+          "oklch(26% 0.0221 123.64)",
+          "oklch(38% 0.0221 123.64)",
+          "oklch(49% 0.0221 123.64)",
+          "oklch(61% 0.0221 123.64)",
+          "oklch(72% 0.0221 123.64)",
+          "oklch(84% 0.0221 123.64)",
+          "oklch(95% 0.0221 123.64)"
+        ]
+      },
+      "stage-active": {
+        "role": "secondary",
+        "displayName": "Stage Active",
+        "tonalRamp": [
+          "oklch(15% 0.0451 250.09)",
+          "oklch(26% 0.0451 250.09)",
+          "oklch(38% 0.0451 250.09)",
+          "oklch(49% 0.0451 250.09)",
+          "oklch(61% 0.0451 250.09)",
+          "oklch(72% 0.0451 250.09)",
+          "oklch(84% 0.0451 250.09)",
+          "oklch(95% 0.0451 250.09)"
+        ]
+      },
+      "stage-complete": {
+        "role": "secondary",
+        "displayName": "Stage Complete",
+        "tonalRamp": [
+          "oklch(15% 0.0607 159.19)",
+          "oklch(26% 0.0607 159.19)",
+          "oklch(38% 0.0607 159.19)",
+          "oklch(49% 0.0607 159.19)",
+          "oklch(61% 0.0607 159.19)",
+          "oklch(72% 0.0607 159.19)",
+          "oklch(84% 0.0607 159.19)",
+          "oklch(95% 0.0607 159.19)"
+        ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "display",
-        "purpose": "Desktop ZELDA line; BONK is 112px. Responsive overrides reduce the lockup."
+        "purpose": "Current desktop menu ZELDA line at 64px; BONK is 80px. Width and height overrides compact the lockup."
       },
       "headline": {
         "displayName": "headline",
-        "purpose": "Menu headline."
+        "purpose": "Current 24px menu headline; compact responsive overrides apply."
       },
       "title": {
         "displayName": "title",
@@ -399,7 +525,77 @@
       {
         "name": "reduced-motion",
         "value": "@media(prefers-reduced-motion:reduce)",
-        "purpose": "CSS transitions and animations stop. Camera shake and floating damage text are suppressed; world rendering continues."
+        "purpose": "System preference or explicit reduced setting disables CSS motion and camera shake, hides floating damage text and selected effects, and leaves continuous world rendering active."
+      },
+      {
+        "name": "dialog-arrive",
+        "value": ".22s cubic-bezier(.16,1,.3,1)",
+        "purpose": "Native-dialog opacity .7 to 1 and scale .98 to 1 on opening."
+      },
+      {
+        "name": "sprite-idle",
+        "value": "4 frames at 3 fps",
+        "purpose": "Authored idle action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-walk",
+        "value": "8 frames at 10 fps",
+        "purpose": "Authored walk action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-attack",
+        "value": "6 frames at 14 fps",
+        "purpose": "Authored attack action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-cast",
+        "value": "6 frames at 10 fps",
+        "purpose": "Authored cast action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-ultimate",
+        "value": "8 frames at 9 fps",
+        "purpose": "Authored ultimate action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-hurt",
+        "value": "2 frames at 8 fps",
+        "purpose": "Authored hurt action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-jump",
+        "value": "4 frames at 6 fps",
+        "purpose": "Authored jump action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-glide",
+        "value": "4 frames at 4 fps",
+        "purpose": "Authored glide action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-dash",
+        "value": "4 frames at 12 fps",
+        "purpose": "Authored dash action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-death",
+        "value": "8 frames at 8 fps",
+        "purpose": "Defeat state holds its last frame; other states loop through the shared animation table."
+      },
+      {
+        "name": "sprite-victory",
+        "value": "6 frames at 5 fps",
+        "purpose": "Authored victory action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-windup",
+        "value": "6 frames at 7 fps",
+        "purpose": "Authored windup action from art.js ANIMATIONS; actor state selects the pose."
+      },
+      {
+        "name": "sprite-spawn",
+        "value": "6 frames at 7 fps",
+        "purpose": "Authored spawn action from art.js ANIMATIONS; actor state selects the pose."
       }
     ],
     "breakpoints": [
@@ -416,16 +612,12 @@
         "value": "(hover:none), (pointer:coarse)"
       },
       {
-        "name": "short-height",
-        "value": "(max-height:700px)"
-      },
-      {
-        "name": "legacy-short-mobile",
-        "value": "(max-height:640px) and (max-width:560px)"
-      },
-      {
         "name": "narrow-mobile",
         "value": "379px"
+      },
+      {
+        "name": "short-menu",
+        "value": "(max-height:680px)"
       }
     ]
   },
@@ -434,9 +626,9 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Gold start, resume, and retry actions.",
-      "html": "<button class=\"ds-primary\"><span>Begin adventure</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h16m-6-6 6 6-6 6\"/></svg></button>",
-      "css": ".ds-primary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-primary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-primary:active:not(:disabled){transform:translateY(2px)}.ds-primary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}.ds-primary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:0;border-radius:8px;background:var(--gold,#edca76);color:#263d32;padding:14px 22px;font-size:15px;font-weight:900;box-shadow:0 6px 20px #17382f26}.ds-primary:hover{background:#f1d797}.ds-primary svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
+      "description": "Gold primary action; menu variant is denser, with Continue prioritized when a checkpoint exists.",
+      "html": "<button class=\"ds-primary ds-menu\"><span>Continue adventure</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h16m-6-6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-primary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-primary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-primary:active:not(:disabled){transform:translateY(2px)}.ds-primary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}.ds-primary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:0;border-radius:8px;background:var(--gold,#edca76);color:#263d32;padding:14px 22px;font-size:15px;font-weight:900;box-shadow:0 6px 20px #17382f26}.ds-primary:hover{background:#f1d797}.ds-primary svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.ds-primary.ds-menu{min-height:48px;padding:11px 17px}@media(max-width:560px){.ds-primary.ds-menu{font-size:13px;min-height:43px}}"
     },
     {
       "name": "Secondary Button",
@@ -447,12 +639,12 @@
       "css": ".ds-secondary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-secondary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-secondary:active:not(:disabled){transform:translateY(2px)}.ds-secondary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}.ds-secondary{padding:11px 20px;background:var(--ink,#29283e);color:var(--cream,#fffdf4);border:0;border-radius:7px;font-size:14px}.ds-secondary:hover{background:#426c56}"
     },
     {
-      "name": "Text Button",
+      "name": "Key Binding",
       "kind": "button",
-      "refersTo": "button-text",
-      "description": "Quiet underlined action for choosing another wanderer.",
-      "html": "<button class=\"ds-text\">Choose another wanderer</button>",
-      "css": ".ds-text{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-text:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-text:active:not(:disabled){transform:translateY(2px)}.ds-text:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-text{transition:none}}.ds-text{display:block;background:none;border:0;color:#4e6b57;padding:5px 8px;font-size:12px;text-decoration:underline;text-underline-offset:4px}.ds-text:hover{color:#263e31}"
+      "refersTo": "binding-button",
+      "description": "Two-column action/key controls. The capturing class adds the live green capture treatment.",
+      "html": "<div class=\"ds-bindings\"><button class=\"ds-binding\">Jump / glide<kbd>Space</kbd></button><button class=\"ds-binding ds-capturing\">Interact<kbd>Press key</kbd></button></div>",
+      "css": ".ds-bindings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:24px}.ds-binding{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;border:0;border-radius:8px;background:#ecebf0;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 12px;color:#47425b;font-size:11px;min-width:0;text-align:left}.ds-binding kbd{font:12px var(--body,Nunito,sans-serif);white-space:nowrap;border:0;background:#fffdf8;color:#39354e;padding:4px 7px;min-width:31px;text-align:center;border-radius:4px}.ds-binding.ds-capturing{outline:2px solid #5d8a76;background:#e4eddf}.ds-capturing kbd{font-size:9px}.ds-binding:hover{cursor:pointer}.ds-binding:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-binding:active:not(:disabled){transform:translateY(2px)}@media(max-width:560px){.ds-binding{font-size:10px;padding:9px}.ds-binding kbd{font-size:10px;padding:4px;min-width:26px}}"
     },
     {
       "name": "Utility Icon Button",
@@ -471,12 +663,12 @@
       "css": ".ds-upgrade{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-upgrade:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-upgrade:active:not(:disabled){transform:translateY(2px)}.ds-upgrade:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-upgrade{transition:none}}.ds-upgrade{border:1px solid #b9c4a7;border-radius:9px;background:#e9ead5;color:var(--ink,#29283e);min-height:215px;width:240px;padding:20px 17px;position:relative;text-align:left;display:flex;flex-direction:column;align-items:flex-start}.ds-upgrade:hover{background:#dfe7cd;border-color:#5a8573;transform:translateY(-3px)}.ds-upgrade>svg{color:#467c6b;margin-bottom:20px}.ds-kind{font-size:8px;letter-spacing:1.6px;color:#5d705c}.ds-upgrade h3{font-family:var(--display,Lilita,Georgia,serif);font-size:23px;font-weight:400;margin:7px 0 8px}.ds-upgrade p{font-size:11px;font-weight:700;line-height:1.55;margin:0;color:#536852}.ds-rank{margin-top:auto;padding-top:14px;font-size:9px;color:#6c794f}.ds-upgrade kbd{position:absolute;top:17px;right:15px;border:1px solid #acb49a;border-radius:4px;padding:3px 5px;font:800 9px var(--body,Nunito,sans-serif);color:#6d7b5e}.ds-upgrade.ds-evolution{background:#dce7ce;border-color:#74a48d}@media(max-width:560px){.ds-upgrade{width:100%;min-height:96px;display:grid;grid-template-columns:32px 1fr;column-gap:13px;padding:13px 16px}.ds-upgrade>svg{grid-column:1;grid-row:1/5;width:28px;height:28px;margin:10px 0 0}.ds-kind,.ds-upgrade h3,.ds-upgrade p,.ds-rank{grid-column:2}.ds-upgrade h3{font-size:20px;margin:3px 0}.ds-upgrade p{font-size:10px}.ds-rank{padding-top:5px;font-size:8px}}.ds-upgrade svg{width:35px;height:35px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}@media(max-width:560px){.ds-upgrade>svg{width:28px;height:28px}}.ds-upgrade{border:0;box-shadow:0 4px 17px #28385520;background:#fff;border-radius:15px;overflow:hidden;padding-top:86px;min-height:260px}.ds-upgrade>svg{position:absolute;left:0;right:0;top:0;width:100%;height:73px;padding:17px;background:#b8d1e5;color:#3a628b;margin:0}.ds-upgrade:nth-child(2)>svg{background:#ded8b8;color:#766235}.ds-upgrade:nth-child(3)>svg{background:#c4dfbe;color:#4a7653}.ds-upgrade:hover{background:#fbf8eb}.ds-upgrade h3{font-size:24px}.ds-kind{color:#626079}.ds-upgrade p{color:#5a5a70;font-size:12px}.ds-upgrade kbd{z-index:1;background:#ffffffd9;color:#45445e;border:0}.ds-rank{color:#65617b}.ds-banish-mode .ds-upgrade{outline:2px solid #cb8e82}@media(max-width:560px){.ds-upgrade{min-height:100px;padding:13px 14px;grid-template-columns:38px 1fr}.ds-upgrade>svg{position:static;width:34px;height:47px;padding:5px;border-radius:7px;margin:7px 0}.ds-upgrade h3{font-size:21px}.ds-upgrade p{font-size:10px}}"
     },
     {
-      "name": "Realm Map Action",
+      "name": "Eight-Map Stage Grid",
       "kind": "nav",
-      "refersTo": "map-action",
-      "description": "Compact map entry point with authored icon and keyboard hint.",
-      "html": "<nav aria-label=\"Realm navigation\"><button class=\"ds-map\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m3 5 6-2 6 3 6-2v16l-6 2-6-3-6 2Zm6-2v16m6-13v16\"/></svg><span>Realm map</span><kbd>M</kbd></button></nav>",
-      "css": ".ds-map{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-map:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-map:active:not(:disabled){transform:translateY(2px)}.ds-map:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-map{transition:none}}.ds-map{border:0;background:#fffaf0f5;color:#34334c;border-radius:7px;display:flex;align-items:center;gap:9px;padding:9px 11px;font-size:11px}.ds-map:hover{background:#f1e7ca}.ds-map kbd{font:800 9px var(--body,Nunito,sans-serif);display:inline-flex;justify-content:center;align-items:center;border:1px solid #aaa7bd;border-radius:4px;padding:3px 5px;min-width:20px}@media(pointer:coarse){.ds-map kbd{display:none}}.ds-map svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.ds-map{box-shadow:0 4px 16px #20333820}"
+      "refersTo": "stage-card",
+      "description": "Eight preview/travel-status cards. In-run travel still requires a gate. Chips show three numbered stages per map.",
+      "html": "<nav class=\"ds-stage-grid\" aria-label=\"Realm stages\"><button class=\"ds-stage-card ds-current\" aria-current=\"location\"><span class=\"ds-orb\" style=\"background:#83bc7d\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m12 2-7 9h4l-6 7h18l-6-7h4Zm0 16v4\"/></svg></span><b>Kokiri Forest</b><small>Current map · Level 1-2</small><span class=\"ds-levels\"><i class=\"ds-complete\">1-1</i><i class=\"ds-active\">1-2</i><i class=\"\">1-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#82c9dc\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M2 8c4-6 6 6 10 0s6 6 10 0M2 15c4-6 6 6 10 0s6 6 10 0\"/></svg></span><b>Lake Hylia</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">2-1</i><i class=\"\">2-2</i><i class=\"\">2-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#a3c874\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m12 2 5 8H7Zm-5 8 5 9H2Zm10 0 5 9H12Z\"/></svg></span><b>Hyrule Field</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">3-1</i><i class=\"\">3-2</i><i class=\"\">3-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#76c9c6\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M2 8c4-6 6 6 10 0s6 6 10 0M2 15c4-6 6 6 10 0s6 6 10 0\"/></svg></span><b>The Great Sea</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">4-1</i><i class=\"\">4-2</i><i class=\"\">4-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#ad91ca\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M20 15A9 9 0 0 1 9 3a9 9 0 1 0 11 12Z\"/></svg></span><b>Twilight Realm</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">5-1</i><i class=\"\">5-2</i><i class=\"\">5-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#abd6df\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M2 11 12 5l10 6-10 7Zm10-6v13M2 11l3 7 7-3 7 3 3-7\"/></svg></span><b>Skyloft</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">6-1</i><i class=\"\">6-2</i><i class=\"\">6-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#9e8bac\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 22V11C12 4 4 3 2 3c0 7 4 10 10 8Zm0 5c0-8 6-11 10-11 0 7-4 10-10 11Z\"/></svg></span><b>The Depths</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">7-1</i><i class=\"\">7-2</i><i class=\"\">7-3</i></span></button><button class=\"ds-stage-card\"><span class=\"ds-orb\" style=\"background:#b6b9de\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 6v6l4 2\"/></svg></span><b>Termina Field</b><small>Preview map</small><span class=\"ds-levels\"><i class=\"\">8-1</i><i class=\"\">8-2</i><i class=\"\">8-3</i></span></button></nav>",
+      "css": ".ds-stage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;min-height:330px;margin:22px 0}.ds-stage-card{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;min-width:0;background:#eeedf0;border:0;border-radius:12px;padding:13px 7px;color:#39354e;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:7px}.ds-stage-card:hover{background:#e5e8df}.ds-stage-card.ds-current{outline:3px solid #648c78;outline-offset:-3px;background:#e9efdf}.ds-orb{display:flex;align-items:center;justify-content:center;border-radius:50%;width:36px;height:36px}.ds-orb svg{width:20px;height:20px;fill:none;stroke:#263f3c;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.ds-stage-card b{font:18px var(--display,Lilita,Georgia,serif);font-weight:400;white-space:normal}.ds-stage-card small{font-size:8px;color:#676078;line-height:1.4;min-height:22px}.ds-levels{display:flex;gap:3px;justify-content:center}.ds-levels i{font-style:normal;font-size:8px;border-radius:4px;padding:4px 5px;background:#d9d7df;color:#625e71}.ds-levels .ds-active{background:#3b5066;color:#fff8df}.ds-levels .ds-complete{background:#547f67;color:#fff8df}.ds-stage-card:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-stage-card:active:not(:disabled){transform:translateY(2px)}@media(max-width:560px){.ds-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;min-height:510px}.ds-stage-card{padding:10px 6px;gap:4px}.ds-orb{width:27px;height:27px}}"
     },
     {
       "name": "Upgrade Resource Actions",
@@ -498,27 +690,28 @@
       "name": "Charged Ultimate",
       "kind": "button",
       "refersTo": "ultimate-button",
-      "description": "Ready-state visual specimen; production ring offset follows charge and activation consumes energy.",
-      "html": "<button class=\"ds-ultimate ds-ready\" aria-label=\"Use Ultimate\"><svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle class=\"ds-ultimate-track\" cx=\"32\" cy=\"32\" r=\"27\"/><circle class=\"ds-ultimate-charge\" cx=\"32\" cy=\"32\" r=\"27\"/></svg><span>R</span><small>GREAT SPIN</small></button>",
+      "description": "One of six hero Ultimates. Production uses the hero definition, real charge, disabled state, and readiness.",
+      "html": "<button class=\"ds-ultimate ds-ready\" aria-label=\"Use Ultimate\"><svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle class=\"ds-ultimate-track\" cx=\"32\" cy=\"32\" r=\"27\"/><circle class=\"ds-ultimate-charge\" cx=\"32\" cy=\"32\" r=\"27\"/></svg><span>R</span><small>SPIN ATTACK</small></button>",
       "css": ".ds-ultimate{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;position:relative;width:79px;height:79px;border:0;background:#34334ce8;border-radius:50%;color:#fffaf0;padding:0;opacity:1;box-shadow:0 4px 13px #20333838;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-ultimate>svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}.ds-ultimate-track,.ds-ultimate-charge{fill:none;stroke-width:4;stroke:#9f9db4}.ds-ultimate-charge{stroke:#edd174;stroke-dasharray:170;stroke-dashoffset:170;transition:stroke-dashoffset .15s}.ds-ultimate>span{font:30px var(--display,Lilita,Georgia,serif);display:block;margin-top:2px}.ds-ultimate>small{position:absolute;left:50%;top:-20px;transform:translateX(-50%);white-space:nowrap;font-size:8px;padding:3px 7px;background:#34334ced;border-radius:4px}.ds-ultimate.ds-ready{background:#a88034}.ds-ready .ds-ultimate-charge{stroke:#fff0b1;stroke-dashoffset:0}.ds-ultimate:hover{cursor:pointer}.ds-ultimate:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-ultimate:active:not(:disabled){transform:translateY(2px)}.ds-ultimate:disabled{cursor:default;opacity:.5}.ds-ultimate:disabled{opacity:1}@media(prefers-reduced-motion:reduce){.ds-ultimate,.ds-ultimate-charge{transition:none}}"
     },
     {
-      "name": "Weapon Slot",
-      "kind": "custom",
-      "refersTo": "weapon-slot",
-      "description": "Light loadout card with Zelda weapon name and actual rank. Evolution changes the surface to gold.",
-      "html": "<div class=\"ds-slot\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m14 4 6-1-1 6-9 9-4-4Z\"/><path d=\"m4 12 8 8M3 21l5-5\"/></svg><strong>Master Sword</strong><small>RANK 1</small></div>",
-      "css": ".ds-slot{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;width:68px;height:74px;background:#fafaffef;color:#393953;border:0;border-radius:12px;box-shadow:0 4px 15px #24334a26;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}.ds-slot svg{width:24px;height:24px;color:#5485a0;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-slot strong{font-size:8px;max-width:62px;text-align:center;line-height:1.2}.ds-slot small{font-size:8px;letter-spacing:0}.ds-slot.ds-evolved{background:#f7e2a9;color:#614b27}@media(max-width:560px){.ds-slot{width:39px;height:49px;border-radius:8px}.ds-slot svg{width:18px;height:18px}.ds-slot strong{display:none}.ds-slot small{font-size:7px}}"
+      "name": "Settings Controls",
+      "kind": "input",
+      "refersTo": "settings-select",
+      "description": "Native graphics select, checkbox, and range with the current settings-row layout and field focus.",
+      "html": "<div class=\"ds-settings\"><label class=\"ds-setting-row\">Quality<select><option>Low · faster</option><option selected>Balanced</option><option>High · sharper shadows</option></select></label><label class=\"ds-setting-row\">Sound effects<input type=\"checkbox\" checked></label><label class=\"ds-setting-row\">Volume<input type=\"range\" min=\"0\" max=\"1\" step=\"0.05\" value=\"0.55\"></label></div>",
+      "css": ".ds-settings{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;color:var(--ink,#29283e);background:var(--paper,#fffdf8);padding:12px}.ds-setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;padding:19px 0;border-bottom:1px solid #dedbe2;font-size:13px}.ds-setting-row input,.ds-setting-row select{font:inherit;color:var(--ink,#29283e);accent-color:#648e80;caret-color:var(--ink,#29283e)}.ds-setting-row select{max-width:210px;font-size:11px;padding:7px 27px 7px 10px;border:1px solid #b7b4c3;border-radius:7px;background:#fffdf8}.ds-setting-row input[type=checkbox]{width:22px;height:22px}.ds-setting-row input[type=range]{flex-shrink:0;width:135px}.ds-setting-row input:focus-visible,.ds-setting-row select:focus-visible{outline:3px solid #397668;outline-offset:4px}@media(max-width:560px){.ds-setting-row{font-size:11px;gap:10px}.ds-setting-row select{max-width:175px;font-size:10px}.ds-setting-row input[type=range]{width:100px}}"
     }
   ],
   "narrative": {
     "northStar": "The Hyrule Survivor Arcade",
-    "overview": "ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Link, Zelda, and Midna appear as outlined pixel billboards in a textured Three.js world. Crisp foliage, stone rims, and three-dimensional landmarks support the compact arenas. The actual Zelda identity replaces the earlier invented-world direction.\n\nLight porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. This named metaphor describes the implementation; code and verified renders are the visual authority, with no separately approved comp.",
+    "overview": "ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Six playable heroes—Link, Zelda, Midna, Tetra, Sheik, and Skull Kid—appear as outlined pixel billboards in textured Three.js arenas. Eight connected maps contain 24 Adventure stages, local enemy species, eight guardians, and final Ganondorf. Survival retains its separate Phantom Ganon encounter, bringing the implemented boss depictions to ten.\n\nLight porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. The established implementation extends this world into the roster, shop, journal, inventory, settings, and save dialogs. Explicit Zelda/PokéBonk direction and implemented renders are the visual authority; there is no separately approved comp or card.",
     "keyCharacteristics": [
-      "Independently drawn directional pixel characters and foliage inhabit textured 3D space.",
-      "Porcelain status panels contrast with dark action hints and announcements.",
-      "Character identity, minimap, health, weapon ranks, and Ultimate charge stay visible during combat.",
-      "White upgrade cards use colored headers and finite refresh, skip, and banish actions."
+      "Independently drawn, cached directional pixel actors and foliage inhabit textured 3D space.",
+      "Porcelain status and progression surfaces contrast with dark action hints and announcements.",
+      "Character identity, stage progress, minimap, health, weapon ranks, and Ultimate charge stay readable during combat.",
+      "White upgrade cards use colored headers and finite refresh, skip, and banish actions.",
+      "Settings, roster, journal, and save flows extend the same native-dialog system."
     ],
     "rules": [
       {
@@ -528,18 +721,18 @@
       }
     ],
     "dos": [
-      "**Do** preserve the actual Zelda theme and recognizable Link, Zelda, and Midna fan depictions.",
-      "**Do** retain crisp directional sprites, textured ground, sprite foliage, and three-dimensional landmarks.",
-      "**Do** keep porcelain status panels separate from dark backed actions and announcements.",
-      "**Do** connect charge, rank, resource, selection, and disabled visuals to real run state.",
-      "**Do** preserve native control semantics, visible focus, paused dialogs, and mobile control space."
+      "**Do** preserve the actual Zelda theme and all six recognizable hero fan depictions.",
+      "**Do** retain crisp cached sprites, action and phase animation, local enemy species, textured ground, and three-dimensional landmarks.",
+      "**Do** keep porcelain status and progression surfaces separate from dark backed actions and announcements.",
+      "**Do** bind stage, charge, rank, resource, unlock, checkpoint, and disabled visuals to actual run or profile state.",
+      "**Do** preserve native controls, visible focus, nested-dialog pause behavior, and mobile control space."
     ],
     "donts": [
-      "**Don't** describe the current game as merely Zelda-inspired or replace its theme with invented names.",
-      "**Don't** replace pixel actors with solid-color primitive character models or blur their texels.",
+      "**Don't** replace the Zelda theme with invented names or blur the independently drawn pixel art.",
+      "**Don't** describe the expanded game as six maps, three total heroes, two-frame walking, or drag-only mouse look.",
       "**Don't** imply complete Zelda maps, complete PokéBonk parity, or verified reference balance formulas.",
-      "**Don't** bundle extracted Nintendo or PokéBonk assets; the implementation uses independently drawn fan artwork.",
-      "**Don't** treat Ultimate charge, finite upgrade resources, or target-lock feedback as decorative controls."
+      "**Don't** bundle extracted Nintendo or PokéBonk assets; artwork and animation are independently authored.",
+      "**Don't** present stage chips, Ultimate charge, unlocks, purchases, saves, or rebinding as decorative controls."
     ]
   }
 }

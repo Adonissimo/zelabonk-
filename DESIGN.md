@@ -23,16 +23,25 @@ colors:
   experience-leaf: "#aad76f"
   ultimate-gold: "#edd174"
   banish-rose: "#f4d9d5"
+  form-accent: "#648e80"
+  form-focus: "#397668"
+  form-border: "#b7b4c3"
+  row-divider: "#dedbe2"
+  control-surface: "#ecebf0"
+  stage-surface: "#eeedf0"
+  stage-current: "#e9efdf"
+  stage-active: "#3b5066"
+  stage-complete: "#547f67"
 typography:
   display:
     fontFamily: "Lilita, Georgia, serif"
-    fontSize: "90px"
+    fontSize: "64px"
     fontWeight: 800
     lineHeight: 0.84
     letterSpacing: "2px"
   headline:
     fontFamily: "Lilita, Georgia, serif"
-    fontSize: "26px"
+    fontSize: "24px"
     fontWeight: 400
     letterSpacing: "0.1px"
   title:
@@ -108,7 +117,7 @@ components:
     textColor: "{colors.cream}"
     rounded: "10px"
     width: "106px"
-    height: "112px"
+    height: "83px"
   hero-choice-selected:
     backgroundColor: "#fffaf0"
     textColor: "#2f3549"
@@ -155,6 +164,48 @@ components:
     rounded: "{rounded.slot}"
     width: "68px"
     height: "74px"
+  button-start-menu:
+    backgroundColor: "{colors.gold}"
+    textColor: "{colors.action-ink}"
+    rounded: "{rounded.button}"
+    padding: "11px 17px"
+  settings-select:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.small}"
+    padding: "7px 27px 7px 10px"
+  binding-button:
+    backgroundColor: "{colors.control-surface}"
+    textColor: "#47425b"
+    rounded: "{rounded.button}"
+    padding: "9px 12px"
+  binding-button-capturing:
+    backgroundColor: "#e4eddf"
+  roster-card:
+    backgroundColor: "#eeeff3"
+    textColor: "#393953"
+    rounded: "{rounded.slot}"
+    padding: "15px 10px"
+  roster-card-selected:
+    backgroundColor: "#edf2df"
+  roster-card-locked:
+    backgroundColor: "#e8e6e9"
+    textColor: "#686477"
+  stage-card:
+    backgroundColor: "{colors.stage-surface}"
+    textColor: "#39354e"
+    rounded: "{rounded.slot}"
+    padding: "13px 7px"
+  stage-card-current:
+    backgroundColor: "{colors.stage-current}"
+  stage-level-active:
+    backgroundColor: "{colors.stage-active}"
+    textColor: "#fff8df"
+    rounded: "{rounded.key}"
+    padding: "4px 5px"
+  stage-level-complete:
+    backgroundColor: "{colors.stage-complete}"
+    textColor: "#fff8df"
 ---
 
 # Design System: ZeldaBonk
@@ -163,110 +214,125 @@ components:
 
 **Creative North Star: "The Hyrule Survivor Arcade"**
 
-ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Link, Zelda, and Midna appear as outlined pixel billboards in a textured Three.js world. Crisp foliage, stone rims, and three-dimensional landmarks support the compact arenas. The actual Zelda identity replaces the earlier invented-world direction.
+ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Six playable heroes—Link, Zelda, Midna, Tetra, Sheik, and Skull Kid—appear as outlined pixel billboards in textured Three.js arenas. Eight connected maps contain 24 Adventure stages, local enemy species, eight guardians, and final Ganondorf. Survival retains its separate Phantom Ganon encounter, bringing the implemented boss depictions to ten.
 
-Light porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. This named metaphor describes the implementation; code and verified renders are the visual authority, with no separately approved comp.
+Light porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. The established implementation extends this world into the roster, shop, journal, inventory, settings, and save dialogs. Explicit Zelda/PokéBonk direction and implemented renders are the visual authority; there is no separately approved comp or card.
 
 **Key Characteristics:**
 
-- Independently drawn directional pixel characters and foliage inhabit textured 3D space.
-- Porcelain status panels contrast with dark action hints and announcements.
-- Character identity, minimap, health, weapon ranks, and Ultimate charge stay visible during combat.
+- Independently drawn, cached directional pixel actors and foliage inhabit textured 3D space.
+- Porcelain status and progression surfaces contrast with dark action hints and announcements.
+- Character identity, stage progress, minimap, health, weapon ranks, and Ultimate charge stay readable during combat.
 - White upgrade cards use colored headers and finite refresh, skip, and banish actions.
+- Settings, roster, journal, and save flows extend the same native-dialog system.
 
 ## Colors
 
-The final ZeldaBonk CSS override owns the current interface palette. Frontmatter records reused values; synthesized eight-step OKLCH ramps in the sidecar are panel previews, not new production tokens.
+The final ZeldaBonk CSS layers own the interface palette. Frontmatter records reused values; synthesized eight-step OKLCH ramps in the sidecar are panel previews, not new production tokens.
 
 ### Primary
 
-- **Adventure Gold**: primary actions and identity accents; **Ultimate Gold** independently represents stored charge.
-- **Action Ink**: the primary button retains its existing dark green text value.
+- **Adventure Gold**: primary actions and identity accents. **Ultimate Gold** independently represents stored charge.
+- **Action Ink**: the primary button retains its established dark green text.
 
 ### Secondary
 
-- **Midnight Indigo**: core text, dark actions, and announcements. Light HUD panels use the dedicated dark HUD text.
-- **Choice Blue, Sand, and Green**: three positional upgrade headers. These colors distinguish the displayed choices, not weapon rarity.
-- **Focus Mint**: the inherited visible keyboard-focus ring.
+- **Midnight Indigo**: core text, dark actions, and announcements. Porcelain HUD surfaces use dedicated dark text.
+- **Choice Blue, Sand, and Green**: positional upgrade headers, not weapon rarity.
+- **Focus Mint**: button and link focus. Native fields use **Form Focus** and **Form Accent** from the extended settings system.
+- **Stage Active** and **Stage Complete**: dark blue current-level chips and green finished-level chips, paired with stage numbers and status text.
 
 ### Tertiary
 
-- **Health Leaf**, **Stamina Blue**, and **Experience Leaf**: distinct persistent meter meanings.
-- **Banish Rose**: the destructive run-choice resource; banish mode also outlines the cards.
+- **Health Leaf**, **Stamina Blue**, and **Experience Leaf**: stable meter meanings.
+- **Banish Rose**: the destructive run-choice resource; banish mode also outlines cards.
 
 ### Neutral
 
-- **Paper**, **Cream**, and **HUD Porcelain**: dialog surfaces, light text, and near-opaque status panels.
-- **Choice White** and **Choice Hover**: card body and hover feedback.
+- **Paper**, **Cream**, and **HUD Porcelain**: dialogs, light text, and near-opaque status surfaces.
+- **Choice White**, **Control Surface**, and **Stage Surface**: choice bodies, key bindings, and map cards.
+- **Form Border** and **Row Divider**: restrained separation in settings, journal, inventory, and shop rows.
 
 **The Two Materials Rule.** Use light porcelain for readable status and choice surfaces, and dark indigo backing for action hints and scene announcements.
 
-World palettes live in the realm definitions and procedural art. Preserve six distinct arena identities without treating every terrain texel as an interface token.
+World palettes stay in realm definitions and procedural art. Preserve all eight map identities without treating each terrain texel as an interface token.
 
 ## Typography
 
-Keep self-hosted Lilita for the title, character names, timer, upgrade titles, and upgrade heading. Keep self-hosted Nunito for controls, counts, descriptions, and keyboard hints. Georgia remains the established face for other dialog headings and realm announcements.
+Keep self-hosted Lilita for identity, character and item names, timer, map labels, and settings section titles. Keep self-hosted Nunito for controls, counts, descriptions, and keyboard hints. Georgia remains the established face for most native-dialog headings and realm announcements; upgrade headings use Lilita.
 
-Frontmatter records desktop roles. The ZELDA title line uses the display role; BONK is larger at 112px with 4px tracking. The final width and short-height overrides reduce both lines. Upgrade titles are 24px on desktop and 21px on mobile; upgrade headings reduce from 38px to 28px. Do not infer a new modular type scale from these observed values.
+Frontmatter records current desktop menu roles. ZELDA uses 64px and BONK 80px. The menu headline is 24px. Below 560px, title lines reduce to 51px and 64px; below 680px height, they reduce to 42px and 53px. Upgrade titles and headings retain their separate established sizes. Do not replace observed roles with a new modular scale.
 
 ## Layout
 
-A fixed canvas fills the viewport. The menu occupies a narrow left column, leaving a wide world preview. During play, character identity and health sit upper left, timing upper center, and the circular minimap upper right. Weapon slots and the charged Ultimate sit below. Utility controls move to the lower right during play.
+A fixed canvas fills the viewport. The scrollable left menu includes Adventure/Survival, difficulty, three quick hero choices, continue/new-run actions, and progression navigation. The full roster contains six heroes. The menu remains bounded by viewport height instead of displacing the world preview.
 
-Width breakpoints are 800px, 560px, and a final narrow-screen adjustment at 379px. At mobile width, the identity panel is 126px wide, timer panel 109px, and minimap 91px; desktop minimap is 156px. At widths up to 379px, the profile, timer, and minimap reduce to 102px, 90px, and 78px; the joystick reduces to 96px. Upgrade choices switch from three columns to a single column. Dialogs retain bounded internal scrolling. The last short-height override compacts title and hero choices below 700px.
+Each playable map spans 128 by 128 units. Adventure progresses through three numbered stages per map. Preserve location-specific terrain, landmarks, enemy pools, guardian encounters, and stage status when extending the world.
 
-Touch controls reserve the lower corners for movement, glide, and dash. Mobile loadout moves above them; Ultimate sits near the lower center. Pointer capability controls keyboard-hint visibility. Dragging the arena orbits the camera; the wheel changes zoom; movement follows camera orientation.
+During play, identity and health sit upper left, timing upper center, and the circular minimap upper right. Weapon slots sit below; Ultimate position follows weapon count on wider screens. Width adjustments occur at 800px, 560px, and 379px. Below 560px, six weapon slots fit a three-column grid above touch controls. The narrow HUD keeps the established 102px profile, 90px timer, and 78px minimap at widths up to 379px.
+
+The eight-map stage grid uses four columns on desktop and two below 560px. The six-hero roster uses three columns, then two. Native dialogs scroll internally. Settings range controls shrink from 135px to 100px on mobile; binding buttons retain a two-column grid, minimum 44px height, and compact keycaps. Shop purchase controls move below their descriptions; journal navigation wraps. The final short-height menu adjustment applies below 680px.
+
+Mouse movement looks around without holding a button. Optional cursor capture starts with an arena click; Escape releases capture and pauses. Touch uses an arena swipe, separate from the movement stick. Wheel zoom, sensitivity, inverted Y, field of view, and camera distance remain player controls.
 
 ## Elevation & Depth
 
-The main depth language comes from pixel billboards placed in textured 3D terrain, raised stone rims, landmarks, perspective, fog, and cast shadows. Hero art uses four facing directions and two walk frames on a 48-by-64 canvas. Nearest filtering and disabled mipmaps preserve crisp source pixels. Terrain tiles use repeated procedural textures.
+Pixel billboards sit in textured 3D terrain with raised stone rims, landmarks, perspective, fog, and cast shadows. Original hero art uses a 64-by-80 canvas and four facing directions. Cached canvas, texture, and material variants include actor identity, action, direction, frame, and hit state. Nearest filtering and disabled mipmaps preserve crisp pixels.
 
-The interface uses soft structural shadows beneath porcelain panels, weapon slots, buttons, and dialogs. The minimap has a circular silhouette and drop shadow. Keep dark backed announcements distinct from these pale surfaces. Buttons depress by 2px; upgrade cards lift by 3px on hover. Reduced-motion handling disables CSS transitions and camera shake, while the world continues rendering.
+Animations include idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat, and victory. Walking now uses eight frames rather than the former two-frame loop. Boss depictions, local species, phase changes, and telegraphed attacks retain their specific poses and effects. Frame counts and rates belong to the animation table, recorded in sidecar metadata.
+
+Soft structural shadows separate porcelain panels, slots, choices, and dialogs. Buttons depress by 2px; upgrade cards lift by 3px on hover. Dialogs arrive through the implemented brief scale-and-opacity animation. Low/Balanced/High graphics tune rendering quality rather than changing interface identity. System or explicit reduced motion stops CSS transitions and animation and suppresses camera shake, floating damage text, and selected scene effects; world rendering remains active.
 
 ## Shapes
 
-Rounded porcelain panels, pill-shaped upgrade-resource controls, circular minimap and Ultimate, and compact rounded weapon slots define the UI. The floating health track follows the character. Pixel actors retain hard texel edges rather than smooth vector or low-poly character replacements.
+Rounded porcelain panels, pill-shaped resource controls, circular minimap and Ultimate, and compact weapon slots remain the core shapes. Roster and stage cards extend the rounded rectangular family. A selected stage or hero uses an inset outline and a surface change; locked heroes retain text explanations and muted portraits.
 
-The authored line SVG icons retain their 24-unit viewBox, 1.8 stroke, and rounded caps and joins. Use the existing icon family for weapons and interface actions; preserve independently drawn sprite portraits for the playable characters.
+The authored SVG family keeps its 24-unit viewBox, 1.8 stroke, and rounded caps and joins. Independently drawn pixel portraits remain the identity art. Native checkboxes, sliders, and selects retain browser semantics, the shared accent color, and distinct visible focus.
 
 ## Components
 
-### Actions and hero choices
+### Actions, modes, and hero selection
 
-Gold primary actions retain their arrow, heavy Nunito label, and desktop minimum height of 54px. Secondary actions use the current ink token. Text actions and visible focus retain their inherited treatments. Playing utility buttons use dark indigo backing. The three native hero-choice buttons show pixel portraits, Lilita names, role labels, and a parchment selected state with `aria-pressed`.
+Gold primary actions retain their arrow and heavy Nunito label. The menu uses a denser 48px minimum height, reducing to 43px on mobile. Other primary actions retain their base sizing. Continue receives priority when a safe checkpoint exists; a new run becomes the secondary light action. Adventure/Survival uses a segmented native-button group, paired with Normal/Hard difficulty.
 
-### Upgrade choices
+Three quick hero buttons show pixel portraits and selection state. The full roster shows six hero cards, origins, loadouts, Ultimates, and unlock requirements. Selected cards use the green outline and tint; locked cards use muted surfaces and portraits with explicit locked text. Preserve the distinction between the quick row and the full roster.
 
-White cards carry blue, sand, and green icon headers by position. Each full-card button retains its shortcut, category, item name, description, and rank. Master Sword, Din's Fire, and Light Arrows belong to the actual Zelda theme. Evolution retains its implemented state treatment. Mobile cards use compact icon tiles and horizontal content.
+### Upgrade choices and combat HUD
 
-Refresh, Skip, and Banish use separate pastel pills, resource counts, and disabled states. Banish mode outlines choice cards and changes the instruction. Keep these actions finite and preserve their run-state effects.
+White cards retain blue, sand, and green headers by position, keyboard shortcuts, category, title, description, rank, and evolution state. Refresh, Skip, and Banish retain their pastel pills, finite counts, and disabled states. Banish mode outlines the cards and changes the instruction.
 
-### Gameplay HUD
+Porcelain identity and timer panels pair with the circular minimap, following health bar, evolved weapon slots, streak feedback, stage objective, and checkpoint status. Six charged hero Ultimates use the actual hero name and charge state. Ring offset follows energy; activation is unavailable below full charge. Keep accessible charge labels synchronized with the visible ring and readiness treatment.
 
-Porcelain identity and timer panels use indigo text. The circular minimap shows nearby threats, gates, and the shrine. A floating health bar follows the hero. Light weapon slots show names, icons, and ranks; evolved slots become gold-tinted. Streak feedback uses outlined light display text.
+### Stage navigation
 
-The Ultimate is a real charge ring, not decoration: stroke offset tracks energy, the button remains unavailable until charged, and ready state changes its surface and ring. Link, Midna, and Zelda receive Great Spin, Fused Shadow, and Triforce Light labels. Keep the accessible charge label and visible readiness state synchronized.
+Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps; in-run travel happens at gates through the bound Interact key or touch Activate action. Boss travel restrictions appear in instructions.
 
-### Dialogs and realm navigation
+The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. They remain authored arena interpretations, not complete canonical Zelda maps.
 
-Native dialogs pause simulation, keep focus handling, and preserve Space and Enter activation. Required upgrade and result choices cannot be dismissed with Escape. The realm map uses six named circular nodes with dashed connections, current-state outline, and text status. Menu nodes preview arenas; in-run travel occurs through world gates using E or the touch Activate action.
+### Settings and key binding
 
-The connected arenas represent Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Landmark depictions include the Great Deku Tree, a red sailing boat, a winged goddess statue, gloom fissures, a clock tower, and an expressive moon. They are compact arena interpretations, not complete canonical maps.
+Native settings rows pair clear labels with sound, volume, system/manual motion, graphics quality, mouse mode, sensitivity, inverted Y, field of view, and camera distance. Numeric outputs remain adjacent to sliders. Fields use the form focus ring; key-binding buttons show action and keycap. Capturing a new key uses a green outline, surface change, and status text. Duplicate bindings are rejected; reset actions restore camera and keys.
+
+### Profile, shop, journal, and save dialogs
+
+The Great Fairy shop uses stacked item rows with icon, upgrade description, rank/cost, and a real purchase button. The journal groups heroes, bosses, equipment, local enemies, and achievements through wrapping section buttons and readable rows. Inventory uses the same surface, row, and item typography.
+
+Continue/checkpoint status, new-run replacement, import confirmation, and export use the shared native-dialog language. Keep save availability, backup/import feedback, locked content, purchase limits, and disabled states tied to actual profile data. Nested map, inventory, and settings dialogs preserve their parent's pause state and focus. Required upgrade and result choices remain non-dismissible with Escape; native Space/Enter activation still works.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** preserve the actual Zelda theme and recognizable Link, Zelda, and Midna fan depictions.
-- **Do** retain crisp directional sprites, textured ground, sprite foliage, and three-dimensional landmarks.
-- **Do** keep porcelain status panels separate from dark backed actions and announcements.
-- **Do** connect charge, rank, resource, selection, and disabled visuals to real run state.
-- **Do** preserve native control semantics, visible focus, paused dialogs, and mobile control space.
+- **Do** preserve the actual Zelda theme and all six recognizable hero fan depictions.
+- **Do** retain crisp cached sprites, action and phase animation, local enemy species, textured ground, and three-dimensional landmarks.
+- **Do** keep porcelain status and progression surfaces separate from dark backed actions and announcements.
+- **Do** bind stage, charge, rank, resource, unlock, checkpoint, and disabled visuals to actual run or profile state.
+- **Do** preserve native controls, visible focus, nested-dialog pause behavior, and mobile control space.
 
 ### Don't:
 
-- **Don't** describe the current game as merely Zelda-inspired or replace its theme with invented names.
-- **Don't** replace pixel actors with solid-color primitive character models or blur their texels.
+- **Don't** replace the Zelda theme with invented names or blur the independently drawn pixel art.
+- **Don't** describe the expanded game as six maps, three total heroes, two-frame walking, or drag-only mouse look.
 - **Don't** imply complete Zelda maps, complete PokéBonk parity, or verified reference balance formulas.
-- **Don't** bundle extracted Nintendo or PokéBonk assets; the implementation uses independently drawn fan artwork.
-- **Don't** treat Ultimate charge, finite upgrade resources, or target-lock feedback as decorative controls.
+- **Don't** bundle extracted Nintendo or PokéBonk assets; artwork and animation are independently authored.
+- **Don't** present stage chips, Ultimate charge, unlocks, purchases, saves, or rebinding as decorative controls.
