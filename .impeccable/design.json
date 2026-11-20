@@ -1,68 +1,68 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-20T12:58:15.614Z",
-  "title": "Design System: Relic Wilds",
+  "generatedAt": "2026-11-20T14:03:33.769Z",
+  "title": "Design System: ZeldaBonk",
   "extensions": {
     "colorMeta": {
       "ink": {
         "role": "neutral",
-        "displayName": "Deep Spruce",
+        "displayName": "Ink",
         "tonalRamp": [
-          "oklch(15% 0.0362 173.22)",
-          "oklch(26% 0.0362 173.22)",
-          "oklch(38% 0.0362 173.22)",
-          "oklch(49% 0.0362 173.22)",
-          "oklch(61% 0.0362 173.22)",
-          "oklch(72% 0.0362 173.22)",
-          "oklch(84% 0.0362 173.22)",
-          "oklch(95% 0.0362 173.22)"
-        ]
-      },
-      "cream": {
-        "role": "neutral",
-        "displayName": "Warm Cream",
-        "tonalRamp": [
-          "oklch(15% 0.0393 91.20)",
-          "oklch(26% 0.0393 91.20)",
-          "oklch(38% 0.0393 91.20)",
-          "oklch(49% 0.0393 91.20)",
-          "oklch(61% 0.0393 91.20)",
-          "oklch(72% 0.0393 91.20)",
-          "oklch(84% 0.0393 91.20)",
-          "oklch(95% 0.0393 91.20)"
+          "oklch(15% 0.0399 285.69)",
+          "oklch(26% 0.0399 285.69)",
+          "oklch(38% 0.0399 285.69)",
+          "oklch(49% 0.0399 285.69)",
+          "oklch(61% 0.0399 285.69)",
+          "oklch(72% 0.0399 285.69)",
+          "oklch(84% 0.0399 285.69)",
+          "oklch(95% 0.0399 285.69)"
         ]
       },
       "paper": {
         "role": "neutral",
-        "displayName": "Field Parchment",
+        "displayName": "Paper",
         "tonalRamp": [
-          "oklch(15% 0.0295 96.40)",
-          "oklch(26% 0.0295 96.40)",
-          "oklch(38% 0.0295 96.40)",
-          "oklch(49% 0.0295 96.40)",
-          "oklch(61% 0.0295 96.40)",
-          "oklch(72% 0.0295 96.40)",
-          "oklch(84% 0.0295 96.40)",
-          "oklch(95% 0.0295 96.40)"
+          "oklch(15% 0.0069 88.64)",
+          "oklch(26% 0.0069 88.64)",
+          "oklch(38% 0.0069 88.64)",
+          "oklch(49% 0.0069 88.64)",
+          "oklch(61% 0.0069 88.64)",
+          "oklch(72% 0.0069 88.64)",
+          "oklch(84% 0.0069 88.64)",
+          "oklch(95% 0.0069 88.64)"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Cream",
+        "tonalRamp": [
+          "oklch(15% 0.0120 96.42)",
+          "oklch(26% 0.0120 96.42)",
+          "oklch(38% 0.0120 96.42)",
+          "oklch(49% 0.0120 96.42)",
+          "oklch(61% 0.0120 96.42)",
+          "oklch(72% 0.0120 96.42)",
+          "oklch(84% 0.0120 96.42)",
+          "oklch(95% 0.0120 96.42)"
         ]
       },
       "gold": {
         "role": "primary",
-        "displayName": "Aged Gold",
+        "displayName": "Gold",
         "tonalRamp": [
-          "oklch(15% 0.1035 88.47)",
-          "oklch(26% 0.1035 88.47)",
-          "oklch(38% 0.1035 88.47)",
-          "oklch(49% 0.1035 88.47)",
-          "oklch(61% 0.1035 88.47)",
-          "oklch(72% 0.1035 88.47)",
-          "oklch(84% 0.1035 88.47)",
-          "oklch(95% 0.1035 88.47)"
+          "oklch(15% 0.1106 87.42)",
+          "oklch(26% 0.1106 87.42)",
+          "oklch(38% 0.1106 87.42)",
+          "oklch(49% 0.1106 87.42)",
+          "oklch(61% 0.1106 87.42)",
+          "oklch(72% 0.1106 87.42)",
+          "oklch(84% 0.1106 87.42)",
+          "oklch(95% 0.1106 87.42)"
         ]
       },
       "gold-hover": {
         "role": "primary",
-        "displayName": "Sunlit Gold",
+        "displayName": "Gold Hover",
         "tonalRamp": [
           "oklch(15% 0.0865 88.38)",
           "oklch(26% 0.0865 88.38)",
@@ -76,7 +76,7 @@
       },
       "action-ink": {
         "role": "neutral",
-        "displayName": "Action Spruce",
+        "displayName": "Action Ink",
         "tonalRamp": [
           "oklch(15% 0.0350 163.08)",
           "oklch(26% 0.0350 163.08)",
@@ -88,18 +88,60 @@
           "oklch(95% 0.0350 163.08)"
         ]
       },
-      "hud-backing": {
+      "hud-porcelain": {
         "role": "neutral",
-        "displayName": "Backed Spruce",
+        "displayName": "Hud Porcelain",
         "tonalRamp": [
-          "oklch(15% 0.0440 174.58 / 0.929)",
-          "oklch(26% 0.0440 174.58 / 0.929)",
-          "oklch(38% 0.0440 174.58 / 0.929)",
-          "oklch(49% 0.0440 174.58 / 0.929)",
-          "oklch(61% 0.0440 174.58 / 0.929)",
-          "oklch(72% 0.0440 174.58 / 0.929)",
-          "oklch(84% 0.0440 174.58 / 0.929)",
-          "oklch(95% 0.0440 174.58 / 0.929)"
+          "oklch(15% 0.0110 89.72 / 0.961)",
+          "oklch(26% 0.0110 89.72 / 0.961)",
+          "oklch(38% 0.0110 89.72 / 0.961)",
+          "oklch(49% 0.0110 89.72 / 0.961)",
+          "oklch(61% 0.0110 89.72 / 0.961)",
+          "oklch(72% 0.0110 89.72 / 0.961)",
+          "oklch(84% 0.0110 89.72 / 0.961)",
+          "oklch(95% 0.0110 89.72 / 0.961)"
+        ]
+      },
+      "hud-ink": {
+        "role": "neutral",
+        "displayName": "Hud Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0431 287.30)",
+          "oklch(26% 0.0431 287.30)",
+          "oklch(38% 0.0431 287.30)",
+          "oklch(49% 0.0431 287.30)",
+          "oklch(61% 0.0431 287.30)",
+          "oklch(72% 0.0431 287.30)",
+          "oklch(84% 0.0431 287.30)",
+          "oklch(95% 0.0431 287.30)"
+        ]
+      },
+      "navy-action": {
+        "role": "neutral",
+        "displayName": "Navy Action",
+        "tonalRamp": [
+          "oklch(15% 0.0460 286.97 / 0.929)",
+          "oklch(26% 0.0460 286.97 / 0.929)",
+          "oklch(38% 0.0460 286.97 / 0.929)",
+          "oklch(49% 0.0460 286.97 / 0.929)",
+          "oklch(61% 0.0460 286.97 / 0.929)",
+          "oklch(72% 0.0460 286.97 / 0.929)",
+          "oklch(84% 0.0460 286.97 / 0.929)",
+          "oklch(95% 0.0460 286.97 / 0.929)"
+        ]
+      },
+      "indigo-announcement": {
+        "role": "neutral",
+        "displayName": "Indigo Announcement",
+        "tonalRamp": [
+          "oklch(15% 0.0472 286.91 / 0.922)",
+          "oklch(26% 0.0472 286.91 / 0.922)",
+          "oklch(38% 0.0472 286.91 / 0.922)",
+          "oklch(49% 0.0472 286.91 / 0.922)",
+          "oklch(61% 0.0472 286.91 / 0.922)",
+          "oklch(72% 0.0472 286.91 / 0.922)",
+          "oklch(84% 0.0472 286.91 / 0.922)",
+          "oklch(95% 0.0472 286.91 / 0.922)"
         ]
       },
       "focus-mint": {
@@ -116,182 +158,206 @@
           "oklch(95% 0.1038 181.51)"
         ]
       },
-      "choice-paper": {
+      "choice-white": {
         "role": "neutral",
-        "displayName": "Choice Parchment",
+        "displayName": "Choice White",
         "tonalRamp": [
-          "oklch(15% 0.0279 109.15)",
-          "oklch(26% 0.0279 109.15)",
-          "oklch(38% 0.0279 109.15)",
-          "oklch(49% 0.0279 109.15)",
-          "oklch(61% 0.0279 109.15)",
-          "oklch(72% 0.0279 109.15)",
-          "oklch(84% 0.0279 109.15)",
-          "oklch(95% 0.0279 109.15)"
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
         ]
       },
       "choice-hover": {
         "role": "neutral",
-        "displayName": "Hover Parchment",
+        "displayName": "Choice Hover",
         "tonalRamp": [
-          "oklch(15% 0.0356 121.03)",
-          "oklch(26% 0.0356 121.03)",
-          "oklch(38% 0.0356 121.03)",
-          "oklch(49% 0.0356 121.03)",
-          "oklch(61% 0.0356 121.03)",
-          "oklch(72% 0.0356 121.03)",
-          "oklch(84% 0.0356 121.03)",
-          "oklch(95% 0.0356 121.03)"
+          "oklch(15% 0.0174 96.10)",
+          "oklch(26% 0.0174 96.10)",
+          "oklch(38% 0.0174 96.10)",
+          "oklch(49% 0.0174 96.10)",
+          "oklch(61% 0.0174 96.10)",
+          "oklch(72% 0.0174 96.10)",
+          "oklch(84% 0.0174 96.10)",
+          "oklch(95% 0.0174 96.10)"
         ]
       },
-      "choice-border": {
-        "role": "neutral",
-        "displayName": "Sage Border",
-        "tonalRamp": [
-          "oklch(15% 0.0416 124.25)",
-          "oklch(26% 0.0416 124.25)",
-          "oklch(38% 0.0416 124.25)",
-          "oklch(49% 0.0416 124.25)",
-          "oklch(61% 0.0416 124.25)",
-          "oklch(72% 0.0416 124.25)",
-          "oklch(84% 0.0416 124.25)",
-          "oklch(95% 0.0416 124.25)"
-        ]
-      },
-      "choice-copy": {
-        "role": "neutral",
-        "displayName": "Sage Copy",
-        "tonalRamp": [
-          "oklch(15% 0.0428 143.73)",
-          "oklch(26% 0.0428 143.73)",
-          "oklch(38% 0.0428 143.73)",
-          "oklch(49% 0.0428 143.73)",
-          "oklch(61% 0.0428 143.73)",
-          "oklch(72% 0.0428 143.73)",
-          "oklch(84% 0.0428 143.73)",
-          "oklch(95% 0.0428 143.73)"
-        ]
-      },
-      "spruce-hover": {
+      "header-blue": {
         "role": "secondary",
-        "displayName": "Lifted Spruce",
+        "displayName": "Header Blue",
         "tonalRamp": [
-          "oklch(15% 0.0592 160.33)",
-          "oklch(26% 0.0592 160.33)",
-          "oklch(38% 0.0592 160.33)",
-          "oklch(49% 0.0592 160.33)",
-          "oklch(61% 0.0592 160.33)",
-          "oklch(72% 0.0592 160.33)",
-          "oklch(84% 0.0592 160.33)",
-          "oklch(95% 0.0592 160.33)"
+          "oklch(15% 0.0388 242.19)",
+          "oklch(26% 0.0388 242.19)",
+          "oklch(38% 0.0388 242.19)",
+          "oklch(49% 0.0388 242.19)",
+          "oklch(61% 0.0388 242.19)",
+          "oklch(72% 0.0388 242.19)",
+          "oklch(84% 0.0388 242.19)",
+          "oklch(95% 0.0388 242.19)"
         ]
       },
-      "health-coral": {
+      "header-sand": {
+        "role": "secondary",
+        "displayName": "Header Sand",
+        "tonalRamp": [
+          "oklch(15% 0.0431 98.43)",
+          "oklch(26% 0.0431 98.43)",
+          "oklch(38% 0.0431 98.43)",
+          "oklch(49% 0.0431 98.43)",
+          "oklch(61% 0.0431 98.43)",
+          "oklch(72% 0.0431 98.43)",
+          "oklch(84% 0.0431 98.43)",
+          "oklch(95% 0.0431 98.43)"
+        ]
+      },
+      "header-green": {
+        "role": "secondary",
+        "displayName": "Header Green",
+        "tonalRamp": [
+          "oklch(15% 0.0531 139.98)",
+          "oklch(26% 0.0531 139.98)",
+          "oklch(38% 0.0531 139.98)",
+          "oklch(49% 0.0531 139.98)",
+          "oklch(61% 0.0531 139.98)",
+          "oklch(72% 0.0531 139.98)",
+          "oklch(84% 0.0531 139.98)",
+          "oklch(95% 0.0531 139.98)"
+        ]
+      },
+      "health-leaf": {
         "role": "tertiary",
-        "displayName": "Health Coral",
+        "displayName": "Health Leaf",
         "tonalRamp": [
-          "oklch(15% 0.1274 33.89)",
-          "oklch(26% 0.1274 33.89)",
-          "oklch(38% 0.1274 33.89)",
-          "oklch(49% 0.1274 33.89)",
-          "oklch(61% 0.1274 33.89)",
-          "oklch(72% 0.1274 33.89)",
-          "oklch(84% 0.1274 33.89)",
-          "oklch(95% 0.1274 33.89)"
+          "oklch(15% 0.1101 140.02)",
+          "oklch(26% 0.1101 140.02)",
+          "oklch(38% 0.1101 140.02)",
+          "oklch(49% 0.1101 140.02)",
+          "oklch(61% 0.1101 140.02)",
+          "oklch(72% 0.1101 140.02)",
+          "oklch(84% 0.1101 140.02)",
+          "oklch(95% 0.1101 140.02)"
         ]
       },
-      "stamina-leaf": {
+      "stamina-blue": {
         "role": "secondary",
-        "displayName": "Stamina Leaf",
+        "displayName": "Stamina Blue",
         "tonalRamp": [
-          "oklch(15% 0.1194 137.17)",
-          "oklch(26% 0.1194 137.17)",
-          "oklch(38% 0.1194 137.17)",
-          "oklch(49% 0.1194 137.17)",
-          "oklch(61% 0.1194 137.17)",
-          "oklch(72% 0.1194 137.17)",
-          "oklch(84% 0.1194 137.17)",
-          "oklch(95% 0.1194 137.17)"
+          "oklch(15% 0.0776 217.57)",
+          "oklch(26% 0.0776 217.57)",
+          "oklch(38% 0.0776 217.57)",
+          "oklch(49% 0.0776 217.57)",
+          "oklch(61% 0.0776 217.57)",
+          "oklch(72% 0.0776 217.57)",
+          "oklch(84% 0.0776 217.57)",
+          "oklch(95% 0.0776 217.57)"
         ]
       },
-      "experience-mint": {
+      "experience-leaf": {
         "role": "secondary",
-        "displayName": "Experience Mint",
+        "displayName": "Experience Leaf",
         "tonalRamp": [
-          "oklch(15% 0.0846 151.81)",
-          "oklch(26% 0.0846 151.81)",
-          "oklch(38% 0.0846 151.81)",
-          "oklch(49% 0.0846 151.81)",
-          "oklch(61% 0.0846 151.81)",
-          "oklch(72% 0.0846 151.81)",
-          "oklch(84% 0.0846 151.81)",
-          "oklch(95% 0.0846 151.81)"
+          "oklch(15% 0.1416 128.41)",
+          "oklch(26% 0.1416 128.41)",
+          "oklch(38% 0.1416 128.41)",
+          "oklch(49% 0.1416 128.41)",
+          "oklch(61% 0.1416 128.41)",
+          "oklch(72% 0.1416 128.41)",
+          "oklch(84% 0.1416 128.41)",
+          "oklch(95% 0.1416 128.41)"
         ]
       },
-      "evolved-mint": {
-        "role": "secondary",
-        "displayName": "Evolved Mint",
+      "ultimate-gold": {
+        "role": "primary",
+        "displayName": "Ultimate Gold",
         "tonalRamp": [
-          "oklch(15% 0.0734 178.68)",
-          "oklch(26% 0.0734 178.68)",
-          "oklch(38% 0.0734 178.68)",
-          "oklch(49% 0.0734 178.68)",
-          "oklch(61% 0.0734 178.68)",
-          "oklch(72% 0.0734 178.68)",
-          "oklch(84% 0.0734 178.68)",
-          "oklch(95% 0.0734 178.68)"
+          "oklch(15% 0.1174 93.04)",
+          "oklch(26% 0.1174 93.04)",
+          "oklch(38% 0.1174 93.04)",
+          "oklch(49% 0.1174 93.04)",
+          "oklch(61% 0.1174 93.04)",
+          "oklch(72% 0.1174 93.04)",
+          "oklch(84% 0.1174 93.04)",
+          "oklch(95% 0.1174 93.04)"
+        ]
+      },
+      "banish-rose": {
+        "role": "tertiary",
+        "displayName": "Banish Rose",
+        "tonalRamp": [
+          "oklch(15% 0.0306 27.76)",
+          "oklch(26% 0.0306 27.76)",
+          "oklch(38% 0.0306 27.76)",
+          "oklch(49% 0.0306 27.76)",
+          "oklch(61% 0.0306 27.76)",
+          "oklch(72% 0.0306 27.76)",
+          "oklch(84% 0.0306 27.76)",
+          "oklch(95% 0.0306 27.76)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Identity lockup",
-        "purpose": "RELIC line at desktop size; WILDS is 102px. Steps down by width and height."
+        "displayName": "display",
+        "purpose": "Desktop ZELDA line; BONK is 112px. Responsive overrides reduce the lockup."
       },
       "headline": {
-        "displayName": "Menu headline",
-        "purpose": "Short Lilita introduction above the menu controls."
+        "displayName": "headline",
+        "purpose": "Menu headline."
       },
       "title": {
-        "displayName": "Upgrade title",
-        "purpose": "Lilita upgrade names."
+        "displayName": "title",
+        "purpose": "Zelda item names in upgrade cards."
+      },
+      "upgrade-heading": {
+        "displayName": "upgrade heading",
+        "purpose": "Lilita upgrade dialog heading."
       },
       "dialog": {
-        "displayName": "Ceremonial heading",
-        "purpose": "Georgia dialog titles; realm announcements also use Georgia."
+        "displayName": "dialog",
+        "purpose": "Georgia headings outside upgrade selection."
       },
       "body": {
-        "displayName": "Interface body",
-        "purpose": "Default bold Nunito interface text."
-      },
-      "introduction": {
-        "displayName": "Menu introduction",
-        "purpose": "Softer supporting menu copy."
+        "displayName": "body",
+        "purpose": "Default heavy Nunito interface text."
       },
       "label": {
-        "displayName": "Category label",
-        "purpose": "Uppercase wanderer-choice legend."
+        "displayName": "label",
+        "purpose": "Tracked uppercase choice and category labels."
       },
       "action": {
-        "displayName": "Primary action",
-        "purpose": "Heavy Nunito primary-button text."
+        "displayName": "action",
+        "purpose": "Heavy Nunito primary-button label."
       }
     },
     "shadows": [
       {
         "name": "panel-shadow",
-        "value": "0 24px 72px #102b2a66",
-        "purpose": "Structural shadow under parchment dialogs; source is --panel-shadow."
+        "value": "0 22px 65px #1b23465e",
+        "purpose": "Parchment dialog shadow from the final --panel-shadow override."
       },
       {
-        "name": "primary-action",
-        "value": "0 6px 20px #17382f26",
-        "purpose": "Soft lift under gold primary actions."
+        "name": "porcelain-panel",
+        "value": "0 6px 22px #20333830",
+        "purpose": "Identity and timer surfaces."
       },
       {
-        "name": "hud-text",
-        "value": "0 2px 7px #18382a66",
-        "purpose": "Secondary polish on backed HUD text; never a substitute for dark backing."
+        "name": "weapon-slot",
+        "value": "0 4px 15px #24334a26",
+        "purpose": "Weapon-loadout slot separation."
+      },
+      {
+        "name": "upgrade-card",
+        "value": "0 4px 17px #28385520",
+        "purpose": "White choice-card elevation."
+      },
+      {
+        "name": "minimap",
+        "value": "drop-shadow(0 4px 10px #19223a44)",
+        "purpose": "Circular minimap silhouette."
       }
     ],
     "motion": [
@@ -326,9 +392,14 @@
         "purpose": "Menu vignette fades when play begins."
       },
       {
+        "name": "ultimate-charge",
+        "value": "stroke-dashoffset .15s",
+        "purpose": "Ring offset is 170 × (1 - energy / 100). Ready at full charge."
+      },
+      {
         "name": "reduced-motion",
         "value": "@media(prefers-reduced-motion:reduce)",
-        "purpose": "Disable CSS transitions and animations; app also suppresses camera shake and floating damage text. World rendering continues."
+        "purpose": "CSS transitions and animations stop. Camera shake and floating damage text are suppressed; world rendering continues."
       }
     ],
     "breakpoints": [
@@ -341,16 +412,20 @@
         "value": "560px"
       },
       {
-        "name": "short-wide",
-        "value": "(max-height:700px) and (min-width:561px)"
+        "name": "touch-capability",
+        "value": "(hover:none), (pointer:coarse)"
       },
       {
-        "name": "short-mobile",
+        "name": "short-height",
+        "value": "(max-height:700px)"
+      },
+      {
+        "name": "legacy-short-mobile",
         "value": "(max-height:640px) and (max-width:560px)"
       },
       {
-        "name": "touch-capability",
-        "value": "(hover:none), (pointer:coarse)"
+        "name": "narrow-mobile",
+        "value": "379px"
       }
     ]
   },
@@ -361,7 +436,7 @@
       "refersTo": "button-primary",
       "description": "Gold start, resume, and retry actions.",
       "html": "<button class=\"ds-primary\"><span>Begin adventure</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h16m-6-6 6 6-6 6\"/></svg></button>",
-      "css": ".ds-primary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-primary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-primary:active:not(:disabled){transform:translateY(2px)}.ds-primary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}.ds-primary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:0;border-radius:8px;background:var(--gold,#e6c779);color:#263d32;padding:14px 22px;font-size:15px;font-weight:900;box-shadow:0 6px 20px #17382f26}.ds-primary:hover{background:#f1d797}.ds-primary svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
+      "css": ".ds-primary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-primary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-primary:active:not(:disabled){transform:translateY(2px)}.ds-primary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}.ds-primary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:0;border-radius:8px;background:var(--gold,#edca76);color:#263d32;padding:14px 22px;font-size:15px;font-weight:900;box-shadow:0 6px 20px #17382f26}.ds-primary:hover{background:#f1d797}.ds-primary svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
     },
     {
       "name": "Secondary Button",
@@ -369,7 +444,7 @@
       "refersTo": "button-secondary",
       "description": "Spruce confirmation action within parchment dialogs.",
       "html": "<button class=\"ds-secondary\">Ready to wander</button>",
-      "css": ".ds-secondary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-secondary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-secondary:active:not(:disabled){transform:translateY(2px)}.ds-secondary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}.ds-secondary{padding:11px 20px;background:var(--ink,#233e36);color:var(--cream,#fff5d8);border:0;border-radius:7px;font-size:14px}.ds-secondary:hover{background:#426c56}"
+      "css": ".ds-secondary{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-secondary:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-secondary:active:not(:disabled){transform:translateY(2px)}.ds-secondary:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}.ds-secondary{padding:11px 20px;background:var(--ink,#29283e);color:var(--cream,#fffdf4);border:0;border-radius:7px;font-size:14px}.ds-secondary:hover{background:#426c56}"
     },
     {
       "name": "Text Button",
@@ -382,34 +457,18 @@
     {
       "name": "Utility Icon Button",
       "kind": "button",
-      "refersTo": "button-icon",
-      "description": "Named circular sound, help, fullscreen, and pause controls.",
+      "refersTo": "button-icon-playing",
+      "description": "Dark indigo utility control used at the lower right during play.",
       "html": "<button class=\"ds-icon\" aria-label=\"How to play\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9 9c0-4 7-4 6 0-1 2-3 1-3 5m0 3v.1\"/></svg></button>",
-      "css": ".ds-icon{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-icon:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-icon:active:not(:disabled){transform:translateY(2px)}.ds-icon:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-icon{transition:none}}.ds-icon{width:38px;height:38px;border:1px solid #fff4d744;border-radius:50%;background:#21423c80;color:var(--cream,#fff5d8);display:grid;place-items:center}.ds-icon:hover{background:#365950}.ds-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
-    },
-    {
-      "name": "Wanderer Choice",
-      "kind": "button",
-      "refersTo": "hero-choice",
-      "description": "Parchment selected state for a native wanderer-choice button.",
-      "html": "<button class=\"ds-hero\" aria-pressed=\"true\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m14 4 6-1-1 6-9 9-4-4Z\"/><path d=\"m4 12 8 8M3 21l5-5\"/></svg><b>Ari</b><small>Wayfarer</small></button>",
-      "css": ".ds-hero{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-hero:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-hero:active:not(:disabled){transform:translateY(2px)}.ds-hero:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-hero{transition:none}}.ds-hero{width:106px;height:80px;border:1px solid #dfdfb742;border-radius:10px;background:#1b423b70;color:var(--cream,#fff5d8);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px}.ds-hero:hover{background:#335e50}.ds-hero b{font-size:13px}.ds-hero small{font-size:9px;font-weight:700;color:#dfdec8}.ds-hero svg{color:var(--gold,#e6c779);margin-bottom:3px}.ds-hero[aria-pressed=true]{background:var(--paper,#f4efd9);color:var(--ink,#233e36);border-color:var(--paper,#f4efd9)}.ds-hero[aria-pressed=true] svg{color:#4b7e6b}.ds-hero[aria-pressed=true] small{color:#5c6c52}.ds-hero svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
+      "css": ".ds-icon{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-icon:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-icon:active:not(:disabled){transform:translateY(2px)}.ds-icon:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-icon{transition:none}}.ds-icon{width:38px;height:38px;border:1px solid #fff8e0aa;border-radius:50%;background:#292c46df;color:var(--cream,#fffdf4);display:grid;place-items:center}.ds-icon:hover{background:#365950}.ds-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
     },
     {
       "name": "Upgrade Choice",
       "kind": "card",
       "refersTo": "upgrade-choice",
-      "description": "Whole-card action with category, title, description, rank, and shortcut.",
-      "html": "<button class=\"ds-upgrade\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m14 4 6-1-1 6-9 9-4-4Z\"/><path d=\"m4 12 8 8M3 21l5-5\"/></svg><kbd>1</kbd><span class=\"ds-kind\">NEW WEAPON</span><h3>Rune blade</h3><p>A spectral blade seeks the nearest enemy.</p><span class=\"ds-rank\">RANK 1</span></button>",
-      "css": ".ds-upgrade{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-upgrade:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-upgrade:active:not(:disabled){transform:translateY(2px)}.ds-upgrade:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-upgrade{transition:none}}.ds-upgrade{border:1px solid #b9c4a7;border-radius:9px;background:#e9ead5;color:var(--ink,#233e36);min-height:215px;width:240px;padding:20px 17px;position:relative;text-align:left;display:flex;flex-direction:column;align-items:flex-start}.ds-upgrade:hover{background:#dfe7cd;border-color:#5a8573;transform:translateY(-3px)}.ds-upgrade>svg{color:#467c6b;margin-bottom:20px}.ds-kind{font-size:8px;letter-spacing:1.6px;color:#5d705c}.ds-upgrade h3{font-family:var(--display,Lilita,Georgia,serif);font-size:23px;font-weight:400;margin:7px 0 8px}.ds-upgrade p{font-size:11px;font-weight:700;line-height:1.55;margin:0;color:#536852}.ds-rank{margin-top:auto;padding-top:14px;font-size:9px;color:#6c794f}.ds-upgrade kbd{position:absolute;top:17px;right:15px;border:1px solid #acb49a;border-radius:4px;padding:3px 5px;font:800 9px var(--body,Nunito,sans-serif);color:#6d7b5e}.ds-upgrade.ds-evolution{background:#dce7ce;border-color:#74a48d}@media(max-width:560px){.ds-upgrade{width:100%;min-height:96px;display:grid;grid-template-columns:32px 1fr;column-gap:13px;padding:13px 16px}.ds-upgrade>svg{grid-column:1;grid-row:1/5;width:28px;height:28px;margin:10px 0 0}.ds-kind,.ds-upgrade h3,.ds-upgrade p,.ds-rank{grid-column:2}.ds-upgrade h3{font-size:20px;margin:3px 0}.ds-upgrade p{font-size:10px}.ds-rank{padding-top:5px;font-size:8px}}.ds-upgrade svg{width:35px;height:35px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}@media(max-width:560px){.ds-upgrade>svg{width:28px;height:28px}}"
-    },
-    {
-      "name": "Parchment Dialog Surface",
-      "kind": "custom",
-      "refersTo": "dialog",
-      "description": "Visual specimen of the native dialog material; production retains dialog semantics and modal behavior.",
-      "html": "<section class=\"ds-dialog\" aria-label=\"Pause dialog visual specimen\"><span class=\"ds-ornament\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m12 2 7 10-7 10-7-10Z\"/><path d=\"m5 12 7-4 7 4-7 4Z\"/></svg></span><h2>A moment of quiet.</h2><p>The wilds will wait.</p></section>",
-      "css": ".ds-dialog{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;border:0;border-radius:14px;background:var(--paper,#f4efd9);color:var(--ink,#233e36);padding:38px;box-shadow:var(--panel-shadow,0 24px 72px #102b2a66);max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overflow:auto;text-align:center;touch-action:pan-y}.ds-dialog h2{font-family:Georgia,serif;font-weight:400;font-size:32px;letter-spacing:-.7px;margin:12px 0}.ds-dialog p{color:#5a6b5b;font-size:13px;line-height:1.6;margin:10px auto 26px}.ds-ornament{color:#8c793e;display:inline-flex;justify-content:center}.ds-ornament svg{width:31px;height:31px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
+      "description": "White native choice card with a colored header, Zelda item, keyboard shortcut, and rank.",
+      "html": "<button class=\"ds-upgrade\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m14 4 6-1-1 6-9 9-4-4Z\"/><path d=\"m4 12 8 8M3 21l5-5\"/></svg><kbd>1</kbd><span class=\"ds-kind\">NEW WEAPON</span><h3>Master Sword</h3><p>A sword beam seeks the nearest enemy.</p><span class=\"ds-rank\">RANK 1</span></button>",
+      "css": ".ds-upgrade{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-upgrade:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-upgrade:active:not(:disabled){transform:translateY(2px)}.ds-upgrade:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-upgrade{transition:none}}.ds-upgrade{border:1px solid #b9c4a7;border-radius:9px;background:#e9ead5;color:var(--ink,#29283e);min-height:215px;width:240px;padding:20px 17px;position:relative;text-align:left;display:flex;flex-direction:column;align-items:flex-start}.ds-upgrade:hover{background:#dfe7cd;border-color:#5a8573;transform:translateY(-3px)}.ds-upgrade>svg{color:#467c6b;margin-bottom:20px}.ds-kind{font-size:8px;letter-spacing:1.6px;color:#5d705c}.ds-upgrade h3{font-family:var(--display,Lilita,Georgia,serif);font-size:23px;font-weight:400;margin:7px 0 8px}.ds-upgrade p{font-size:11px;font-weight:700;line-height:1.55;margin:0;color:#536852}.ds-rank{margin-top:auto;padding-top:14px;font-size:9px;color:#6c794f}.ds-upgrade kbd{position:absolute;top:17px;right:15px;border:1px solid #acb49a;border-radius:4px;padding:3px 5px;font:800 9px var(--body,Nunito,sans-serif);color:#6d7b5e}.ds-upgrade.ds-evolution{background:#dce7ce;border-color:#74a48d}@media(max-width:560px){.ds-upgrade{width:100%;min-height:96px;display:grid;grid-template-columns:32px 1fr;column-gap:13px;padding:13px 16px}.ds-upgrade>svg{grid-column:1;grid-row:1/5;width:28px;height:28px;margin:10px 0 0}.ds-kind,.ds-upgrade h3,.ds-upgrade p,.ds-rank{grid-column:2}.ds-upgrade h3{font-size:20px;margin:3px 0}.ds-upgrade p{font-size:10px}.ds-rank{padding-top:5px;font-size:8px}}.ds-upgrade svg{width:35px;height:35px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}@media(max-width:560px){.ds-upgrade>svg{width:28px;height:28px}}.ds-upgrade{border:0;box-shadow:0 4px 17px #28385520;background:#fff;border-radius:15px;overflow:hidden;padding-top:86px;min-height:260px}.ds-upgrade>svg{position:absolute;left:0;right:0;top:0;width:100%;height:73px;padding:17px;background:#b8d1e5;color:#3a628b;margin:0}.ds-upgrade:nth-child(2)>svg{background:#ded8b8;color:#766235}.ds-upgrade:nth-child(3)>svg{background:#c4dfbe;color:#4a7653}.ds-upgrade:hover{background:#fbf8eb}.ds-upgrade h3{font-size:24px}.ds-kind{color:#626079}.ds-upgrade p{color:#5a5a70;font-size:12px}.ds-upgrade kbd{z-index:1;background:#ffffffd9;color:#45445e;border:0}.ds-rank{color:#65617b}.ds-banish-mode .ds-upgrade{outline:2px solid #cb8e82}@media(max-width:560px){.ds-upgrade{min-height:100px;padding:13px 14px;grid-template-columns:38px 1fr}.ds-upgrade>svg{position:static;width:34px;height:47px;padding:5px;border-radius:7px;margin:7px 0}.ds-upgrade h3{font-size:21px}.ds-upgrade p{font-size:10px}}"
     },
     {
       "name": "Realm Map Action",
@@ -417,51 +476,70 @@
       "refersTo": "map-action",
       "description": "Compact map entry point with authored icon and keyboard hint.",
       "html": "<nav aria-label=\"Realm navigation\"><button class=\"ds-map\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m3 5 6-2 6 3 6-2v16l-6 2-6-3-6 2Zm6-2v16m6-13v16\"/></svg><span>Realm map</span><kbd>M</kbd></button></nav>",
-      "css": ".ds-map{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-map:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-map:active:not(:disabled){transform:translateY(2px)}.ds-map:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-map{transition:none}}.ds-map{border:1px solid #fff2d044;background:#1b403baa;color:var(--cream,#fff5d8);border-radius:7px;display:flex;align-items:center;gap:9px;padding:9px 11px;font-size:11px}.ds-map:hover{background:#345a4e}.ds-map kbd{font:800 9px var(--body,Nunito,sans-serif);display:inline-flex;justify-content:center;align-items:center;border:1px solid #fff2d05e;border-radius:4px;padding:3px 5px;min-width:20px}@media(pointer:coarse){.ds-map kbd{display:none}}.ds-map svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}"
+      "css": ".ds-map{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-map:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-map:active:not(:disabled){transform:translateY(2px)}.ds-map:disabled{cursor:default;opacity:.5}@media(prefers-reduced-motion:reduce){.ds-map{transition:none}}.ds-map{border:0;background:#fffaf0f5;color:#34334c;border-radius:7px;display:flex;align-items:center;gap:9px;padding:9px 11px;font-size:11px}.ds-map:hover{background:#f1e7ca}.ds-map kbd{font:800 9px var(--body,Nunito,sans-serif);display:inline-flex;justify-content:center;align-items:center;border:1px solid #aaa7bd;border-radius:4px;padding:3px 5px;min-width:20px}@media(pointer:coarse){.ds-map kbd{display:none}}.ds-map svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.ds-map{box-shadow:0 4px 16px #20333820}"
     },
     {
-      "name": "Backed Gameplay Status",
+      "name": "Upgrade Resource Actions",
+      "kind": "button",
+      "refersTo": "upgrade-refresh",
+      "description": "Finite refresh, skip, and banish native actions. Counts and disabled state follow the run.",
+      "html": "<div class=\"ds-upgrade-actions\"><button>Refresh (2) · F</button><button>Skip (2) · X</button><button>Banish (1) · Z</button></div>",
+      "css": ".ds-upgrade-actions{display:flex;justify-content:center;gap:10px;margin-top:19px}.ds-upgrade-actions button{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;cursor:pointer;border:0;border-radius:20px;background:#dceaf4;color:#3c5470;padding:9px 15px;font-size:11px;transition:background .16s,transform .16s,color .16s}.ds-upgrade-actions button:nth-child(2){background:#e9e6dc;color:#5f5b54}.ds-upgrade-actions button:nth-child(3){background:#f4d9d5;color:#894d4d}.ds-upgrade-actions button:hover{cursor:pointer}.ds-upgrade-actions button:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-upgrade-actions button:active:not(:disabled){transform:translateY(2px)}.ds-upgrade-actions button:disabled{opacity:.5;cursor:default}@media(prefers-reduced-motion:reduce){.ds-upgrade-actions button{transition:none}}"
+    },
+    {
+      "name": "Porcelain Identity Status",
       "kind": "custom",
       "refersTo": "hud-panel",
-      "description": "The final dark backing keeps health and realm facts readable over every world.",
-      "html": "<section class=\"ds-hud\" aria-label=\"Game status\"><strong>125 / 125</strong><div class=\"ds-health\"><span></span></div><div class=\"ds-stamina\"><span></span></div><p>Verdant Reach</p></section>",
-      "css": ".ds-hud{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;color:var(--cream,#fff5d8);padding:11px 14px;background:#1b3e35ed;border-radius:9px;width:218px;text-shadow:0 2px 7px #18382a66}.ds-hud strong{font-size:13px}.ds-health{height:9px;margin-top:7px;background:#203f38b3;border:1px solid #fff1cc70;border-radius:7px;overflow:hidden}.ds-health span{display:block;height:100%;width:100%;background:#ed8972;transition:width .15s}.ds-stamina{height:4px;margin-top:5px;border:0;border-radius:7px;background:#193d3999;width:100px;overflow:hidden}.ds-stamina span{display:block;height:100%;width:100%;background:#a8e092}.ds-hud p{font-size:12px;margin:10px 0 0;letter-spacing:.5px}@media(max-width:800px){.ds-hud{width:178px;padding:10px 12px}}@media(max-width:560px){.ds-hud{width:124px;padding:9px 10px}.ds-hud strong{font-size:10px}.ds-hud p{font-size:9px}}@media(prefers-reduced-motion:reduce){.ds-health span{transition:none}}"
+      "description": "Text-and-meter subset of the identity panel. Production also shows the independently drawn hero portrait.",
+      "html": "<section class=\"ds-hud\"><strong>Link</strong><small>Hero of Courage</small><b>100 / 100</b><div class=\"ds-health\"><span></span></div><div class=\"ds-stamina\"><span></span></div><p>Hyrule Field</p></section>",
+      "css": ".ds-hud{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;background:#fffcf4f5;box-shadow:0 6px 22px #20333830;width:218px;padding:12px 15px;border-radius:15px;color:#2c2a42}.ds-hud>strong{font:23px var(--display,Lilita,Georgia,serif);display:block}.ds-hud>small{font-size:9px;color:#5d6178;display:block;margin:4px 0 9px}.ds-hud>b{font-size:10px}.ds-health{height:7px;margin-top:7px;border:1px solid #9896ad;background:#d9dae5;border-radius:7px;overflow:hidden}.ds-health span{display:block;width:100%;height:100%;background:#82b976}.ds-stamina{height:4px;margin-top:5px;background:#d9dae5;width:100px;border-radius:7px;overflow:hidden}.ds-stamina span{display:block;width:100%;height:100%;background:#6db5c9}.ds-hud p{font-size:10px;color:#5b5b74;margin:8px 0 0}@media(max-width:560px){.ds-hud{width:126px;padding:8px 10px;border-radius:12px}.ds-hud>strong{font-size:17px}.ds-hud>small{font-size:7px}.ds-hud p{font-size:8px}}@media(max-width:379px){.ds-hud{width:102px;padding:8px}.ds-hud>strong{font-size:16px}.ds-hud>small{font-size:6.5px}.ds-hud p{font-size:7.5px}}"
+    },
+    {
+      "name": "Charged Ultimate",
+      "kind": "button",
+      "refersTo": "ultimate-button",
+      "description": "Ready-state visual specimen; production ring offset follows charge and activation consumes energy.",
+      "html": "<button class=\"ds-ultimate ds-ready\" aria-label=\"Use Ultimate\"><svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle class=\"ds-ultimate-track\" cx=\"32\" cy=\"32\" r=\"27\"/><circle class=\"ds-ultimate-charge\" cx=\"32\" cy=\"32\" r=\"27\"/></svg><span>R</span><small>GREAT SPIN</small></button>",
+      "css": ".ds-ultimate{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;position:relative;width:79px;height:79px;border:0;background:#34334ce8;border-radius:50%;color:#fffaf0;padding:0;opacity:1;box-shadow:0 4px 13px #20333838;cursor:pointer;transition:background .16s,transform .16s,color .16s}.ds-ultimate>svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}.ds-ultimate-track,.ds-ultimate-charge{fill:none;stroke-width:4;stroke:#9f9db4}.ds-ultimate-charge{stroke:#edd174;stroke-dasharray:170;stroke-dashoffset:170;transition:stroke-dashoffset .15s}.ds-ultimate>span{font:30px var(--display,Lilita,Georgia,serif);display:block;margin-top:2px}.ds-ultimate>small{position:absolute;left:50%;top:-20px;transform:translateX(-50%);white-space:nowrap;font-size:8px;padding:3px 7px;background:#34334ced;border-radius:4px}.ds-ultimate.ds-ready{background:#a88034}.ds-ready .ds-ultimate-charge{stroke:#fff0b1;stroke-dashoffset:0}.ds-ultimate:hover{cursor:pointer}.ds-ultimate:focus-visible{outline:3px solid #75e1cf;outline-offset:5px}.ds-ultimate:active:not(:disabled){transform:translateY(2px)}.ds-ultimate:disabled{cursor:default;opacity:.5}.ds-ultimate:disabled{opacity:1}@media(prefers-reduced-motion:reduce){.ds-ultimate,.ds-ultimate-charge{transition:none}}"
+    },
+    {
+      "name": "Weapon Slot",
+      "kind": "custom",
+      "refersTo": "weapon-slot",
+      "description": "Light loadout card with Zelda weapon name and actual rank. Evolution changes the surface to gold.",
+      "html": "<div class=\"ds-slot\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m14 4 6-1-1 6-9 9-4-4Z\"/><path d=\"m4 12 8 8M3 21l5-5\"/></svg><strong>Master Sword</strong><small>RANK 1</small></div>",
+      "css": ".ds-slot{font-family:var(--body,Nunito,'Trebuchet MS',sans-serif);font-weight:800;width:68px;height:74px;background:#fafaffef;color:#393953;border:0;border-radius:12px;box-shadow:0 4px 15px #24334a26;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}.ds-slot svg{width:24px;height:24px;color:#5485a0;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-slot strong{font-size:8px;max-width:62px;text-align:center;line-height:1.2}.ds-slot small{font-size:8px;letter-spacing:0}.ds-slot.ds-evolved{background:#f7e2a9;color:#614b27}@media(max-width:560px){.ds-slot{width:39px;height:49px;border-radius:8px}.ds-slot svg{width:18px;height:18px}.ds-slot strong{display:none}.ds-slot small{font-size:7px}}"
     }
   ],
   "narrative": {
-    "northStar": "The Wanderer's Field Guide",
-    "overview": "Relic Wilds puts a warm, readable field-guide interface over a full-screen, explorable fantasy world. Parchment choices, aged gold actions, and deep spruce status panels sit beside original low-poly adventurers and cel-shaded landmarks. This metaphor describes the finished implementation; it is an implementation assumption, not a separately approved comp.\n\nThe scene provides atmosphere and depth. Interface ornament stays small: a relic diamond, thin rules, rounded line icons, and compact labels. Six connected original realms express forest, sea, twilight, sky, volcanic, and moon/time settings through distinct geometry, lighting, fog, and landmarks. The visual authority is the running code and its verified desktop and mobile renders.",
+    "northStar": "The Hyrule Survivor Arcade",
+    "overview": "ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Link, Zelda, and Midna appear as outlined pixel billboards in a textured Three.js world. Crisp foliage, stone rims, and three-dimensional landmarks support the compact arenas. The actual Zelda identity replaces the earlier invented-world direction.\n\nLight porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. This named metaphor describes the implementation; code and verified renders are the visual authority, with no separately approved comp.",
     "keyCharacteristics": [
-      "A real Three.js world fills the viewport behind the interface.",
-      "Gold actions and parchment selections remain distinct from spruce status surfaces.",
-      "Friendly display lettering pairs with sturdy, compact control text.",
-      "Native dialogs and visible keyboard focus preserve clear interaction states."
+      "Independently drawn directional pixel characters and foliage inhabit textured 3D space.",
+      "Porcelain status panels contrast with dark action hints and announcements.",
+      "Character identity, minimap, health, weapon ranks, and Ultimate charge stay visible during combat.",
+      "White upgrade cards use colored headers and finite refresh, skip, and banish actions."
     ],
     "rules": [
       {
-        "name": "The Backed Status Rule",
-        "body": "Place persistent gameplay text and realm announcements on the implemented dark backing. Text shadow alone is insufficient over changing terrain.",
+        "name": "The Two Materials Rule",
+        "body": "Use light porcelain for readable status and choice surfaces, and dark indigo backing for action hints and scene announcements.",
         "section": "colors"
-      },
-      {
-        "name": "The Two Voices Rule",
-        "body": "Use Lilita for playful identity and upgrade names, Nunito for controls and facts, and Georgia for the established ceremonial headings.",
-        "section": "typography"
       }
     ],
     "dos": [
-      "**Do** use the running implementation as visual authority; there is no separately approved comp.",
-      "**Do** keep gameplay facts readable on dark backing across all six realms.",
-      "**Do** retain self-hosted type, authored SVG icons, and original characters and geometry.",
-      "**Do** preserve native button activation, visible focus, dialog pause behavior, and touch control space.",
-      "**Do** keep the compact six-realm scope accurate in descriptions and visual extensions."
+      "**Do** preserve the actual Zelda theme and recognizable Link, Zelda, and Midna fan depictions.",
+      "**Do** retain crisp directional sprites, textured ground, sprite foliage, and three-dimensional landmarks.",
+      "**Do** keep porcelain status panels separate from dark backed actions and announcements.",
+      "**Do** connect charge, rank, resource, selection, and disabled visuals to real run state.",
+      "**Do** preserve native control semantics, visible focus, paused dialogs, and mobile control space."
     ],
     "donts": [
-      "**Don't** replace the playable scene with a decorative hero image or a dashboard shell.",
-      "**Don't** place persistent gameplay labels directly over terrain using only text shadow.",
-      "**Don't** substitute franchise characters, logos, or canonical locations for the original world.",
-      "**Don't** imply every location from the inspiration franchises is represented.",
-      "**Don't** let global gameplay shortcuts consume Space or Enter on focused native controls."
+      "**Don't** describe the current game as merely Zelda-inspired or replace its theme with invented names.",
+      "**Don't** replace pixel actors with solid-color primitive character models or blur their texels.",
+      "**Don't** imply complete Zelda maps, complete PokéBonk parity, or verified reference balance formulas.",
+      "**Don't** bundle extracted Nintendo or PokéBonk assets; the implementation uses independently drawn fan artwork.",
+      "**Don't** treat Ultimate charge, finite upgrade resources, or target-lock feedback as decorative controls."
     ]
   }
 }

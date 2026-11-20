@@ -1,31 +1,35 @@
 ---
-name: Relic Wilds
-description: A parchment-and-spruce interface over a living, low-poly fantasy world.
+name: "ZeldaBonk"
+description: "Porcelain survivor-game controls over a textured 3D Zelda world with crisp pixel billboards."
 colors:
-  ink: "#233e36"
-  cream: "#fff5d8"
-  paper: "#f4efd9"
-  gold: "#e6c779"
+  ink: "#29283e"
+  paper: "#fffdf8"
+  cream: "#fffdf4"
+  gold: "#edca76"
   gold-hover: "#f1d797"
   action-ink: "#263d32"
-  hud-backing: "#1b3e35ed"
+  hud-porcelain: "#fffcf4f5"
+  hud-ink: "#2c2a42"
+  navy-action: "#302e48ed"
+  indigo-announcement: "#34324deb"
   focus-mint: "#75e1cf"
-  choice-paper: "#e9ead5"
-  choice-hover: "#dfe7cd"
-  choice-border: "#b9c4a7"
-  choice-copy: "#536852"
-  spruce-hover: "#426c56"
-  health-coral: "#ed8972"
-  stamina-leaf: "#a8e092"
-  experience-mint: "#aee8bc"
-  evolved-mint: "#a4eada"
+  choice-white: "#fff"
+  choice-hover: "#fbf8eb"
+  header-blue: "#b8d1e5"
+  header-sand: "#ded8b8"
+  header-green: "#c4dfbe"
+  health-leaf: "#82b976"
+  stamina-blue: "#6db5c9"
+  experience-leaf: "#aad76f"
+  ultimate-gold: "#edd174"
+  banish-rose: "#f4d9d5"
 typography:
   display:
     fontFamily: "Lilita, Georgia, serif"
-    fontSize: "91px"
+    fontSize: "90px"
     fontWeight: 800
     lineHeight: 0.84
-    letterSpacing: "5px"
+    letterSpacing: "2px"
   headline:
     fontFamily: "Lilita, Georgia, serif"
     fontSize: "26px"
@@ -33,8 +37,13 @@ typography:
     letterSpacing: "0.1px"
   title:
     fontFamily: "Lilita, Georgia, serif"
-    fontSize: "23px"
+    fontSize: "24px"
     fontWeight: 400
+  upgrade-heading:
+    fontFamily: "Lilita, Georgia, serif"
+    fontSize: "38px"
+    fontWeight: 400
+    letterSpacing: "-0.7px"
   dialog:
     fontFamily: "Georgia, serif"
     fontSize: "32px"
@@ -44,11 +53,6 @@ typography:
     fontFamily: "Nunito, 'Trebuchet MS', sans-serif"
     fontSize: "14px"
     fontWeight: 800
-  introduction:
-    fontFamily: "Nunito, 'Trebuchet MS', sans-serif"
-    fontSize: "14px"
-    fontWeight: 700
-    lineHeight: 1.65
   label:
     fontFamily: "Nunito, 'Trebuchet MS', sans-serif"
     fontSize: "10px"
@@ -62,8 +66,10 @@ rounded:
   key: "4px"
   small: "7px"
   button: "8px"
-  card: "9px"
-  choice: "10px"
+  slot: "12px"
+  panel: "15px"
+  timer: "18px"
+  pill: "20px"
   dialog: "14px"
   round: "50%"
 spacing:
@@ -88,161 +94,179 @@ components:
     textColor: "{colors.cream}"
     rounded: "{rounded.small}"
     padding: "11px 20px"
-  button-secondary-hover:
-    backgroundColor: "{colors.spruce-hover}"
   button-text:
     textColor: "#4e6b57"
     padding: "5px 8px"
-  button-icon:
-    backgroundColor: "#21423c80"
+  button-icon-playing:
+    backgroundColor: "#292c46df"
     textColor: "{colors.cream}"
     rounded: "{rounded.round}"
     width: "38px"
     height: "38px"
   hero-choice:
-    backgroundColor: "#1b423b70"
+    backgroundColor: "#243c49c9"
     textColor: "{colors.cream}"
-    rounded: "{rounded.choice}"
+    rounded: "10px"
     width: "106px"
-    height: "80px"
+    height: "112px"
   hero-choice-selected:
-    backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink}"
+    backgroundColor: "#fffaf0"
+    textColor: "#2f3549"
   upgrade-choice:
-    backgroundColor: "{colors.choice-paper}"
+    backgroundColor: "{colors.choice-white}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.card}"
-    padding: "20px 17px"
+    rounded: "{rounded.panel}"
+    padding: "86px 17px 20px"
+  upgrade-refresh:
+    backgroundColor: "#dceaf4"
+    textColor: "#3c5470"
+    rounded: "{rounded.pill}"
+    padding: "9px 15px"
+  upgrade-skip:
+    backgroundColor: "#e9e6dc"
+    textColor: "#5f5b54"
+  upgrade-banish:
+    backgroundColor: "{colors.banish-rose}"
+    textColor: "#894d4d"
   dialog:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
     rounded: "{rounded.dialog}"
     padding: "{spacing.dialog-inset}"
   hud-panel:
-    backgroundColor: "{colors.hud-backing}"
-    textColor: "{colors.cream}"
-    rounded: "{rounded.card}"
-    padding: "11px 14px"
+    backgroundColor: "{colors.hud-porcelain}"
+    textColor: "{colors.hud-ink}"
+    rounded: "{rounded.panel}"
+    padding: "12px 15px"
   map-action:
-    backgroundColor: "#1b403baa"
-    textColor: "{colors.cream}"
+    backgroundColor: "#fffaf0f5"
+    textColor: "#34334c"
     rounded: "{rounded.small}"
     padding: "9px 11px"
+  ultimate-button:
+    backgroundColor: "#34334ce8"
+    textColor: "#fffaf0"
+    rounded: "{rounded.round}"
+    width: "79px"
+    height: "79px"
+  weapon-slot:
+    backgroundColor: "#fafaffef"
+    textColor: "#393953"
+    rounded: "{rounded.slot}"
+    width: "68px"
+    height: "74px"
 ---
 
-# Design System: Relic Wilds
+# Design System: ZeldaBonk
 
 ## Overview
 
-**Creative North Star: "The Wanderer's Field Guide"**
+**Creative North Star: "The Hyrule Survivor Arcade"**
 
-Relic Wilds puts a warm, readable field-guide interface over a full-screen, explorable fantasy world. Parchment choices, aged gold actions, and deep spruce status panels sit beside original low-poly adventurers and cel-shaded landmarks. This metaphor describes the finished implementation; it is an implementation assumption, not a separately approved comp.
+ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Link, Zelda, and Midna appear as outlined pixel billboards in a textured Three.js world. Crisp foliage, stone rims, and three-dimensional landmarks support the compact arenas. The actual Zelda identity replaces the earlier invented-world direction.
 
-The scene provides atmosphere and depth. Interface ornament stays small: a relic diamond, thin rules, rounded line icons, and compact labels. Six connected original realms express forest, sea, twilight, sky, volcanic, and moon/time settings through distinct geometry, lighting, fog, and landmarks. The visual authority is the running code and its verified desktop and mobile renders.
+Light porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. This named metaphor describes the implementation; code and verified renders are the visual authority, with no separately approved comp.
 
 **Key Characteristics:**
 
-- A real Three.js world fills the viewport behind the interface.
-- Gold actions and parchment selections remain distinct from spruce status surfaces.
-- Friendly display lettering pairs with sturdy, compact control text.
-- Native dialogs and visible keyboard focus preserve clear interaction states.
+- Independently drawn directional pixel characters and foliage inhabit textured 3D space.
+- Porcelain status panels contrast with dark action hints and announcements.
+- Character identity, minimap, health, weapon ranks, and Ultimate charge stay visible during combat.
+- White upgrade cards use colored headers and finite refresh, skip, and banish actions.
 
 ## Colors
 
-The palette combines aged gold, warm parchment, deep spruce, and restrained mint and coral signals. Frontmatter owns exact reusable values; the sidecar adds previews and metadata. Its eight-step OKLCH ramps are synthesized panel previews, not additional production tokens.
+The final ZeldaBonk CSS override owns the current interface palette. Frontmatter records reused values; synthesized eight-step OKLCH ramps in the sidecar are panel previews, not new production tokens.
 
 ### Primary
 
-- **Aged Gold** (`gold`, `gold-hover`): start, resume, retry, relic accents, and selected importance.
-- **Action Spruce** (`action-ink`): strong text on gold actions.
+- **Adventure Gold**: primary actions and identity accents; **Ultimate Gold** independently represents stored charge.
+- **Action Ink**: the primary button retains its existing dark green text value.
 
 ### Secondary
 
-- **Deep Spruce** (`ink`, `spruce-hover`, `hud-backing`): parchment text, secondary actions, and dark status backing.
-- **Focus Mint** (`focus-mint`): visible keyboard focus. Experience and evolved-weapon mint remain separate semantic signals.
+- **Midnight Indigo**: core text, dark actions, and announcements. Light HUD panels use the dedicated dark HUD text.
+- **Choice Blue, Sand, and Green**: three positional upgrade headers. These colors distinguish the displayed choices, not weapon rarity.
+- **Focus Mint**: the inherited visible keyboard-focus ring.
 
 ### Tertiary
 
-- **Health Coral** (`health-coral`): health fill. Stamina uses leaf green; experience uses mint. Keep these meanings stable.
+- **Health Leaf**, **Stamina Blue**, and **Experience Leaf**: distinct persistent meter meanings.
+- **Banish Rose**: the destructive run-choice resource; banish mode also outlines the cards.
 
 ### Neutral
 
-- **Warm Cream** (`cream`): text over dark controls and status panels.
-- **Field Parchment** (`paper`): dialogs and selected wanderers.
-- **Choice Parchment** (`choice-paper`, `choice-hover`, `choice-border`, `choice-copy`): upgrade surfaces, borders, and explanatory copy.
+- **Paper**, **Cream**, and **HUD Porcelain**: dialog surfaces, light text, and near-opaque status panels.
+- **Choice White** and **Choice Hover**: card body and hover feedback.
 
-**The Backed Status Rule.** Place persistent gameplay text and realm announcements on the implemented dark backing. Text shadow alone is insufficient over changing terrain.
+**The Two Materials Rule.** Use light porcelain for readable status and choice surfaces, and dark indigo backing for action hints and scene announcements.
 
-Realm-specific sky, ground, fog, and accent values belong to the world definitions in `core.js`. Preserve their distinct identities rather than extending the interface palette into every mesh.
+World palettes live in the realm definitions and procedural art. Preserve six distinct arena identities without treating every terrain texel as an interface token.
 
 ## Typography
 
-Lilita is the self-hosted display face; Nunito is the self-hosted interface face. The files are `assets/lilita-one.ttf` and `assets/nunito-extra-bold.ttf`. Keep Georgia for the quieter dialog headings and realm announcements already using it.
+Keep self-hosted Lilita for the title, character names, timer, upgrade titles, and upgrade heading. Keep self-hosted Nunito for controls, counts, descriptions, and keyboard hints. Georgia remains the established face for other dialog headings and realm announcements.
 
-The frontmatter records desktop roles. The two-line title pairs a large RELIC with a larger WILDS; its sizes step down across width and height breakpoints. Menu headlines use Lilita; upgrade titles use the smaller title role. Nunito remains heavy enough for compact buttons, counts, and instructions. Letter-spaced uppercase labels mark categories rather than paragraphs.
-
-**The Two Voices Rule.** Use Lilita for playful identity and upgrade names, Nunito for controls and facts, and Georgia for the established ceremonial headings.
+Frontmatter records desktop roles. The ZELDA title line uses the display role; BONK is larger at 112px with 4px tracking. The final width and short-height overrides reduce both lines. Upgrade titles are 24px on desktop and 21px on mobile; upgrade headings reduce from 38px to 28px. Do not infer a new modular type scale from these observed values.
 
 ## Layout
 
-This is an experience, with a fixed full-viewport canvas and overlay controls. The desktop menu occupies a narrow left column with open scenery to its right. The topbar and footer frame the world. During play, health sits upper left, time and objective upper center, map and shrines upper right, and loadout and control hints below.
+A fixed canvas fills the viewport. The menu occupies a narrow left column, leaving a wide world preview. During play, character identity and health sit upper left, timing upper center, and the circular minimap upper right. Weapon slots and the charged Ultimate sit below. Utility controls move to the lower right during play.
 
-Width breakpoints are 800px and 560px. Short-window adjustments apply at heights of 700px on wider screens and 640px on narrow screens. Below 560px, the menu uses 24px side margins, upgrade choices form one column, map nodes compact, and dialogs stay within the viewport with internal scrolling. Preserve the final HUD overrides: health panels are 218px wide on desktop, 178px at the intermediate width, and 124px on mobile.
+Width breakpoints are 800px, 560px, and a final narrow-screen adjustment at 379px. At mobile width, the identity panel is 126px wide, timer panel 109px, and minimap 91px; desktop minimap is 156px. At widths up to 379px, the profile, timer, and minimap reduce to 102px, 90px, and 78px; the joystick reduces to 96px. Upgrade choices switch from three columns to a single column. Dialogs retain bounded internal scrolling. The last short-height override compacts title and hero choices below 700px.
 
-Coarse pointers receive a joystick and separate jump/glide and dash controls. Loadout and interaction prompts move above that control zone. These changes follow pointer capability as well as viewport width. Spacing tokens describe repeated observed measurements, not a newly imposed scale.
+Touch controls reserve the lower corners for movement, glide, and dash. Mobile loadout moves above them; Ultimate sits near the lower center. Pointer capability controls keyboard-hint visibility. Dragging the arena orbits the camera; the wheel changes zoom; movement follows camera orientation.
 
 ## Elevation & Depth
 
-The world carries physical depth through perspective, toon materials, low-sided geometry, soft directional shadows, atmospheric fog, and elevated islands or landmarks. The interface uses restrained structural depth: an ambient dialog shadow, a small primary-action shadow, and dark translucent backing. The menu vignette makes text readable and fades during play.
+The main depth language comes from pixel billboards placed in textured 3D terrain, raised stone rims, landmarks, perspective, fog, and cast shadows. Hero art uses four facing directions and two walk frames on a 48-by-64 canvas. Nearest filtering and disabled mipmaps preserve crisp source pixels. Terrain tiles use repeated procedural textures.
 
-The sidecar records exact shadow and transition values. Controls depress by 2px on activation; upgrade cards lift by 3px on hover. Honor reduced motion: CSS transitions and animations stop, while camera shake and floating damage numbers are suppressed. Continuous world rendering remains active.
+The interface uses soft structural shadows beneath porcelain panels, weapon slots, buttons, and dialogs. The minimap has a circular silhouette and drop shadow. Keep dark backed announcements distinct from these pale surfaces. Buttons depress by 2px; upgrade cards lift by 3px on hover. Reduced-motion handling disables CSS transitions and camera shake, while the world continues rendering.
 
 ## Shapes
 
-Soft rectangular controls and parchment panels contrast with faceted world geometry. Small keycaps, compact buttons, choice cards, and dialogs use distinct observed radius steps from frontmatter. Utility buttons, map orbs, and touch controls are circles. Borders remain thin; focus rings sit clearly outside controls.
+Rounded porcelain panels, pill-shaped upgrade-resource controls, circular minimap and Ultimate, and compact rounded weapon slots define the UI. The floating health track follows the character. Pixel actors retain hard texel edges rather than smooth vector or low-poly character replacements.
 
-The authored SVG icon family uses a 24-unit viewBox, rounded caps and joins, a 1.8 stroke, and mostly unfilled paths. Keep icons consistent with the relic, sword, shield, map, and realm motifs already present.
+The authored line SVG icons retain their 24-unit viewBox, 1.8 stroke, and rounded caps and joins. Use the existing icon family for weapons and interface actions; preserve independently drawn sprite portraits for the playable characters.
 
 ## Components
 
-### Buttons
+### Actions and hero choices
 
-Gold primary actions use strong spruce text, an arrow at the trailing edge, and a desktop minimum height of 54px. Secondary actions use spruce and cream. Text actions are quiet and underlined. Circular utility buttons use translucent spruce, visible borders, accessible names, and a compact icon. Preserve hover, visible focus, pressed, and disabled treatments.
+Gold primary actions retain their arrow, heavy Nunito label, and desktop minimum height of 54px. Secondary actions use the current ink token. Text actions and visible focus retain their inherited treatments. Playing utility buttons use dark indigo backing. The three native hero-choice buttons show pixel portraits, Lilita names, role labels, and a parchment selected state with `aria-pressed`.
 
-### Wanderer choices
+### Upgrade choices
 
-Three native buttons act as a single visual choice group. The selected button changes to parchment with dark text and reports `aria-pressed`. Each choice keeps its icon, name, role, and separate perk line. Do not use color as the only indication of selection.
+White cards carry blue, sand, and green icon headers by position. Each full-card button retains its shortcut, category, item name, description, and rank. Master Sword, Din's Fire, and Light Arrows belong to the actual Zelda theme. Evolution retains its implemented state treatment. Mobile cards use compact icon tiles and horizontal content.
 
-### Upgrade cards
+Refresh, Skip, and Banish use separate pastel pills, resource counts, and disabled states. Banish mode outlines choice cards and changes the instruction. Keep these actions finite and preserve their run-state effects.
 
-Three parchment action cards form the desktop choice row. Each card includes an icon, keyboard shortcut, category, Lilita title, description, and rank. Evolution has its own green-tinted surface. On narrow screens, keep the full card clickable while arranging its contents horizontally in a single-column list.
+### Gameplay HUD
 
-### Dialogs
+Porcelain identity and timer panels use indigo text. The circular minimap shows nearby threats, gates, and the shrine. A floating health bar follows the hero. Light weapon slots show names, icons, and ranks; evolved slots become gold-tinted. Streak feedback uses outlined light display text.
 
-Native `dialog` surfaces pause the simulation and use parchment, centered serif headings, a dark backdrop, and bounded internal scrolling. Map, help, pause, upgrade, and result surfaces share this language. Preserve native Space and Enter activation. Escape resumes pause, closes auxiliary dialogs through their owning flow, and cannot dismiss mandatory upgrade or result choices.
+The Ultimate is a real charge ring, not decoration: stroke offset tracks energy, the button remains unavailable until charged, and ready state changes its surface and ring. Link, Midna, and Zelda receive Great Spin, Fused Shadow, and Triforce Light labels. Keep the accessible charge label and visible readiness state synchronized.
 
-### Realm navigation
+### Dialogs and realm navigation
 
-The map uses six colored circular nodes and dashed connections. The current realm has an extra spruce outline and a text status. Menu nodes preview worlds; during a run, travel occurs at world gates. Keep this distinction visible in the map's instructions.
+Native dialogs pause simulation, keep focus handling, and preserve Space and Enter activation. Required upgrade and result choices cannot be dismissed with Escape. The realm map uses six named circular nodes with dashed connections, current-state outline, and text status. Menu nodes preview arenas; in-run travel occurs through world gates using E or the touch Activate action.
 
-### Gameplay status and touch controls
-
-Persistent health, timer, shrine, control-hint, and boss text use dark backing. Health and stamina remain separate tracks; experience spans the top edge; loadout slots show weapon ranks and evolved state. Transient messages and realm announcements share the same readable material. Touch controls use large circular hit areas and separate movement from actions.
+The connected arenas represent Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Landmark depictions include the Great Deku Tree, a red sailing boat, a winged goddess statue, gloom fissures, a clock tower, and an expressive moon. They are compact arena interpretations, not complete canonical maps.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use the running implementation as visual authority; there is no separately approved comp.
-- **Do** keep gameplay facts readable on dark backing across all six realms.
-- **Do** retain self-hosted type, authored SVG icons, and original characters and geometry.
-- **Do** preserve native button activation, visible focus, dialog pause behavior, and touch control space.
-- **Do** keep the compact six-realm scope accurate in descriptions and visual extensions.
+- **Do** preserve the actual Zelda theme and recognizable Link, Zelda, and Midna fan depictions.
+- **Do** retain crisp directional sprites, textured ground, sprite foliage, and three-dimensional landmarks.
+- **Do** keep porcelain status panels separate from dark backed actions and announcements.
+- **Do** connect charge, rank, resource, selection, and disabled visuals to real run state.
+- **Do** preserve native control semantics, visible focus, paused dialogs, and mobile control space.
 
 ### Don't:
 
-- **Don't** replace the playable scene with a decorative hero image or a dashboard shell.
-- **Don't** place persistent gameplay labels directly over terrain using only text shadow.
-- **Don't** substitute franchise characters, logos, or canonical locations for the original world.
-- **Don't** imply every location from the inspiration franchises is represented.
-- **Don't** let global gameplay shortcuts consume Space or Enter on focused native controls.
+- **Don't** describe the current game as merely Zelda-inspired or replace its theme with invented names.
+- **Don't** replace pixel actors with solid-color primitive character models or blur their texels.
+- **Don't** imply complete Zelda maps, complete PokéBonk parity, or verified reference balance formulas.
+- **Don't** bundle extracted Nintendo or PokéBonk assets; the implementation uses independently drawn fan artwork.
+- **Don't** treat Ultimate charge, finite upgrade resources, or target-lock feedback as decorative controls.

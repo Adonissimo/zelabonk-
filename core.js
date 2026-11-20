@@ -1,4 +1,4 @@
-/* RELIC WILDS simulation. Rendering and browser state live in app.js. */
+/* ZELDABONK simulation. Rendering and browser state live in app.js. */
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -6,31 +6,32 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const TAU = Math.PI * 2;
+  const ARENA_LIMIT = 26;
   const HEROES = {
-    pip: { name: 'Ari', title: 'The wayfarer', hp: 100, speed: 6, weapon: 'ember', color: '#72cfc8', perk: '+20% damage · Rune blade', damage: 1.2 },
-    pebble: { name: 'Rook', title: 'The stonebound', hp: 150, speed: 5.1, weapon: 'orbit', color: '#b7b8bd', perk: '+50 health · Orbiting relics', damage: 1 },
-    sprig: { name: 'Fern', title: 'The wildling', hp: 85, speed: 7, weapon: 'leaf', color: '#b3ce78', perk: 'Fast movement · Wind blades', damage: 1 }
+    link: { name: 'Link', title: 'Hero of Courage', hp: 100, speed: 6, weapon: 'ember', color: '#72cfc8', perk: '+20% damage · Master Sword', damage: 1.2 },
+    midna: { name: 'Midna', title: 'Twilight Princess', hp: 150, speed: 5.1, weapon: 'orbit', color: '#b7b8bd', perk: '+50 health · Twilight shards', damage: 1 },
+    zelda: { name: 'Zelda', title: 'Princess of Hyrule', hp: 85, speed: 7, weapon: 'leaf', color: '#b3ce78', perk: 'Fast movement · Light arrows', damage: 1 }
   };
   const REALMS = [
-    { id: 'verdant', name: 'Verdant Reach', subtitle: 'Where the old forest remembers', color: '#a3c874', sky: '#d4e8d3', ground: '#88aa60', fog: '#cadfc6', accent: '#e6cc81', blessing: 'Forest grace', benefit: '+45% shard collection range', links: [1, 5, 3] },
-    { id: 'tide', name: 'Tideglass Coast', subtitle: 'Follow the wind beyond the horizon', color: '#76c9c6', sky: '#cbe9e6', ground: '#d5c18c', fog: '#d1e8de', accent: '#53c7d4', blessing: 'Ocean heart', benefit: '+25 maximum health. Restore 35 health.', links: [0, 2, 4] },
-    { id: 'dusk', name: 'Dusk Hollow', subtitle: 'A light between two worlds', color: '#ad91ca', sky: '#555b80', ground: '#636a8d', fog: '#73728c', accent: '#f4b583', blessing: 'Twilight might', benefit: '+18% damage to all weapons', links: [1, 3, 5] },
-    { id: 'sky', name: 'Zephyr Isles', subtitle: 'The earth ends. The adventure does not.', color: '#abd6df', sky: '#cae6ef', ground: '#a3b97a', fog: '#e0eff0', accent: '#f4dd9b', blessing: 'Skyward haste', benefit: 'All weapons attack 10% faster', links: [2, 4, 0] },
-    { id: 'ember', name: 'Ember Depths', subtitle: 'An ancient fire stirs below', color: '#d59b74', sky: '#6d6468', ground: '#706a63', fog: '#aa8e7e', accent: '#ffb469', blessing: 'Ember renewal', benefit: 'Restore 1 health every second', links: [3, 5, 1] },
-    { id: 'moon', name: 'Moonveil Ruins', subtitle: 'Every ending holds another beginning', color: '#b6b9de', sky: '#5a6986', ground: '#7e8f9d', fog: '#9aabc1', accent: '#e3d99e', blessing: 'Timeless stride', benefit: '+10% movement speed', links: [4, 0, 2] }
+    { id: 'verdant', name: 'Hyrule Field', subtitle: 'Where the old forest remembers', color: '#a3c874', sky: '#d4e8d3', ground: '#88aa60', fog: '#cadfc6', accent: '#e6cc81', blessing: 'Forest grace', benefit: '+45% shard collection range', links: [1, 5, 3] },
+    { id: 'tide', name: 'The Great Sea', subtitle: 'Follow the wind beyond the horizon', color: '#76c9c6', sky: '#cbe9e6', ground: '#d5c18c', fog: '#d1e8de', accent: '#53c7d4', blessing: 'Ocean heart', benefit: '+25 maximum health. Restore 35 health.', links: [0, 2, 4] },
+    { id: 'dusk', name: 'Twilight Realm', subtitle: 'A light between two worlds', color: '#ad91ca', sky: '#555b80', ground: '#636a8d', fog: '#73728c', accent: '#f4b583', blessing: 'Twilight might', benefit: '+18% damage to all weapons', links: [1, 3, 5] },
+    { id: 'sky', name: 'Skyloft', subtitle: 'The earth ends. The adventure does not.', color: '#abd6df', sky: '#cae6ef', ground: '#a3b97a', fog: '#e0eff0', accent: '#f4dd9b', blessing: 'Skyward haste', benefit: 'All weapons attack 10% faster', links: [2, 4, 0] },
+    { id: 'depths', name: 'The Depths', subtitle: 'Follow the lightroots through the gloom', color: '#9e8bac', sky: '#39303d', ground: '#685660', fog: '#634c61', accent: '#e6e8a3', blessing: 'Lightroot blessing', benefit: 'Restore 1 health every second', links: [3, 5, 1] },
+    { id: 'moon', name: 'Termina Field', subtitle: 'Every ending holds another beginning', color: '#b6b9de', sky: '#5a6986', ground: '#7e8f9d', fog: '#9aabc1', accent: '#e3d99e', blessing: 'Timeless stride', benefit: '+10% movement speed', links: [4, 0, 2] }
   ];
   const GATES = [{ x: -16, z: -16 }, { x: 16, z: -16 }, { x: 0, z: 21 }];
   const UPGRADES = [
-    { id: 'ember', name: 'Rune blade', category: 'WEAPON', icon: 'sword', desc: 'A spectral blade seeks the nearest enemy.', next: 'More damage and faster blades. Extra shot at rank 4.', evolved: 'Dawnbreaker', max: 7 },
-    { id: 'orbit', name: 'Orbiting relics', category: 'WEAPON', icon: 'orbit', desc: 'Two ancient stones circle you and strike enemies.', next: 'Add another relic and increase impact damage.', evolved: 'Celestial orbit', max: 7 },
-    { id: 'nova', name: 'Thunder bloom', category: 'WEAPON', icon: 'bolt', desc: 'An electric bloom blasts everything nearby.', next: 'Bigger blooms, more damage, shorter cooldown.', evolved: 'Superbloom', max: 7 },
-    { id: 'leaf', name: 'Wind blades', category: 'WEAPON', icon: 'leaf', desc: 'Send a fan of piercing wind through the swarm.', next: 'More blades, more damage, faster volleys.', evolved: 'Tempest wings', max: 7 },
-    { id: 'power', name: 'Wild heart', category: 'CHARM', icon: 'heart', desc: '+18% damage to all weapons.', max: 5 },
-    { id: 'haste', name: 'Quick paws', category: 'CHARM', icon: 'wind', desc: 'All weapons attack 10% faster.', max: 5 },
-    { id: 'magnet', name: 'Pocket gravity', category: 'CHARM', icon: 'magnet', desc: '+45% shard collection range.', max: 4 },
-    { id: 'vitality', name: 'Second breakfast', category: 'CHARM', icon: 'plus', desc: '+25 maximum health. Restore 35 health.', max: 5 },
-    { id: 'regen', name: 'Forest remedy', category: 'CHARM', icon: 'sprout', desc: 'Restore 1 health every second.', max: 4 },
-    { id: 'speed', name: 'Trail runner', category: 'CHARM', icon: 'boot', desc: '+10% movement speed.', max: 3 }
+    { id: 'ember', name: 'Master Sword', category: 'WEAPON', icon: 'sword', desc: 'A sword beam seeks the nearest enemy.', next: 'More damage and faster blades. Extra shot at rank 4.', evolved: 'True Master Sword', max: 7 },
+    { id: 'orbit', name: 'Twilight shards', category: 'WEAPON', icon: 'orbit', desc: 'Two ancient stones circle you and strike enemies.', next: 'Add another relic and increase impact damage.', evolved: 'Fused Shadow', max: 7 },
+    { id: 'nova', name: 'Din’s Fire', category: 'WEAPON', icon: 'flame', desc: 'A ring of sacred fire blasts everything nearby.', next: 'Bigger blasts, more damage, shorter cooldown.', evolved: 'Goddess Inferno', max: 7 },
+    { id: 'leaf', name: 'Light arrows', category: 'WEAPON', icon: 'leaf', desc: 'Send a fan of piercing wind through the swarm.', next: 'More blades, more damage, faster volleys.', evolved: 'Bow of Light', max: 7 },
+    { id: 'power', name: 'Power Bracelet', category: 'CHARM', icon: 'heart', desc: '+18% damage to all weapons.', max: 5 },
+    { id: 'haste', name: 'Wind Waker', category: 'CHARM', icon: 'wind', desc: 'All weapons attack 10% faster.', max: 5 },
+    { id: 'magnet', name: 'Rupee Pouch', category: 'CHARM', icon: 'magnet', desc: '+45% shard collection range.', max: 4 },
+    { id: 'vitality', name: 'Heart Container', category: 'CHARM', icon: 'plus', desc: '+25 maximum health. Restore 35 health.', max: 5 },
+    { id: 'regen', name: 'Bottled Fairy', category: 'CHARM', icon: 'sprout', desc: 'Restore 1 health every second.', max: 4 },
+    { id: 'speed', name: 'Bunny Hood', category: 'CHARM', icon: 'boot', desc: '+10% movement speed.', max: 3 }
   ];
   const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -38,7 +39,7 @@
     return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   }
   class Game {
-    constructor(hero = 'pip', seed = Date.now()) {
+    constructor(hero = 'link', seed = Date.now()) {
       if (!HEROES[hero]) throw new Error('Unknown creature');
       this.random = seeded(seed); this.hero = hero; this.state = 'running'; this.time = 0;
       this.player = { x: 0, z: 0, y: 0, vy: 0, gliding: false, stamina: 1, hp: HEROES[hero].hp, maxHp: HEROES[hero].hp, speed: HEROES[hero].speed, radius: .52, facing: 0, invincible: 0, dash: 0, dashCooldown: 0, dx: 0, dz: 1 };
@@ -47,6 +48,9 @@
       this.cooldowns = { ember: .3, nova: 1.5, leaf: .4 }; this.spawnTimer = .2; this.eliteMinute = 0;
       this.bossSpawned = false; this.boss = null; this.choices = []; this.orbitAngle = 0; this.damageTaken = 0; this.damageDealt = 0;
       this.realm = 0; this.visited = new Set([0]); this.shrines = new Set(); this.travelCooldown = 0; this.shrineCharge = 0;
+      this.energy = 25; this.streak = 0; this.streakTimer = 0; this.bestStreak = 0;
+      this.aimMode = 'auto'; this.cameraYaw = Math.PI / 4; this.lockedTarget = null;
+      this.refreshes = 2; this.skips = 2; this.banishes = 1; this.banished = new Set();
     }
     emit(type, data = {}) { if (this.events.length < 300) this.events.push({ type, ...data }); }
     drainEvents() { const out = this.events; this.events = []; return out; }
@@ -63,6 +67,32 @@
       this.emit('dash', { x: p.x, z: p.z }); return true;
     }
     jump() { const p = this.player; if (this.state !== 'running' || p.y > .01) return false; p.vy = 9; p.y = .02; this.emit('jump'); return true; }
+    ultimate() {
+      if (this.state !== 'running' || this.energy < 100) return false;
+      this.energy = 0;
+      const p = this.player, radius = this.hero === 'zelda' ? 14 : this.hero === 'midna' ? 10 : 12;
+      const damage = (this.hero === 'midna' ? 230 : this.hero === 'zelda' ? 150 : 200) * this.damageMultiplier;
+      p.invincible = Math.max(p.invincible, this.hero === 'midna' ? 3 : 1.2);
+      if (this.hero === 'zelda') p.hp = Math.min(p.maxHp, p.hp + 30);
+      this.emit('ultimate', { x: p.x, z: p.z, radius, hero: this.hero });
+      for (const enemy of this.enemies) if (distance(enemy, p) < radius + enemy.radius) this.hurtEnemy(enemy, damage, 8);
+      return true;
+    }
+    toggleAim() { if (this.state !== 'running') return; this.aimMode = this.aimMode === 'auto' ? 'manual' : 'auto'; this.lockedTarget = null; }
+    lockTarget() {
+      if (this.state !== 'running') return false;
+      if (this.lockedTarget !== null) { this.lockedTarget = null; return false; }
+      const enemy = this.nearest(24); this.lockedTarget = enemy ? enemy.id : null; return !!enemy;
+    }
+    attackTarget(range) {
+      if (this.lockedTarget !== null) {
+        const locked = this.enemies.find(e => e.id === this.lockedTarget && !e.dead && distance(e, this.player) <= range);
+        if (locked) return locked;
+        this.lockedTarget = null;
+      }
+      if (this.aimMode === 'auto') return this.nearest(range);
+      return { x: this.player.x - Math.sin(this.cameraYaw) * range, z: this.player.z - Math.cos(this.cameraYaw) * range, id: null };
+    }
     travel(destination) {
       if (this.state !== 'running' || this.travelCooldown > 0 || !REALMS[this.realm].links.includes(destination)) return false;
       this.realm = destination; this.visited.add(destination); this.travelCooldown = 5;
@@ -71,7 +101,7 @@
       if (this.boss && !this.boss.dead) { this.boss.x = 12; this.boss.z = -12; }
       // Shards travel with the player; they cannot be duplicated or lost at a gate.
       const banked = this.shards.reduce((sum, s) => sum + s.value, 0); this.shards = [];
-      this.projectiles = []; this.hazards = []; this.shrineCharge = 0;
+      this.projectiles = []; this.hazards = []; this.shrineCharge = 0; this.lockedTarget = null;
       this.emit('travel', { realm: destination }); if (banked) this.collect(banked); return true;
     }
     get interaction() {
@@ -114,7 +144,7 @@
       if (knock) { const d = Math.max(.01, distance(e, this.player)); e.knockX += (e.x - this.player.x) / d * knock; e.knockZ += (e.z - this.player.z) / d * knock; }
       this.emit('hit', { x: e.x, z: e.z, damage: Math.round(damage), boss: e.type === 'boss' });
       if (e.hp <= 0) {
-        e.dead = true; this.kills++; this.emit('pop', { x: e.x, z: e.z, type: e.type, elite: e.elite });
+        e.dead = true; this.kills++; this.streak++; this.streakTimer = 4; this.bestStreak = Math.max(this.bestStreak, this.streak); this.energy = Math.min(100, this.energy + (e.elite ? 12 : 3)); this.emit('pop', { x: e.x, z: e.z, type: e.type, elite: e.elite });
         if (e.type === 'boss') { this.state = 'won'; this.emit('end', { won: true }); return; }
         this.shards.push({ id: this.nextId++, x: e.x, z: e.z, value: e.elite ? 18 : e.type === 'boar' ? 4 : 2 });
         // Preserve XP when the player leaves shards behind for a long run.
@@ -136,7 +166,7 @@
       }
     }
     rollUpgrades() {
-      const pool = UPGRADES.filter(u => this.rank(u.id) < u.max);
+      const pool = UPGRADES.filter(u => this.rank(u.id) < u.max && !this.banished.has(u.id));
       if (!pool.length) return [{ id: 'feast', name: 'A well-earned snack', category: 'RESTORE', icon: 'plus', desc: 'Restore all health.', max: Infinity }];
       const picks = [];
       // Always offer one available weapon so a run can grow into a build.
@@ -146,6 +176,18 @@
         const available = pool.filter(u => !picks.includes(u)); picks.push(available[Math.floor(this.random() * available.length)]);
       }
       return picks;
+    }
+    refreshChoices() {
+      if (this.state !== 'upgrade' || this.refreshes <= 0) return false;
+      this.refreshes--; this.choices = this.rollUpgrades(); return true;
+    }
+    skipUpgrade() {
+      if (this.state !== 'upgrade' || this.skips <= 0) return false;
+      this.skips--; this.choices = []; this.state = 'running'; this.checkLevel(); return true;
+    }
+    banishChoice(id) {
+      if (this.state !== 'upgrade' || this.banishes <= 0 || !this.choices.some(u => u.id === id) || id === 'feast') return false;
+      this.banishes--; this.banished.add(id); this.choices = this.rollUpgrades(); return true;
     }
     choose(id) {
       if (this.state !== 'upgrade' || !this.choices.some(u => u.id === id)) return false;
@@ -162,7 +204,7 @@
     }
     updateWeapons(dt) {
       for (const id of ['ember', 'leaf', 'nova']) this.cooldowns[id] -= dt;
-      const target = this.nearest(26), p = this.player;
+      const target = this.attackTarget(26), p = this.player;
       if (target && this.rank('ember') && this.cooldowns.ember <= 0) {
         const rank = this.rank('ember'), count = rank >= 7 ? 4 : rank >= 4 ? 2 : 1;
         for (let i = 0; i < count; i++) this.fire('ember', target, (i - (count - 1) / 2) * .18);
@@ -196,6 +238,9 @@
       if (this.state !== 'running' || !Number.isFinite(dt) || dt <= 0) return;
       dt = Math.min(dt, .05); this.time += dt;
       const p = this.player;
+      this.energy = Math.min(100, this.energy + dt * .75);
+      this.streakTimer = Math.max(0, this.streakTimer - dt); if (!this.streakTimer) this.streak = 0;
+      this.cameraYaw = Number.isFinite(input.cameraYaw) ? input.cameraYaw : this.cameraYaw;
       this.travelCooldown = Math.max(0, this.travelCooldown - dt);
       p.gliding = p.y > .1 && p.vy < 0 && !!input.glide && p.stamina > 0;
       if (p.y > 0) { p.vy -= (p.gliding ? 4 : 23) * dt; if (p.gliding) { p.vy = Math.max(p.vy, -.9); p.stamina = Math.max(0, p.stamina - dt * .38); } p.y += p.vy * dt; if (p.y <= 0) { p.y = 0; p.vy = 0; p.gliding = false; } }
@@ -203,11 +248,11 @@
       p.invincible = Math.max(0, p.invincible - dt); p.dashCooldown = Math.max(0, p.dashCooldown - dt);
       const ix = Number.isFinite(input.x) ? input.x : 0, iy = Number.isFinite(input.y) ? input.y : 0;
       const len = Math.max(1, Math.hypot(ix, iy)), mx = ix / len, my = iy / len;
-      let dx = (mx - my) * Math.SQRT1_2, dz = (-mx - my) * Math.SQRT1_2;
+      let dx = mx * Math.cos(this.cameraYaw) - my * Math.sin(this.cameraYaw), dz = -mx * Math.sin(this.cameraYaw) - my * Math.cos(this.cameraYaw);
       if (Math.hypot(dx, dz) > .05) { p.dx = dx; p.dz = dz; p.facing = Math.atan2(dx, dz); }
       if (p.dash > 0) { dx = p.dx * 4.2; dz = p.dz * 4.2; p.dash = Math.max(0, p.dash - dt); }
       const speed = p.speed * (1 + this.rank('speed') * .1) * (p.gliding ? 1.3 : 1);
-      p.x = clamp(p.x + dx * speed * dt, -65, 65); p.z = clamp(p.z + dz * speed * dt, -65, 65);
+      p.x = clamp(p.x + dx * speed * dt, -ARENA_LIMIT, ARENA_LIMIT); p.z = clamp(p.z + dz * speed * dt, -ARENA_LIMIT, ARENA_LIMIT);
       if (this.rank('regen')) p.hp = Math.min(p.maxHp, p.hp + this.rank('regen') * dt);
       this.spawnTimer -= dt;
       if (this.time < 240 && this.spawnTimer <= 0) {
@@ -279,5 +324,5 @@
       for (const e of this.enemies) if (e.type !== 'boss' && distance(e, p) > 50) { const a = this.random() * TAU; e.x = p.x + Math.cos(a) * 24; e.z = p.z + Math.sin(a) * 24; }
     }
   }
-  return { Game, HEROES, REALMS, GATES, UPGRADES, seeded, clamp };
+  return { Game, HEROES, REALMS, GATES, UPGRADES, ARENA_LIMIT, seeded, clamp };
 });

@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#243b35">
-  <meta name="description" content="Relic Wilds: a 3D fantasy survival adventure across six connected realms. Explore, glide, gather relics, and face the Hollow Warden.">
-  <title>Relic Wilds — Six realms. One adventure.</title>
+  <meta name="description" content="ZeldaBonk: an unofficial Zelda survivor. Play Link, Zelda, or Midna across Hyrule, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina.">
+  <title>ZeldaBonk — Six realms. One adventure.</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <canvas id="world" tabindex="0" aria-label="3D fantasy world. Use WASD or arrow keys to move, Space to jump and glide, Shift to dash, E to interact, M for the realm map, and Escape to pause."></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="wordmark" href="#" id="home-link" aria-label="Relic Wilds home"><span data-icon="relic"></span> RELIC WILDS</a>
+    <a class="wordmark" href="#" id="home-link" aria-label="ZeldaBonk home"><span data-icon="relic"></span> ZELDABONK</a>
     <div class="top-actions">
       <button class="icon-button" id="sound-button" aria-label="Enable sound" title="Sound"><span data-icon="mute"></span></button>
       <button class="icon-button" id="help-button" aria-label="How to play" title="How to play"><span data-icon="help"></span></button>
@@ -22,34 +22,38 @@
   </header>
 
   <main id="menu" class="menu">
-    <div class="title-lockup" aria-label="Relic Wilds"><div class="title-relic">RELIC</div><div class="title-wilds">WILDS</div><span class="title-rule"><i></i><span data-icon="relic"></span><i></i></span></div>
-    <h1>Six realms. One adventure.</h1>
+    <div class="title-lockup" aria-label="ZeldaBonk"><div class="title-relic">ZELDA</div><div class="title-wilds">BONK</div><span class="title-rule"><i></i><span data-icon="relic"></span><i></i></span></div>
+    <h1>Hyrule is only the beginning.</h1>
     <p class="menu-intro">Follow the wind. Gather ancient power.<br>Become the thing the darkness fears.</p>
-    <fieldset class="hero-select"><legend>Choose your wanderer</legend>
+    <fieldset class="hero-select"><legend>Choose your hero</legend>
       <div class="hero-options">
-        <button type="button" class="hero-option selected" data-hero="pip" aria-pressed="true"><span data-icon="sword"></span><b>Ari</b><small>Wayfarer</small></button>
-        <button type="button" class="hero-option" data-hero="pebble" aria-pressed="false"><span data-icon="shield"></span><b>Rook</b><small>Stonebound</small></button>
-        <button type="button" class="hero-option" data-hero="sprig" aria-pressed="false"><span data-icon="leaf"></span><b>Fern</b><small>Wildling</small></button>
+        <button type="button" class="hero-option selected" data-hero="link" aria-pressed="true"><span data-icon="sword"></span><b>Link</b><small>Courage</small></button>
+        <button type="button" class="hero-option" data-hero="midna" aria-pressed="false"><span data-icon="shield"></span><b>Midna</b><small>Twilight</small></button>
+        <button type="button" class="hero-option" data-hero="zelda" aria-pressed="false"><span data-icon="leaf"></span><b>Zelda</b><small>Wisdom</small></button>
       </div>
-      <p id="hero-perk">+20% damage · Rune blade</p>
+      <p id="hero-perk">+20% damage · Master Sword</p>
     </fieldset>
     <button id="start-button" class="primary-button"><span>Begin adventure</span><span data-icon="arrow"></span></button>
-    <p class="run-note"><span data-icon="clock"></span> Survive 4 minutes. Defeat the Warden.</p>
+    <p class="run-note"><span data-icon="clock"></span> Survive 4 minutes. Defeat Phantom Ganon.</p>
     <p class="best-note" id="best-note"></p>
   </main>
-  <div id="menu-landmark" class="menu-landmark"><span class="location-line"></span><span><b>VERDANT REACH</b><small>Your journey starts here</small></span></div>
-  <footer id="menu-footer" class="menu-footer"><span>A little courage goes a long way.</span><button id="world-preview-button">Explore the realms <span data-icon="arrow"></span></button></footer>
+  <div id="menu-landmark" class="menu-landmark"><span class="location-line"></span><span><b>HYRULE FIELD</b><small>Your journey starts here</small></span></div>
+  <footer id="menu-footer" class="menu-footer"><span>Unofficial Zelda fan game. Not affiliated with Nintendo.</span><button id="world-preview-button">Explore the realms <span data-icon="arrow"></span></button></footer>
 
   <section id="hud" class="hud" aria-label="Game status" hidden>
-    <div class="hud-left"><div class="health-label"><span data-icon="heart"></span><span id="health-text">100 / 100</span></div><div class="health-track"><div id="health-fill"></div></div><div class="stamina-track" aria-label="Gliding stamina"><div id="stamina-fill"></div></div><p id="realm-name">Verdant Reach</p></div>
-    <div class="hud-center"><div id="timer">0:00</div><p id="objective">THE WARDEN WAKES AT 4:00</p><div id="kill-count"><span data-icon="sword"></span><span id="kills">0</span></div></div>
-    <div class="hud-right"><button id="map-button" class="map-button"><span data-icon="map"></span><span>Realm map</span><kbd>M</kbd></button><div class="shrine-count"><span data-icon="relic"></span><span id="shrines-count">0 / 6 shrines</span></div></div>
+    <div class="hud-left"><div class="player-profile"><img id="hero-portrait" alt=""><div><strong id="hero-name">Link</strong><small id="hero-title">Hero of Courage</small></div></div><div class="health-label"><span data-icon="heart"></span><span id="health-text">100 / 100</span></div><div class="health-track"><div id="health-fill"></div></div><div class="stamina-track" aria-label="Gliding stamina"><div id="stamina-fill"></div></div><p id="realm-name">Hyrule Field</p></div>
+    <div class="hud-center"><div id="timer">0:00</div><p id="objective">PHANTOM GANON AT 4:00</p><div id="kill-count"><span data-icon="sword"></span><span id="kills">0</span></div></div>
+    <div class="hud-right"><canvas id="minimap" width="220" height="220" aria-label="Nearby enemies, realm gates, and shrine"></canvas><button id="map-button" class="map-button"><span data-icon="map"></span><span>Realm map</span><kbd>M</kbd></button><div class="shrine-count"><span data-icon="relic"></span><span id="shrines-count">0 / 6 shrines</span></div></div>
     <div class="xp-panel"><span id="level-label">LV. 1</span><div class="xp-track"><div id="xp-fill"></div></div><span id="xp-label">0 / 12</span></div>
     <div id="loadout" class="loadout" aria-label="Equipped weapons"></div>
+    <button id="ultimate-button" class="ultimate-button" aria-label="Ultimate charging" disabled><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" class="ultimate-track"/><circle id="ultimate-charge" cx="32" cy="32" r="27" class="ultimate-charge"/></svg><span class="ultimate-symbol">R</span><small id="ultimate-label">GREAT SPIN</small></button>
+    <div id="streak" class="streak" hidden><small>KO STREAK</small><strong id="streak-value">1</strong></div>
+    <button id="aim-button" class="aim-button">AUTO AIM <kbd>Q</kbd></button>
+    <div id="player-health" class="player-health"><span id="player-health-fill"></span><b id="player-health-value">100</b></div>
     <div class="dash-status"><span data-icon="wind"></span><span id="dash-label">Dash ready</span><kbd>SHIFT</kbd></div>
-    <div class="desktop-controls"><span><kbd>W A S D</kbd> Move</span><span><kbd>SPACE</kbd> Jump · hold to glide</span><span><kbd>E</kbd> Interact</span></div>
+    <div class="desktop-controls"><span><kbd>W A S D</kbd> Move</span><span><kbd>SPACE</kbd> Jump · glide</span><span><kbd>E</kbd> Interact</span><span>Drag to orbit · Wheel to zoom</span></div>
   </section>
-  <div id="boss-hud" class="boss-hud" hidden><b>THE HOLLOW WARDEN</b><div><span id="boss-fill"></span></div></div>
+  <div id="boss-hud" class="boss-hud" hidden><b>THE PHANTOM GANON</b><div><span id="boss-fill"></span></div></div>
   <div id="interaction" class="interaction" hidden><kbd>E</kbd><span id="interaction-label">Awaken shrine</span><button id="interact-button">Activate</button></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="damage-flash" aria-hidden="true"></div>
@@ -60,20 +64,21 @@
     <div class="touch-actions"><button id="touch-jump" aria-label="Jump; hold to glide"><span data-icon="wing"></span><small>GLIDE</small></button><button id="touch-dash" aria-label="Dash"><span data-icon="wind"></span><small>DASH</small></button></div>
   </div>
 
-  <dialog id="upgrade-dialog" class="modal upgrade-modal" aria-labelledby="upgrade-title"><div class="modal-ornament" data-icon="relic"></div><h2 id="upgrade-title">Ancient power awakens.</h2><p id="upgrade-level">Level 2 · Choose a blessing</p><div id="upgrade-options" class="upgrade-options"></div><small class="modal-hint">Choose with 1, 2, or 3. The world waits for you.</small></dialog>
+  <dialog id="upgrade-dialog" class="modal upgrade-modal" aria-labelledby="upgrade-title"><div class="modal-ornament" data-icon="relic"></div><h2 id="upgrade-title">Ancient power awakens.</h2><p id="upgrade-level">Level 2 · Choose a blessing</p><div id="upgrade-options" class="upgrade-options"></div><div class="upgrade-actions"><button id="refresh-button">Refresh (2) <kbd>F</kbd></button><button id="skip-button">Skip (2) <kbd>X</kbd></button><button id="banish-button">Banish (1) <kbd>Z</kbd></button></div><small id="upgrade-hint" class="modal-hint">Choose with 1, 2, or 3. The world waits for you.</small></dialog>
 
   <dialog id="pause-dialog" class="modal compact-modal" aria-labelledby="pause-title"><span class="modal-ornament" data-icon="moon"></span><h2 id="pause-title">A moment of stillness.</h2><p>Your adventure is paused.</p><button id="resume-button" class="primary-button">Continue adventure <span data-icon="arrow"></span></button><button id="pause-map-button" class="text-button">Open realm map</button><button id="quit-button" class="text-button">Return to title</button></dialog>
 
-  <dialog id="map-dialog" class="modal map-modal" aria-labelledby="map-title"><button class="close-button" data-close="map-dialog" aria-label="Close realm map"><span data-icon="close"></span></button><h2 id="map-title">A world woven together.</h2><p id="map-description">Six realms. Ancient gates. Every path leads somewhere.</p><div id="realm-map" class="realm-map"></div><div class="map-legend"><span><i class="map-dot current"></i> You are here</span><span><i class="map-dot"></i> Ancient gate</span><span data-icon="relic"></span><span id="map-shrine-status">Awaken the shrines for permanent run blessings.</span></div><p class="modal-hint" id="map-travel-hint">Find a glowing gate and press E to cross. Your power travels with you.</p></dialog>
+  <dialog id="map-dialog" class="modal map-modal" aria-labelledby="map-title"><button class="close-button" data-close="map-dialog" aria-label="Close realm map"><span data-icon="close"></span></button><h2 id="map-title">A world woven together.</h2><p id="map-description">Six realms. Ancient gates. Every path leads somewhere.</p><div id="realm-map" class="realm-map"></div><div class="map-legend"><span><i class="map-dot current"></i> You are here</span><span><i class="map-dot"></i> Ancient gate</span><span data-icon="relic"></span><span id="map-shrine-status">Awaken the shrines for permanent run blessings.</span></div><p class="modal-hint" id="map-travel-hint">At a glowing gate, press E or tap Activate. Your power travels with you.</p></dialog>
 
-  <dialog id="help-dialog" class="modal help-modal" aria-labelledby="help-title"><button class="close-button" data-close="help-dialog" aria-label="Close help"><span data-icon="close"></span></button><span class="modal-ornament" data-icon="compass"></span><h2 id="help-title">A wanderer’s field guide.</h2><p>Keep moving. Your relics handle the fighting.</p><div class="help-grid"><div><span data-icon="sword"></span><h3>Gather your strength</h3><p>Defeat creatures. Collect glowing shards. Choose a new power each time you level up. Weapons evolve at rank 7.</p></div><div><span data-icon="map"></span><h3>Cross the realms</h3><p>Three gates in each realm connect the whole world. Approach a gate and press E. Your time, health, and upgrades carry over.</p></div><div><span data-icon="relic"></span><h3>Wake the shrines</h3><p>Find the shrine near the center of each realm. Press E for a unique blessing and a protective burst.</p></div><div><span data-icon="moon"></span><h3>Break the darkness</h3><p>At 4:00 the Hollow Warden awakens. Dodge the red warning circles. Defeat it to restore the realms.</p></div></div><div class="key-guide"><span><kbd>WASD / ARROWS</kbd> Move</span><span><kbd>SPACE</kbd> Jump · hold to glide</span><span><kbd>SHIFT</kbd> Dash</span><span><kbd>E</kbd> Interact</span><span><kbd>M</kbd> Map</span><span><kbd>ESC / P</kbd> Pause</span></div><p class="modal-hint">Touchscreen: left stick to move, right buttons to jump and dash. Hold GLIDE while airborne.</p><button id="help-done" class="secondary-button">Ready to wander</button></dialog>
+  <dialog id="help-dialog" class="modal help-modal" aria-labelledby="help-title"><button class="close-button" data-close="help-dialog" aria-label="Close help"><span data-icon="close"></span></button><span class="modal-ornament" data-icon="compass"></span><h2 id="help-title">A wanderer’s field guide.</h2><p>Keep moving. Your relics handle the fighting.</p><div class="help-grid"><div><span data-icon="sword"></span><h3>Gather your strength</h3><p>Defeat creatures. Collect glowing shards. Choose a new power each time you level up. Weapons evolve at rank 7.</p></div><div><span data-icon="map"></span><h3>Cross the realms</h3><p>Three gates in each realm connect the whole world. Approach a gate, then press E or tap Activate. Your time, health, and upgrades carry over.</p></div><div><span data-icon="relic"></span><h3>Wake the shrines</h3><p>Find the shrine near the center of each realm. Press E or tap Activate for a unique blessing and a protective burst.</p></div><div><span data-icon="moon"></span><h3>Break the darkness</h3><p>At 4:00 Phantom Ganon awakens. Dodge the red warning circles. Defeat it to restore the realms.</p></div></div><p class="modal-hint">Drag the arena to orbit. Use the wheel to zoom. Q switches auto/manual aim. Right-click locks a target. R unleashes a charged Ultimate.</p><div class="key-guide"><span><kbd>WASD / ARROWS</kbd> Move</span><span><kbd>SPACE</kbd> Jump · hold to glide</span><span><kbd>SHIFT</kbd> Dash</span><span><kbd>E</kbd> Interact</span><span><kbd>M</kbd> Map</span><span><kbd>ESC / P</kbd> Pause</span></div><p class="modal-hint">Touchscreen: left stick to move, right buttons to jump and dash. Hold GLIDE while airborne.</p><button id="help-done" class="secondary-button">Ready to wander</button></dialog>
 
   <dialog id="end-dialog" class="modal end-modal" aria-labelledby="end-title"><div id="end-icon" class="modal-ornament" data-icon="sun"></div><h2 id="end-title">The wilds remember you.</h2><p id="end-description"></p><div id="end-stats" class="end-stats"></div><p id="end-record" class="end-record"></p><button id="retry-button" class="primary-button">One more adventure <span data-icon="arrow"></span></button><button id="end-home-button" class="text-button">Choose another wanderer</button></dialog>
 
   <section id="error-screen" class="error-screen" hidden><h1>The wilds need WebGL.</h1><p id="error-message">Enable hardware acceleration in your browser, then reload.</p><button onclick="location.reload()" class="primary-button">Try again</button></section>
-  <noscript><div class="error-screen"><h1>Enable JavaScript to play.</h1><p>Relic Wilds runs entirely in your browser.</p></div></noscript>
+  <noscript><div class="error-screen"><h1>Enable JavaScript to play.</h1><p>ZeldaBonk runs entirely in your browser.</p></div></noscript>
   <script src="vendor/three.min.js"></script>
   <script src="core.js"></script>
+  <script src="art.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

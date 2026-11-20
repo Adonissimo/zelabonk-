@@ -1,85 +1,74 @@
-# Relic Wilds
+# ZeldaBonk
 
-A playable 3D survival adventure inspired by PokéBonk's survivor loop and the landscapes, exploration, and ancient magic of the 3D Zelda games.
+An unofficial Legend of Zelda survivor. PokéBonk is the gameplay and presentation reference. Play Link, Zelda, or Midna in a world of pixel sprites, textured 3D terrain, and six connected Zelda realms.
 
-This compact original world contains six interconnected realms. It is a representative interpretation of the combined theme, not an exhaustive recreation of every canonical location. All character models, environments, names, and effects in this game are original procedural artwork.
+Project: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . Check deployment status for each revision.
 
 ## Play
 
-Open `index.html` in a current version of Edge, Chrome, Firefox, or Safari. Keep the folder together. No installation, account, build step, server, or internet connection is required. JavaScript, WebGL, and browser hardware acceleration must be available.
+Open index.html in a current WebGL-capable browser. Keep the folder together. No installation, backend, account, build step, or runtime network access is required. The separately delivered ZeldaBonk.html embeds the game, art generator, engine, and fonts.
 
-The separately delivered `Relic-Wilds.html` is the portable version: one file with the game, 3D engine, and fonts embedded.
+With Node.js 18 or newer:
 
-Optional local server, with Node.js 18 or newer:
+    npm start
 
-```sh
-npm start
-```
-
-Open `http://127.0.0.1:4173`. Set `PORT` to use another local port.
-
-## Deploy on Vercel
-
-1. Open https://vercel.com/new and sign in with GitHub.
-2. Import `Adonissimo/zelabonk-`. Grant Vercel access to that repository if asked.
-3. Keep the root directory at the repository root. The included `vercel.json` selects no framework, skips installation and building, and serves the current directory.
-4. Click Deploy. Open the production URL once Vercel reports Ready.
-
-If configuring manually, choose the Other framework preset, leave Build Command and Install Command empty, and set Output Directory to `.`. No environment variables are required. Future pushes to the connected production branch can trigger Vercel deployments. A GitHub push alone does not establish that Vercel has deployed the game.
-
-## Your adventure
-
-Choose Ari, Rook, or Fern. Weapons attack automatically. Defeat enemies, collect luminous shards, and choose a power whenever you level up. Each weapon evolves at rank 7. A four-minute survival phase ends when the Hollow Warden awakens. Defeat the Warden to win; the clock continues during the fight.
-
-Three ancient gates in every realm connect the world. Approach a gate and interact to cross. Health, experience, weapons, charms, elapsed time, and shrine blessings carry over. Uncollected shards are banked once during the crossing. The Warden follows gates without restoring its health. Gates recharge for five seconds after travel.
-
-Each realm contains one shrine near its center. Interact to receive its permanent blessing for the current run, brief protection, and an enemy-clearing pulse. The six realms are:
-
-| Realm | Theme | Shrine blessing |
-|---|---|---|
-| Verdant Reach | Ancient forest and forgotten stonework | +45% shard collection range |
-| Tideglass Coast | Bright seas, palms, and a wind-powered sailboat | +25 maximum health; restore 35 health |
-| Dusk Hollow | Twilight, dark crystals, and an otherworldly moon | +18% weapon damage |
-| Zephyr Isles | Floating islands and sky ruins | Weapons attack 10% faster |
-| Ember Depths | Volcanic rock, fissures, and glowing embers | Regenerate 1 health per second |
-| Moonveil Ruins | Lunar ruins and a suspended time ring | +10% movement speed |
-
-The realm map shows the actual gate network. Map nodes preview worlds on the title screen. During a run, travel requires reaching a physical gate.
+Open http://127.0.0.1:4173 . PORT selects another local port.
 
 ## Controls
 
-| Control | Action |
+| Input | Action |
 |---|---|
-| WASD / arrow keys | Move |
+| WASD / arrows | Move relative to the camera |
+| Drag game view | Orbit camera |
+| Mouse wheel | Zoom |
 | Space | Jump; hold while descending to glide |
-| Shift | Dash with brief invulnerability |
-| E | Awaken a nearby shrine or cross a gate |
-| M | Realm map |
-| Escape / P | Pause / resume |
-| 1, 2, 3 | Choose an upgrade |
+| Shift | Slide/dash with brief protection |
+| Q | Auto/manual camera-directed aim |
+| Right-click | Lock/unlock nearest enemy; a ring marks it |
+| R | Use fully charged Ultimate |
+| E | Gate or shrine interaction |
+| M | Open/close realm map |
+| Escape / P | Pause/resume |
+| 1, 2, 3 | Choose upgrade |
+| F / X / Z | Refresh / skip / toggle banish during level-up |
 
-Touchscreen devices show a movement stick, glide and dash buttons, and a contextual Activate button. Gliding consumes stamina; landing restores it.
+Touch controls include a movement stick, jump/glide, dash, contextual interaction, aim toggle, and tappable Ultimate. Drag the arena to orbit. Focused interface buttons retain native keyboard activation; gameplay focus returns after menus close.
 
-The world pauses during upgrades, help, the map, and focus loss. Best kill count and victories are saved locally when browser storage is available. Individual runs are not saved between page reloads. Sound is optional and can be toggled in the top bar.
+## Run
+
+Weapons cast automatically. Defeat enemies, collect green shards, and choose upgrades. Weapons evolve at rank 7. Each run has two refreshes, two skips, and one banish. Banish removes a selected choice from future offers without removing an equipped weapon.
+
+Time and defeated enemies charge the Ultimate. Link uses Great Spin. Midna uses Fused Shadow and gains longer protection. Zelda uses Triforce Light and restores health. A kill streak expires after four seconds without another defeat.
+
+After four minutes, Phantom Ganon appears. Dodge telegraphed circles and defeat him to win. The clock continues during the fight. All numerical balance is original to this survivor mode.
+
+Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field each have three gates and a shrine. Health, time, XP, weapons, charge, shrine blessings, and boss health persist across gates. Loose XP is banked once on crossing. Gates recharge for five seconds.
+
+These are compact connected arenas with decorative stone rims and landmarks. They are not full recreations of Zelda's maps or complete platforming levels.
 
 ## Source and checks
 
-- `core.js`: deterministic simulation, combat, leveling, realm graph, shrines, and win/loss rules.
-- `app.js`: Three.js scene, original models, rendering, sound, input, interface, and optional local records.
-- `styles.css` and `index.html`: responsive interface and native accessible dialogs.
-- `tests/core.test.cjs`: fourteen deterministic tests, including a full simulated survival phase.
+    npm test
 
-```sh
-npm test
-```
+Nineteen deterministic tests cover simulation invariants, camera-relative movement, leveling, targeting, Ultimates, streaks, choice resources, realm connectivity, shrines, bounded entities, boss persistence, and terminal states.
 
-Desktop and mobile browser checks cover offline launch, controls, pause ownership, upgrade selection, every gate transition, every shrine blessing, the Warden interface, victory, defeat, and restart. Headless tests use software WebGL; this does not establish frame rates on all physical devices. Touch was checked through browser emulation, not a physical phone. Long-term difficulty balancing remains an area for playtesting.
+- core.js: simulation and run invariants.
+- art.js: independently drawn pixel sprites and procedural texture cache.
+- app.js: Three.js scene, camera, input, sound, interface, local records.
+- REFERENCE-ANALYSIS.md: evidence, sources, differences, and remaining gaps.
 
-## Credits
+Local storage optionally retains best records and sound preference. Runs do not persist across page reloads. Touch checks use browser emulation; performance is not established on every physical device.
 
-- Three.js 0.160.1, MIT license: `vendor/THREE-LICENSE.txt`. The vendored classic script is intentionally used for direct offline `file:` launch without a module server. Its legacy-build warning is expected.
-- Lilita One, SIL Open Font License: `assets/LILITA-OFL.txt`.
-- Nunito Extra Bold, SIL Open Font License: `assets/NUNITO-OFL.txt`.
-- Gameplay reference: https://pokebonk.com/ . The reference's source, art, branding, and audio are not included.
+## Vercel
 
-No analytics, advertising, remote account services, or runtime network requests are included.
+Import Adonissimo/zelabonk- at https://vercel.com/new . Keep the repository root. vercel.json configures a static project, no install/build command, and output directory dot. No environment variables are needed. Wait for Ready before treating a push as deployed.
+
+## Credits and scope
+
+Unofficial fan game; unaffiliated with Nintendo. Zelda characters, names, and setting belong to their respective owners. Pixel depictions are independently drawn in art.js. No official sprites, audio, models, or PokéBonk source/assets are bundled.
+
+Reference: https://pokebonk.com/ . Guest entry encountered human verification; analysis uses public captures and labeled secondary guides. Collection/capture, permanent upgrade shop, multiplayer, accounts, an exhaustive roster, and full franchise map coverage are not implemented.
+
+- Three.js 0.160.1, MIT: vendor/THREE-LICENSE.txt. Its classic-script warning is expected; direct offline file launch is supported.
+- Lilita One, SIL Open Font License: assets/LILITA-OFL.txt.
+- Nunito Extra Bold, SIL Open Font License: assets/NUNITO-OFL.txt.
