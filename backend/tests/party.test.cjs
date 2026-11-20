@@ -14,6 +14,41 @@ const create = () =>
     ],
     { mode: 'survival', seed: 123, flatTerrain: true },
   );
+
+test('weapon rarities and orbit timers remain actor-owned through choices and restart', () => {
+  const game = create();
+  game.collect(15);
+  game.members.get(a).choices = [{ id: 'ember', rarity: 4 }];
+  game.members.get(b).choices = [{ id: 'leaf', rarity: 1 }];
+  Object.assign(game, game.members.get(a));
+  game.chooseFor(a, 'choose', 'ember');
+  game.chooseFor(b, 'choose', 'leaf');
+  game.withActor(a, () => { game.orbitActive = 2; game.cooldowns.orbit = 3; });
+  game.withActor(b, () => { game.orbitActive = 1; game.cooldowns.orbit = 4; });
+  const restored = PartyGame.restore(JSON.parse(JSON.stringify(game.serialize())));
+  assert.deepEqual(restored.members.get(a).weaponUpgrades, { ember: [4] });
+  assert.deepEqual(restored.members.get(b).weaponUpgrades, { leaf: [1] });
+  assert.equal(restored.members.get(a).orbitActive, 2);
+  assert.equal(restored.members.get(b).orbitActive, 1);
+  assert.equal(restored.members.get(a).cooldowns.orbit, 3);
+  assert.equal(restored.members.get(b).cooldowns.orbit, 4);
+});
+
+test('older room snapshots gain defaults without dropping actors or oversized equipment', () => {
+  const game = create();
+  game.withActor(b, () => { game.ranks = { ember: 4, leaf: 1, bomb: 1, nova: 1 }; });
+  const saved = JSON.parse(JSON.stringify(game.serialize()));
+  for (const { actor } of saved.members) for (const key of ['weaponUpgrades', 'legacySlots', 'orbitActive']) delete actor[key];
+  for (const { actor } of saved.members) delete actor.cooldowns.orbit;
+  const restored = PartyGame.restore(saved);
+  assert.equal(restored.members.get(a).ranks.ember, 1);
+  assert.equal(restored.members.get(b).ranks.ember, 4);
+  assert.equal(restored.members.get(b).legacySlots.weapons, 4);
+  assert.equal(restored.members.get(b).orbitActive, 0);
+  assert.equal(restored.members.get(b).cooldowns.orbit, 0.1);
+  restored.withActor(b, () => assert.ok(Number.isFinite(restored.weaponStats('ember').damage)));
+  assert.equal(restored.xpNeed, 15);
+});
 test('two actors share one clock and enemies target the nearest living player', () => {
   const game = create();
   game.spawnTimer = 999;
@@ -33,7 +68,7 @@ test('two actors share one clock and enemies target the nearest living player', 
 });
 test('shared XP waits for separate valid choices, and menus freeze all actors', () => {
   const game = create();
-  game.collect(12);
+  game.collect(15);
   assert.equal(game.level, 2);
   assert.equal(game.state, 'upgrade');
   const time = game.time;
@@ -145,7 +180,7 @@ test('a one-member authoritative party keeps the existing solo simulation behavi
 test('party membership bounds and per-room storage failures preserve independent rooms', async () => {
   const players = Array.from({ length: 4 }, () => ({ id: crypto.randomUUID(), hero: 'link' }));
   const four = new PartyGame(crypto.randomUUID(), players, { mode: 'survival' });
-  four.collect(12);
+  four.collect(15);
   assert.equal([...four.members.values()].filter((member) => member.choices.length).length, 4);
   assert.throws(() => new PartyGame(crypto.randomUUID(), [...players, players[0]]));
   assert.throws(() => new PartyGame(crypto.randomUUID(), [players[0], players[0]]));

@@ -279,7 +279,7 @@ class Store {
         invite = token();
       await tx.query(
         "INSERT INTO rooms(id,host_id,invite_hash,status,ranked,mode,difficulty,ruleset) VALUES($1,$2,$3,'lobby',$4,$5,$6,$7)",
-        [id, host, digest(invite), config.ranked, config.mode, config.difficulty, '2.1.0-local-1'],
+        [id, host, digest(invite), config.ranked, config.mode, config.difficulty, '2.2.0-local-1'],
       );
       await tx.query('INSERT INTO room_members(room_id,account_id,hero) VALUES($1,$2,$3)', [
         id,

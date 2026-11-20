@@ -18,11 +18,11 @@ Characters and foliage use independently drawn pixel-art billboards in a texture
 
 ## Reference Evidence
 
-The official v0.10.15 landing screen, public client, and Season 4 notes were inspected. After the user completed verification, the explicitly non-counting Training Grounds was inspected in Brave. Public captures and control guides provide additional evidence. PARITY.md separates verified facts, authored rules, implemented coverage, and remaining work.
+The official v0.10.15 and v0.10.17 landing screen, public client, and Season 4 notes were inspected. After the user completed verification, the explicitly non-counting Training Grounds was inspected in Brave. Public captures and control guides provide additional evidence. PARITY.md separates verified facts, authored rules, implemented coverage, and remaining work.
 
 ## Capabilities
 
-- Automatic weapons, XP, level-up choices, and weapon evolution.
+- Automatic weapons, measured XP thresholds, level-up choices, saved weapon rarity growth, three base weapon/charm slots, permanent slot unlocks and treasure-extended level caps.
 - Camera-relative movement, mouse look without dragging, wheel zoom, jump, glide, and dash.
 - Auto/manual aim, separate target lock, and six charged Ultimates.
 - Kill streaks and finite refresh, skip, and banish resources.
@@ -32,10 +32,10 @@ The official v0.10.15 landing screen, public client, and Season 4 notes were ins
 - Normal and Hard difficulty, six weapon families, three boss health phases, telegraphed patterns and map-specific enemy species.
 - Original idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat and victory animations.
 - Deterministic plateaus and ramps share height sampling with the renderer; trees, rocks and shrine structures have physical collisions.
-- Twenty-four stackable Zelda treasures across five rarities. Physical/magic damage, criticals/mega-criticals, armor, evasion, regeneration, lifesteal, thorns and damage breakdown.
+- Twenty-six stackable Zelda treasures across five rarities. Physical/magic damage, criticals/mega-criticals, armor, evasion, regeneration, lifesteal, thorns and damage breakdown.
 - Burn, freeze, shock and wet effects with steam and chain-shock reactions. Menus freeze their simulation clocks.
-- Non-counting Training Grounds with all six heroes, map/stage/level selection, four-weapon/five-charm builds, treasure stack editing, stationary dummies, groups, elites, alphas and map guardians.
-- Rupees, five capped permanent upgrades, three hero unlocks, records, equipment/enemy journal and six achievements.
+- Non-counting Training Grounds with all six heroes, map/stage/level selection, four-weapon/five-charm builds, per-weapon rarity, treasure-extended caps, treasure stack editing, stationary dummies, groups, elites, alphas and map guardians.
+- Rupees, seven capped permanent upgrades, three hero unlocks, records, equipment/enemy journal and six achievements.
 - Safe map and pending-choice checkpoints, import/export with backup, legacy-record migration and cross-tab checkpoint ownership.
 - Low/Balanced/High graphics, sound/volume, key rebinding, mouse sensitivity, inverted Y, field of view, camera distance, optional cursor capture, system or manual reduced motion, nested native dialogs and focus-loss pause.
 

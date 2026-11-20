@@ -35,10 +35,38 @@
     {id:'splashfruit',name:'Splash Fruit',origin:'Tears of the Kingdom',icon:'wave',rarity:2,proc:'wet',chance:.2,desc:'Hits have a 20% chance to soak. Water improves freezing and shock.'},
     {id:'shockfruit',name:'Shock Fruit',origin:'Tears of the Kingdom',icon:'bolt',rarity:3,proc:'shock',chance:.12,desc:'Hits have a 12% chance to shock. Soaked targets take chain damage.'},
     {id:'ancientbow',name:'Ancient Bow',origin:'Breath of the Wild',icon:'arrow',rarity:3,mods:{critChance:.15},desc:'+15% critical chance. Above 100%, critical chance becomes mega-critical chance.'},
+    {id:'adventurepouch',name:'Adventure Pouch',origin:'Skyward Sword',icon:'relic',rarity:4,max:1,desc:'Weapons can reach level 10 instead of 8.'},
+    {id:'greenpotion',name:'Green Potion',origin:'Ocarina of Time',icon:'plus',rarity:3,max:1,desc:'Charms can reach level 12 instead of 10.'},
     {id:'fierce',name:'Fierce Deity Mask',origin:'Majora’s Mask',icon:'moon',rarity:4,max:1,mods:{physical:1.5,magic:1.5},desc:'+50% physical and magic damage.'}
   ].map(item=>Object.freeze({...item,max:item.max??10,mods:Object.freeze(item.mods||{})})));
   const BY_ID=new Map(GEAR.map(item=>[item.id,item]));
   const WEAPONS=Object.freeze({ember:'physical',leaf:'magic',orbit:'magic',nova:'magic',bomb:'physical',boomerang:'physical'});
+  const UPGRADE_POWER=Object.freeze([1,1.2,1.45,1.75,2.1]);
+  const ATTACKS=Object.freeze({
+    ember:{damage:13,cooldown:1,count:1,radius:.5,speed:24,duration:.8,pierce:0,stats:['dmg','cd','count','pierce','speed','crit','bounce']},
+    leaf:{damage:9,cooldown:1.25,count:2,radius:.5,speed:15,duration:1.6,pierce:0,homing:true,stats:['dmg','cd','count','speed','crit']},
+    bomb:{damage:20,cooldown:1.9,count:1,radius:3.2,speed:15,duration:3,pierce:0,stats:['dmg','cd','count','area','status']},
+    nova:{damage:22,cooldown:2.6,count:1,radius:6.5,speed:0,duration:0,pierce:99,stats:['dmg','cd','area','status','crit']},
+    orbit:{damage:9,cooldown:5.5,count:2,radius:3.2,speed:3.2,duration:4,pierce:99,stats:['dmg','count','area','dur','speed','cd']},
+    boomerang:{damage:14,cooldown:1.7,count:1,radius:.8,speed:17,duration:1.3,pierce:99,stats:['dmg','cd','count','area','speed','crit']}
+  });
+  function upgradeGrowth(id,history=[]){
+    const result={damage:1,cooldown:1,count:0,area:1,speed:1,duration:1,pierce:0,bounce:0,critical:0,status:1};
+    const keys=ATTACKS[id]?.stats;if(!keys)return result;
+    for(let index=0;index<history.length;index++){
+      const strength=UPGRADE_POWER[history[index]],count=strength>=1.6?3:2;result.damage+=.08;
+      for(let offset=0;offset<Math.min(count,keys.length);offset++){
+        const stat=keys[(index*count+offset)%keys.length];
+        if(stat==='dmg')result.damage+=.22*strength;
+        else if(stat==='cd')result.cooldown*=1-Math.min(.25,.08*strength);
+        else if(stat==='count')result.count+=strength>=1.6?2:1;
+        else if(stat==='crit')result.critical+=.05*strength;
+        else if(stat==='status')result.status+=.25*strength;
+        else if(stat==='pierce'||stat==='bounce')result[stat]+=Math.max(1,Math.round(strength));
+        else result[stat==='dur'?'duration':stat]+=(stat==='dur'?.2:.15)*strength;
+      }
+    }return result;
+  }
   const STATUS=Object.freeze({
     burn:{name:'Burn',duration:3,color:'#f2a56b'},
     freeze:{name:'Freeze',duration:1.5,color:'#9ce2ef'},
@@ -65,5 +93,5 @@
       const item=BY_ID.get(id);if(!item||!Number.isInteger(count)||count<1||count>item.max)throw new Error('Invalid saved equipment stack.');out[id]=count;
     }return out;
   }
-  return{GEAR,RARITIES,WEAPONS,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
+  return{GEAR,RARITIES,WEAPONS,ATTACKS,UPGRADE_POWER,upgradeGrowth,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
 });

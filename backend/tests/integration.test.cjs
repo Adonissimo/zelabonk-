@@ -290,7 +290,7 @@ test('local PostgreSQL backend protects accounts, saves, authoritative rooms and
     async () => {
       const active = app.rooms.rooms.get(room.id),
         game = active.game;
-      game.collect(12);
+      game.collect(15);
       wa.send({
         type: 'action',
         seq: 2,

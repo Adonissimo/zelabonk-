@@ -53,29 +53,37 @@
     phantom: { name: 'Phantom Ganon', origin: 'Ocarina of Time', hp: 2900, speed: 1.3, radius: 2.1, damage: 26, color: '#b6d5b6', height: 5, final: true, patterns: ['slam','volley'] }
   };
   const UPGRADES = [
-    {id:'ember',name:'Master Sword',category:'WEAPON',icon:'sword',desc:'Sword beams seek a nearby enemy.',evolved:'True Master Sword',max:7,origin:'Ocarina of Time / Skyward Sword'},
-    {id:'orbit',name:'Fused Shadow',category:'WEAPON',icon:'orbit',desc:'Dark relics circle you and strike nearby enemies.',evolved:'Fused Shadow',max:7,origin:'Twilight Princess'},
-    {id:'nova',name:'Din’s Fire',category:'WEAPON',icon:'flame',desc:'A ring of fire blasts nearby enemies.',evolved:'Din’s Fire',max:7,origin:'Ocarina of Time'},
-    {id:'leaf',name:'Light Arrows',category:'WEAPON',icon:'arrow',desc:'A fan of light pierces the swarm.',evolved:'Bow of Light',max:7,origin:'Ocarina of Time / Breath of the Wild'},
-    {id:'bomb',name:'Bombs',category:'WEAPON',icon:'flame',desc:'Lob a bomb that explodes across a wide area.',evolved:'Bombs',max:7,origin:'Recurring Zelda item'},
-    {id:'boomerang',name:'Boomerang',category:'WEAPON',icon:'wind',desc:'A returning weapon strikes on both journeys.',evolved:'Gale Boomerang',max:7,origin:'The Wind Waker / Twilight Princess'},
-    {id:'power',name:'Power Bracelet',category:'CHARM',icon:'heart',desc:'+18% weapon damage.',max:5,origin:'Recurring Zelda item'},
-    {id:'haste',name:'Wind Waker',category:'CHARM',icon:'wind',desc:'Weapons attack 10% faster.',max:5,origin:'The Wind Waker'},
-    {id:'magnet',name:'Wallet',category:'CHARM',icon:'magnet',desc:'+45% XP collection range.',max:4,origin:'Recurring Zelda item'},
-    {id:'vitality',name:'Heart Container',category:'CHARM',icon:'plus',desc:'+25 maximum health. Restore 35 health.',max:5,origin:'Recurring Zelda item'},
-    {id:'regen',name:'Fairy',category:'CHARM',icon:'sprout',desc:'Restore 1 health per second.',max:4,origin:'Recurring Zelda creature'},
-    {id:'speed',name:'Bunny Hood',category:'CHARM',icon:'boot',desc:'+10% movement speed.',max:3,origin:'Majora’s Mask'}
+    {id:'ember',name:'Master Sword',category:'WEAPON',icon:'sword',desc:'Straight sword beams strike a nearby enemy.',max:8,origin:'Ocarina of Time / Skyward Sword'},
+    {id:'orbit',name:'Fused Shadow',category:'WEAPON',icon:'orbit',desc:'Dark relics circle you and strike nearby enemies.',max:8,origin:'Twilight Princess'},
+    {id:'nova',name:'Din’s Fire',category:'WEAPON',icon:'flame',desc:'A ring of fire blasts nearby enemies.',max:8,origin:'Ocarina of Time'},
+    {id:'leaf',name:'Light Arrows',category:'WEAPON',icon:'arrow',desc:'Homing light arrows track nearby enemies.',max:8,origin:'Ocarina of Time / Breath of the Wild'},
+    {id:'bomb',name:'Bombs',category:'WEAPON',icon:'flame',desc:'Lob a bomb that explodes across a wide area.',max:8,origin:'Recurring Zelda item'},
+    {id:'boomerang',name:'Boomerang',category:'WEAPON',icon:'wind',desc:'A returning weapon strikes on both journeys.',max:8,origin:'The Wind Waker / Twilight Princess'},
+    {id:'power',name:'Power Bracelet',category:'CHARM',icon:'heart',desc:'+18% weapon damage.',max:10,origin:'Recurring Zelda item'},
+    {id:'haste',name:'Wind Waker',category:'CHARM',icon:'wind',desc:'Weapons attack 10% faster.',max:10,origin:'The Wind Waker'},
+    {id:'magnet',name:'Wallet',category:'CHARM',icon:'magnet',desc:'+45% XP collection range.',max:10,origin:'Recurring Zelda item'},
+    {id:'vitality',name:'Heart Container',category:'CHARM',icon:'plus',desc:'+25 maximum health. Restore 35 health.',max:10,origin:'Recurring Zelda item'},
+    {id:'regen',name:'Fairy',category:'CHARM',icon:'sprout',desc:'Restore 1 health per second.',max:10,origin:'Recurring Zelda creature'},
+    {id:'speed',name:'Bunny Hood',category:'CHARM',icon:'boot',desc:'+10% movement speed.',max:10,origin:'Majora’s Mask'}
   ];
   const PERMANENT = [
     {id:'heart',name:'Heart Container',icon:'heart',desc:'+8 starting maximum health per rank.',max:5},
     {id:'power',name:'Power Bracelet',icon:'sword',desc:'+5% starting weapon damage per rank.',max:5},
     {id:'armor',name:'Mirror Shield',icon:'shield',desc:'Take 4% less damage per rank.',max:5},
     {id:'magnet',name:'Wallet',icon:'magnet',desc:'+12% starting XP collection range per rank.',max:5},
-    {id:'magic',name:'Magic Jar',icon:'bolt',desc:'Charge Ultimates 8% faster per rank.',max:5}
+    {id:'magic',name:'Magic Jar',icon:'bolt',desc:'Charge Ultimates 8% faster per rank.',max:5},
+    {id:'weaponSlot',name:'Fourth weapon',icon:'sword',desc:'Unlock a fourth weapon slot for new runs.',max:1,costs:[1500]},
+    {id:'charmSlots',name:'Charm slots',icon:'relic',desc:'Unlock one additional charm slot per rank, up to five.',max:2,costs:[1200,3000]}
   ];
+  const xpForLevel=level=>Math.round(8+level*5.5+Math.pow(level,1.8));
+  const UPGRADE_LIMITS=Object.fromEntries(UPGRADES.map(item=>[item.id,item.max]));
 
   const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  function hitAlong(from,to,target,radius,targetY,tolerance){
+    const dx=to.x-from.x,dz=to.z-from.z,length=dx*dx+dz*dz,t=length?clamp(((target.x-from.x)*dx+(target.z-from.z)*dz)/length,0,1):0;
+    return Math.hypot(from.x+dx*t-target.x,from.z+dz*t-target.z)<radius&&Math.abs(from.y+(to.y-from.y)*t-targetY)<tolerance;
+  }
   function seeded(seed) {
     const roll=function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
     roll.getState=()=>seed|0;roll.setState=value=>{seed=value|0;};return roll;
@@ -94,8 +102,10 @@
       this.player = { ground:0, x: 0, z: 0, y: 0, vy: 0, gliding: false, stamina: 1, hp: HEROES[hero].hp, maxHp: HEROES[hero].hp, speed: HEROES[hero].speed, radius: .52, facing: 0, invincible: 0, dash: 0, dashCooldown: 0, dx: 0, dz: 1 };
       this.enemies = []; this.shards = []; this.projectiles = []; this.hazards = []; this.events = [];
       this.gear={};this.stats=Combat.stats(this.gear);this.loot=[];this.damageBySource={};this.criticalHits=0;this.megaCriticalHits=0;this.reactions=0;
-      this.level = 1; this.xp = 0; this.xpNeed = 12; this.kills = 0; this.nextId = 1; this.ranks = { [HEROES[hero].weapon]: 1 };
-      this.cooldowns = { ember: .3, nova: 1.5, leaf: .4, bomb: .7, boomerang: .4 }; this.spawnTimer = .2; this.eliteMinute = 0;
+      this.legacySlots={weapons:0,charms:0};
+      this.weaponUpgrades={};this.orbitActive=0;
+      this.level = 1; this.xp = 0; this.xpNeed = xpForLevel(1); this.kills = 0; this.nextId = 1; this.ranks = { [HEROES[hero].weapon]: 1 };
+      this.cooldowns = { ember: .3, nova: 1.5, leaf: .4, bomb: .7, boomerang: .4, orbit:.1 }; this.spawnTimer = .2; this.eliteMinute = 0;
       this.bossSpawned = false; this.boss = null; this.choices = []; this.orbitAngle = 0; this.damageTaken = 0; this.damageDealt = 0;
       this.realm = this.mode==='adventure'||this.mode==='training'?6:0; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.travelCooldown = 0; this.shrineCharge = 0;
       this.energy = 25; this.streak = 0; this.streakTimer = 0; this.bestStreak = 0;
@@ -104,6 +114,13 @@
       this.player.maxHp+=this.permanent.heart*8;this.player.hp=this.player.maxHp;this.player.action='idle';this.player.actionTime=0;this.player.actionAge=0;this.player.attackKind=null;
     }
     groundAt(x,z){return this.flatTerrain?0:Terrain.height(this.realm,this.stage,x,z);}
+    get weaponSlots(){return this.mode==='training'?4:Math.max(3+(this.permanent.weaponSlot||0),this.legacySlots?.weapons||0);}
+    get charmSlots(){return this.mode==='training'?5:Math.max(3+(this.permanent.charmSlots||0),this.legacySlots?.charms||0);}
+    shrineRanks(id){return Combat.WEAPONS[id]?0:[...this.shrines].filter(index=>REALMS[index].gift===id).length;}
+    learnedRank(id){return Math.max(0,this.rank(id)-this.shrineRanks(id));}
+    slotCount(category){return UPGRADES.filter(item=>item.category===category&&this.learnedRank(item.id)>0).length;}
+    rankLimit(id){return UPGRADE_LIMITS[id]+(Combat.WEAPONS[id]?(this.gear.adventurepouch?2:0):(this.gear.greenpotion?2:0)+this.shrineRanks(id));}
+    canOffer(item){return !!item&&this.rank(item.id)<this.rankLimit(item.id)&&!this.banished.has(item.id)&&(this.learnedRank(item.id)>0||this.slotCount(item.category)<(item.category==='WEAPON'?this.weaponSlots:this.charmSlots));}
     targetFor(){return this.player;}
     damageTargets(){return[this.player];}
     pickupTarget(){return this.player;}
@@ -118,20 +135,22 @@
       if(this.mode!=='training'||!['running','paused'].includes(this.state)||!config||typeof config!=='object')return false;
       const {realm,stage,level,invulnerable}=config,hero=config.hero??this.hero;
       if(!Object.hasOwn(HEROES,hero)||!Number.isInteger(realm)||!REALMS[realm]||!Number.isInteger(stage)||stage<1||stage>3||!Number.isInteger(level)||level<1||level>40||typeof invulnerable!=='boolean')return false;
-      this.hero=hero;this.player.speed=HEROES[hero].speed;this.refreshStats();this.realm=realm;this.realmStages[realm]=stage;this.level=level;this.training.invulnerable=invulnerable;this.visited.add(realm);this.resetTraining();return true;
+      this.hero=hero;this.player.speed=HEROES[hero].speed;this.refreshStats();this.realm=realm;this.realmStages[realm]=stage;this.level=level;this.xpNeed=xpForLevel(level);this.training.invulnerable=invulnerable;this.visited.add(realm);this.resetTraining();return true;
     }
-    setTrainingBuild(ranks,gear){
+    setTrainingBuild(ranks,gear,rarities={}){
       if(this.mode!=='training'||!['running','paused'].includes(this.state)||!ranks||typeof ranks!=='object'||Array.isArray(ranks))return false;
       const entries=Object.entries(ranks),weapons=entries.filter(([id,rank])=>rank&&Combat.WEAPONS[id]).length,charms=entries.filter(([id,rank])=>rank&&!Combat.WEAPONS[id]).length;
-      if(weapons>4||charms>5||entries.some(([id,rank])=>!UPGRADES.some(item=>item.id===id)||!Number.isInteger(rank)||rank<0||rank>(Combat.WEAPONS[id]?8:10)))return false;
       let validated;try{validated=Combat.validateGear(gear);}catch{return false;}
-      this.ranks=Object.fromEntries(entries.filter(([,rank])=>rank));this.gear=validated;this.refreshStats();this.player.hp=this.player.maxHp;this.cooldowns={ember:.1,leaf:.1,nova:.1,bomb:.1,boomerang:.1};return true;
+      if(weapons>4||charms>5||entries.some(([id,rank])=>!UPGRADES.some(item=>item.id===id)||!Number.isInteger(rank)||rank<0||rank>(Combat.WEAPONS[id]?(validated.adventurepouch?10:8):(validated.greenpotion?12:10))))return false;
+      if(!rarities||typeof rarities!=='object'||Array.isArray(rarities)||Object.entries(rarities).some(([id,value])=>!Object.hasOwn(Combat.WEAPONS,id)||!Number.isInteger(value)||value<0||value>4))return false;
+      this.weaponUpgrades=Object.fromEntries(entries.filter(([id,rank])=>Combat.WEAPONS[id]&&rank).map(([id,rank])=>{const history=Object.hasOwn(rarities,id)?Array(rank-1).fill(rarities[id]):(this.weaponUpgrades[id]||[]).slice(0,rank-1);while(history.length<rank-1)history.push(0);return[id,history];}));
+      this.ranks=Object.fromEntries(entries.filter(([,rank])=>rank));this.shrines.clear();this.gear=validated;this.refreshStats();this.player.hp=this.player.maxHp;this.cooldowns={ember:.1,leaf:.1,nova:.1,bomb:.1,boomerang:.1,orbit:.1};this.orbitActive=0;return true;
     }
     resetTraining(){
       if(this.mode!=='training'||!['running','paused'].includes(this.state))return false;
       this.enemies=[];this.projectiles=[];this.hazards=[];this.shards=[];this.loot=[];this.boss=null;this.bossSpawned=false;this.lockedTarget=null;
       this.player.x=0;this.player.z=0;this.player.y=0;this.player.ground=0;this.player.vy=0;this.player.hp=this.player.maxHp;this.player.invincible=0;this.player.dashCooldown=0;
-      this.damageDealt=0;this.damageTaken=0;this.damageBySource={};this.kills=0;this.streak=0;this.bestStreak=0;this.criticalHits=0;this.megaCriticalHits=0;this.reactions=0;this.energy=100;return true;
+      this.orbitActive=0;for(const id of Object.keys(Combat.WEAPONS))this.cooldowns[id]=.1;this.damageDealt=0;this.damageTaken=0;this.damageBySource={};this.kills=0;this.streak=0;this.bestStreak=0;this.criticalHits=0;this.megaCriticalHits=0;this.reactions=0;this.energy=100;return true;
     }
     spawnTrainingRivals(kind){
       if(this.mode!=='training'||!['running','paused'].includes(this.state)||!['dummy','group10','group30','horde60','elite','alpha','boss'].includes(kind)||this.boss)return false;
@@ -172,7 +191,7 @@
       if(!enemy||enemy.dead||this.state!=='running'||!Number.isFinite(base)||base<=0)return 0;
       const stats=this.stats,kind=Combat.WEAPONS[source];let damage=base*(kind?stats[kind]:1);
       if(enemy.elite||enemy.type==='boss')damage*=stats.eliteDamage;
-      const crit=secondary?{tier:0,multiplier:1}:Combat.critical(stats.critChance,stats.critDamage,this.random());
+      const crit=secondary?{tier:0,multiplier:1}:Combat.critical(stats.critChance+(this.weaponStats(source)?.critical||0),stats.critDamage,this.random());
       damage*=crit.multiplier;
       if(crit.tier){this.criticalHits++;if(crit.tier===2)this.megaCriticalHits++;}
       const dealt=this.hurtEnemy(enemy,damage,knock,{source,critical:crit.tier})||0;
@@ -287,27 +306,23 @@
       const d=Math.max(.01,distance(enemy,p)),desired=enemy.bossId==='colgera'||enemy.bossId==='helmaroc'?5:2;
       if(d>desired){enemy.x+=(p.x-enemy.x)/d*enemy.speed*dt;enemy.z+=(p.z-enemy.z)/d*enemy.speed*dt;}
     }
-    weaponStats(id,rank=this.rank(id)) {
-      const r=Math.max(1,rank),awakened=r>=7?1.5:1,m=this.damageMultiplier;
-      const specs={
-        ember:{damage:(13+r*5)*m*awakened,count:r>=7?4:r>=4?2:1,cooldown:Math.max(.25,.85-r*.055),radius:.28},
-        leaf:{damage:(10+r*4)*m*awakened,count:2+Math.ceil(r/2),cooldown:1.55-r*.1,radius:.42},
-        orbit:{damage:(10+r*5)*m*awakened,count:r+1,cooldown:.45,radius:2.6},
-        nova:{damage:(20+r*12)*m*awakened,count:1,cooldown:4.5-r*.28,radius:4+r*.65},
-        bomb:{damage:(30+r*11)*m*awakened,count:r>=5?2:1,cooldown:2.1-r*.12,radius:2.8+r*.3},
-        boomerang:{damage:(12+r*4)*m*awakened,count:r>=7?3:r>=4?2:1,cooldown:1.7-r*.09,radius:.5}
-      };
-      const stats=specs[id];return stats?{...stats,cooldown:stats.cooldown*this.cooldownMultiplier}:null;
+    weaponStats(id,rank=this.rank(id),rarity=0) {
+      const base=Combat.ATTACKS[id];if(!base)return null;
+      const r=Math.max(1,rank),history=(this.weaponUpgrades[id]||[]).slice(0,r-1);while(history.length<r-1)history.push(history.length<this.rank(id)-1?0:rarity);
+      const growth=Combat.upgradeGrowth(id,history);
+      return{damage:base.damage*growth.damage*(1+(r-1)*.04)*this.damageMultiplier,count:base.count+growth.count,cooldown:base.cooldown*growth.cooldown*this.cooldownMultiplier,radius:base.radius*growth.area,speed:base.speed*growth.speed,duration:base.duration*growth.duration,pierce:base.pierce+growth.pierce,bounce:growth.bounce,critical:growth.critical,status:growth.status,homing:!!base.homing};
     }
     upgradeSummary(id) {
-      const rank=this.rank(id),before=this.weaponStats(id,rank),after=this.weaponStats(id,rank+1);
+      const rank=this.rank(id),before=this.weaponStats(id,rank),after=this.weaponStats(id,rank+1,this.choices.find(choice=>choice.id===id)?.rarity||0);
       if(!after)return UPGRADES.find(u=>u.id===id)?.desc||'Restore all health.';
       const multiplier=this.stats[Combat.WEAPONS[id]]||1,damage=Math.round(after.damage*multiplier),first=rank?Math.round(before.damage*multiplier)+' → '+damage:String(damage);
-      return 'Damage '+first+' · '+after.count+(id==='orbit'?' relics':' shots')+' · '+after.cooldown.toFixed(2)+'s'+(id==='nova'||id==='bomb'?' · radius '+after.radius.toFixed(1):'');
+      const details=['Damage '+first,after.count+(id==='orbit'?' relics':' shots'),after.cooldown.toFixed(2)+'s'];
+      for(const [key,label,format]of [['pierce','pierce',value=>value],['bounce','bounces',value=>value],['speed','speed',value=>value.toFixed(1)],['radius','radius',value=>value.toFixed(1)],['duration','duration',value=>value.toFixed(1)+'s'],['critical','crit bonus',value=>Math.round(value*100)+'%']])if(rank&&Math.abs(after[key]-before[key])>.00001)details.push(label+' '+format(before[key])+' → '+format(after[key]));
+      return details.join(' · ');
     }
     weaponSummary(id){
       const stats=this.weaponStats(id);if(!stats)return '';
-      return 'Damage '+Math.round(stats.damage*(this.stats[Combat.WEAPONS[id]]||1))+' · '+stats.count+(id==='orbit'?' relics':' shots')+' · '+stats.cooldown.toFixed(2)+'s'+(id==='nova'||id==='bomb'?' · radius '+stats.radius.toFixed(1):'');
+      return 'Damage '+Math.round(stats.damage*(this.stats[Combat.WEAPONS[id]]||1))+' · '+stats.count+(id==='orbit'?' relics':' shots')+' · '+stats.cooldown.toFixed(2)+'s'+(id==='nova'||id==='bomb'||id==='orbit'?' · radius '+stats.radius.toFixed(1):'')+(id==='orbit'?' · active '+stats.duration.toFixed(1)+'s':'')+(stats.pierce&&stats.pierce<99?' · '+stats.pierce+' pierce':'')+(stats.bounce?' · '+stats.bounce+' bounces':'')+(stats.critical?' · +'+Math.round(stats.critical*100)+'% crit':'');
     }
     explode(projectile) {
       if(projectile.exploded)return;projectile.exploded=true;projectile.type='bomb';
@@ -317,7 +332,7 @@
     get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade'].includes(this.state)&&this.player.hp>0&&!this.boss;}
     checkpoint(){
       if(!this.canCheckpoint)return null;
-      return {version:2,combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
+      return {version:2,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
     }
     static fromCheckpoint(raw){
       const validNumber=(value,min,max,integer=false)=>Number.isFinite(value)&&value>=min&&value<=max&&(!integer||Number.isInteger(value));
@@ -326,14 +341,26 @@
       const indices=value=>Array.isArray(value)&&value.length<=REALMS.length&&new Set(value).size===value.length&&value.every(v=>validNumber(v,0,REALMS.length-1,true));
       if(!indices(raw.shrines)||!indices(raw.visited)||!raw.visited.includes(raw.realm)||!raw.ranks||typeof raw.ranks!=='object'||Array.isArray(raw.ranks)||!Array.isArray(raw.banished)||raw.banished.length>1||raw.banished.some(id=>!UPGRADES.some(u=>u.id===id)))throw new Error('Invalid checkpoint collection.');
       const game=new Game(raw.hero,Date.now(),{mode:raw.mode,difficulty:raw.difficulty,upgrades:raw.permanent,runId:raw.runId});
-      game.ranks={};for(const upgrade of UPGRADES){const value=raw.ranks[upgrade.id]||0;if(!validNumber(value,0,upgrade.max+REALMS.filter(realm=>realm.gift===upgrade.id).length,true))throw new Error('Invalid checkpoint rank.');if(value)game.ranks[upgrade.id]=value;}
+      game.shrines=new Set(raw.shrines);if(raw.gear!==undefined)game.gear=Combat.validateGear(raw.gear);
+      if(Object.keys(raw.ranks).some(id=>!UPGRADES.some(item=>item.id===id)))throw new Error('Invalid checkpoint rank.');
+      game.ranks={};for(const upgrade of UPGRADES){const value=raw.ranks[upgrade.id]??0;if(!validNumber(value,0,game.rankLimit(upgrade.id),true))throw new Error('Invalid checkpoint rank.');if(value)game.ranks[upgrade.id]=value;}
+      if(raw.buildVersion!==undefined&&raw.buildVersion!==1)throw new Error('Unsupported saved build version.');
+      if(raw.buildVersion===1){if(!raw.legacySlots||!validNumber(raw.legacySlots.weapons,0,6,true)||!validNumber(raw.legacySlots.charms,0,6,true))throw new Error('Invalid legacy slot capacity.');game.legacySlots={...raw.legacySlots};}
+      else for(const [key,category]of[['weapons','WEAPON'],['charms','CHARM']]){const owned=game.slotCount(category),pending=raw.state==='upgrade'&&Array.isArray(raw.choices)&&raw.choices.some(id=>UPGRADES.some(item=>item.id===id&&item.category===category&&!game.learnedRank(id)));game.legacySlots[key]=Math.min(6,owned+(pending?1:0));}
+      if(game.slotCount('WEAPON')>game.weaponSlots||game.slotCount('CHARM')>game.charmSlots)throw new Error('Saved equipment exceeds its slot capacity.');
+      if(raw.weaponUpgrades!==undefined&&(!raw.weaponUpgrades||typeof raw.weaponUpgrades!=='object'||Array.isArray(raw.weaponUpgrades)||Object.keys(raw.weaponUpgrades).some(id=>!Object.hasOwn(Combat.WEAPONS,id)||!game.rank(id))))throw new Error('Invalid saved weapon upgrades.');
+      for(const id of Object.keys(Combat.WEAPONS))if(game.rank(id)){
+        const history=raw.weaponUpgrades?.[id]??Array(game.rank(id)-1).fill(0);
+        if(!Array.isArray(history)||history.length!==game.rank(id)-1||history.some(value=>!validNumber(value,0,4,true)))throw new Error('Invalid saved weapon rarity history.');
+        game.weaponUpgrades[id]=[...history];
+      }
+      if(raw.choiceRarities!==undefined&&(!raw.choiceRarities||typeof raw.choiceRarities!=='object'||Array.isArray(raw.choiceRarities)||Object.entries(raw.choiceRarities).some(([id,value])=>!raw.choices?.includes(id)||!validNumber(value,0,4,true))))throw new Error('Invalid saved choice rarity.');
       if(raw.realmStages!==undefined&&(!Array.isArray(raw.realmStages)||raw.realmStages.length!==REALMS.length||raw.realmStages.some(value=>!validNumber(value,1,3,true))))throw new Error('Invalid saved map levels.');
       if(raw.stageKills!==undefined&&(!Array.isArray(raw.stageKills)||raw.stageKills.length!==REALMS.length||raw.stageKills.some(value=>!validNumber(value,0,1000000,true))))throw new Error('Invalid saved level progress.');
       game.realmStages=raw.realmStages?[...raw.realmStages]:REALMS.map((_,i)=>raw.shrines.includes(i)?3:1);game.stageKills=raw.stageKills?[...raw.stageKills]:REALMS.map(()=>0);
       if(raw.shrines.some(index=>game.realmStages[index]!==3))throw new Error('A saved seal requires level three.');
-      game.realm=raw.realm;game.time=raw.time;game.level=raw.level;game.xp=raw.xp;game.xpNeed=raw.level===1?12:Math.floor(10+raw.level*4+Math.pow(raw.level,1.35));game.shrines=new Set(raw.shrines);game.visited=new Set(raw.visited);
+      game.realm=raw.realm;game.time=raw.time;game.level=raw.level;game.xp=raw.xp;game.xpNeed=xpForLevel(raw.level);game.shrines=new Set(raw.shrines);game.visited=new Set(raw.visited);
       if(raw.combatVersion!==undefined&&raw.combatVersion!==1)throw new Error('Unsupported saved combat version.');
-      if(raw.gear!==undefined)game.gear=Combat.validateGear(raw.gear);
       if(raw.pendingLoot!==undefined){
         if(!Array.isArray(raw.pendingLoot)||raw.pendingLoot.length>12||raw.pendingLoot.some(id=>!Combat.item(id)))throw new Error('Invalid saved loot.');
         game.loot=raw.pendingLoot.map((gearId,i)=>({id:game.nextId++,gearId,x:Math.cos(i*2.4)*2,z:Math.sin(i*2.4)*2}));
@@ -348,8 +375,8 @@
       game.energy=raw.energy;game.kills=raw.kills;game.damageDealt=validNumber(raw.damageDealt,0,1e10)?raw.damageDealt:0;game.damageTaken=validNumber(raw.damageTaken,0,1e8)?raw.damageTaken:0;
       game.refreshes=raw.refreshes;game.skips=raw.skips;game.banishes=raw.banishes;game.banished=new Set(raw.banished);game.checkpointRevision=Number.isInteger(raw.revision)?Math.max(1,raw.revision):1;game.eliteMinute=Math.floor(game.time/60);game.spawnTimer=1.5;
       if(raw.state==='upgrade'){
-        if(!Array.isArray(raw.choices)||raw.choices.length<1||raw.choices.length>3||new Set(raw.choices).size!==raw.choices.length||raw.choices.some(id=>id!=='feast'&&(!UPGRADES.some(item=>item.id===id&&game.rank(id)<item.max)||game.banished.has(id))))throw new Error('Invalid saved upgrade choices.');
-        game.state='upgrade';game.choices=raw.choices.map(id=>id==='feast'?{id:'feast',name:'Red Potion',category:'RESTORE',icon:'plus',desc:'Restore all health.',max:Infinity}:UPGRADES.find(item=>item.id===id));
+        if(!Array.isArray(raw.choices)||raw.choices.length<1||raw.choices.length>3||new Set(raw.choices).size!==raw.choices.length||raw.choices.some(id=>id!=='feast'&&!game.canOffer(UPGRADES.find(item=>item.id===id))))throw new Error('Invalid saved upgrade choices.');
+        game.state='upgrade';game.choices=raw.choices.map(id=>({...id==='feast'?{id:'feast',name:'Red Potion',category:'RESTORE',icon:'plus',desc:'Restore all health.',max:Infinity}:UPGRADES.find(item=>item.id===id),rarity:raw.choiceRarities?.[id]??0}));
       }else game.checkLevel();return game;
     }
 
@@ -492,12 +519,12 @@
     collect(amount) { if(this.mode==='training'||!Number.isFinite(amount)||amount<=0)return;this.xp += amount*this.stats.xpGain; this.checkLevel(); }
     checkLevel() {
       if (this.xp >= this.xpNeed && this.state === 'running') {
-        this.xp -= this.xpNeed; this.level++; this.xpNeed = Math.floor(10 + this.level * 4 + Math.pow(this.level, 1.35));
+        this.xp -= this.xpNeed; this.level++; this.xpNeed = xpForLevel(this.level);
         this.state = 'upgrade'; this.choices = this.rollUpgrades(); this.checkpointRevision++; this.emit('level', { level: this.level });
       }
     }
     rollUpgrades() {
-      const pool = UPGRADES.filter(u => this.rank(u.id) < u.max && !this.banished.has(u.id));
+      const pool = UPGRADES.filter(u => this.canOffer(u));
       if (!pool.length) return [{ id: 'feast', name: 'Red Potion', category: 'RESTORE', icon: 'plus', desc: 'Restore all health.', max: Infinity }];
       const picks = [];
       // Always offer one available weapon so a run can grow into a build.
@@ -506,7 +533,11 @@
       while (picks.length < Math.min(3, pool.length)) {
         const available = pool.filter(u => !picks.includes(u)); picks.push(available[Math.floor(this.random() * available.length)]);
       }
-      return picks;
+      return picks.map(item=>({...item,rarity:item.category==='WEAPON'&&this.rank(item.id)>0?this.rollRarity():0}));
+    }
+    rollRarity(){
+      let roll=this.random()*Combat.RARITIES.reduce((sum,item)=>sum+item.weight,0);
+      for(let i=0;i<Combat.RARITIES.length;i++){roll-=Combat.RARITIES[i].weight;if(roll<0)return i;}return 0;
     }
     refreshChoices() {
       if (this.state !== 'upgrade' || this.refreshes <= 0) return false;
@@ -521,22 +552,24 @@
       this.banishes--; this.banished.add(id); this.choices = this.rollUpgrades(); this.checkpointRevision++; return true;
     }
     choose(id) {
-      if (this.state !== 'upgrade' || !this.choices.some(u => u.id === id)) return false;
+      if (this.state !== 'upgrade' || !this.choices.some(u => u.id === id)||(id!=='feast'&&!this.canOffer(UPGRADES.find(item=>item.id===id)))) return false;
       if (id === 'feast') this.player.hp = this.player.maxHp;
-      else this.ranks[id] = this.rank(id) + 1;
+      else {
+        if(Combat.WEAPONS[id]&&this.rank(id)>0){const history=this.weaponUpgrades[id]||(this.weaponUpgrades[id]=Array(this.rank(id)-1).fill(0));history.push(this.choices.find(item=>item.id===id).rarity??0);}
+        this.ranks[id] = this.rank(id) + 1;
+      }
       if (id === 'vitality') { const hp=this.player.hp;this.refreshStats();this.player.hp=hp;this.heal(35); }
-      if (this.rank(id) === 7) this.emit('evolve', { id });
       this.choices = []; this.state = 'running'; this.checkpointRevision++; this.emit('choose', { id }); this.checkLevel(); return true;
     }
     fire(type,target,angleOffset=0) {
       if(this.projectiles.length>=300)return;
       const p=this.player,stats=this.weaponStats(type),angle=Math.atan2(target.z-p.z,target.x-p.x)+angleOffset;
       const y=p.y+(p.ground||0)+1,vy=(this.groundAt(target.x,target.z)+1-y)/Math.max(1,distance(p,target));
-      this.projectiles.push({id:this.nextId++,actorId:this.actorId||null,type,x:p.x,z:p.z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:type==='bomb'?1.15:type==='boomerang'?2.4:type==='leaf'?1.65:2.5,age:0,speed:(type==='bomb'?7:type==='boomerang'?15:type==='leaf'?14:17)*this.stats.projectileSpeed,damage:stats.damage,radius:stats.radius>1?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,hits:new Set(),targetId:target.id,returning:false});
+      this.projectiles.push({id:this.nextId++,actorId:this.actorId||null,type,x:p.x,z:p.z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:stats.duration,duration:stats.duration,age:0,speed:stats.speed*this.stats.projectileSpeed,damage:stats.damage,radius:type==='bomb'?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,pierce:stats.pierce,bounce:stats.bounce,homing:stats.homing,hits:new Set(),targetId:target.id,returning:false});
       this.setAction(type==='leaf'||type==='bomb'?'cast':'attack',.42);this.player.attackKind=type;
     }
     updateWeapons(dt) {
-      for(const id of ['ember','leaf','nova','bomb','boomerang'])this.cooldowns[id]-=dt;
+      for(const id of Object.keys(Combat.WEAPONS))this.cooldowns[id]-=dt;
       const target=this.attackTarget(26),p=this.player;
       for(const id of ['ember','leaf','bomb','boomerang'])if(target&&this.rank(id)&&this.cooldowns[id]<=0){
         const stats=this.weaponStats(id);
@@ -548,11 +581,14 @@
         for(const enemy of this.enemies)if(distance(p,enemy)<stats.radius+enemy.radius)this.hitEnemy(enemy,stats.damage,'nova',4);
         this.cooldowns.nova=stats.cooldown;
       }}
-      this.orbitAngle+=dt*(2.4+this.rank('haste')*.3);
-      if(this.rank('orbit')){const stats=this.weaponStats('orbit');for(const enemy of this.enemies){
+      this.orbitActive=Math.max(0,this.orbitActive-dt);
+      if(this.rank('orbit')){const stats=this.weaponStats('orbit');this.orbitAngle+=dt*stats.speed;
+      if(this.cooldowns.orbit<=0){this.orbitActive=stats.duration;this.cooldowns.orbit=stats.cooldown;}
+      for(const enemy of this.enemies){
         const key=this.actorId||'solo';enemy.orbitHits=enemy.orbitHits||{};enemy.orbitHits[key]=(enemy.orbitHits[key]||0)-dt;if(enemy.dead||enemy.orbitHits[key]>0)continue;
+        if(this.orbitActive<=0)continue;
         for(let i=0;i<stats.count;i++){const angle=this.orbitAngle+i*TAU/stats.count,rock={x:p.x+Math.cos(angle)*stats.radius,z:p.z+Math.sin(angle)*stats.radius};
-          if(distance(enemy,rock)<enemy.radius+.5){this.hitEnemy(enemy,stats.damage,'orbit',2.5);enemy.orbitHits[key]=stats.cooldown;break;}
+          if(distance(enemy,rock)<enemy.radius+.5){this.hitEnemy(enemy,stats.damage,'orbit',2.5);enemy.orbitHits[key]=.5;break;}
         }
       }}
     }
@@ -634,27 +670,35 @@
       this.updateAllWeapons(dt);
       for(const projectile of this.projectiles){
         const p=this.projectileOwner(projectile);
+        const previous={x:projectile.x,z:projectile.z,y:projectile.y??this.groundAt(projectile.x,projectile.z)+1};
         projectile.life-=dt;projectile.age=(projectile.age||0)+dt;
         if(projectile.type==='bomb'){
           projectile.speed*=Math.exp(-dt*1.4);projectile.x+=projectile.vx*projectile.speed*dt;projectile.z+=projectile.vz*projectile.speed*dt;
           if(projectile.life<=0)this.explode(projectile);continue;
         }
-        if(projectile.type==='boomerang'&&projectile.age>.72){
+        if(projectile.type==='boomerang'&&projectile.age>(projectile.duration??1.3)*.5){
           if(!projectile.returning){projectile.returning=true;projectile.hits.clear();}
           const d=Math.max(.01,distance(projectile,p)),steer=Math.min(1,dt*10);projectile.vx+=( (p.x-projectile.x)/d-projectile.vx)*steer;projectile.vz+=( (p.z-projectile.z)/d-projectile.vz)*steer;projectile.vy+=((p.y+p.ground+1-projectile.y)/d-projectile.vy)*steer;
           if(d<.7){projectile.life=0;continue;}
         }
-        if(projectile.type==='ember'){
+        if(projectile.homing){
           const target=this.enemies.find(enemy=>enemy.id===projectile.targetId&&!enemy.dead);
           if(target){const d=distance(target,projectile);if(d>.01){const steer=Math.min(1,dt*5);projectile.vx+=((target.x-projectile.x)/d-projectile.vx)*steer;projectile.vz+=((target.z-projectile.z)/d-projectile.vz)*steer;projectile.vy+=((this.groundAt(target.x,target.z)+1-projectile.y)/d-projectile.vy)*steer;const length=Math.max(.01,Math.hypot(projectile.vx,projectile.vz));projectile.vx/=length;projectile.vz/=length;}}
         }
         projectile.x+=projectile.vx*projectile.speed*dt;projectile.z+=projectile.vz*projectile.speed*dt;
         projectile.y+=(projectile.vy||0)*projectile.speed*dt;
         if(projectile.y!==undefined&&projectile.y<this.groundAt(projectile.x,projectile.z)+.08){projectile.life=0;continue;}
-        if(projectile.hostile){for(const target of this.damageTargets())if(distance(projectile,target)<projectile.radius+target.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(target.y+(target.ground||0)+1))<1.3){this.hurtPlayer(projectile.damage,this.enemies.find(enemy=>enemy.id===projectile.ownerId),target);projectile.life=0;break;}continue;}
+        if(projectile.hostile){for(const target of this.damageTargets())if(hitAlong(previous,projectile,target,projectile.radius+target.radius,target.y+(target.ground||0)+1,1.3)){this.hurtPlayer(projectile.damage,this.enemies.find(enemy=>enemy.id===projectile.ownerId),target);projectile.life=0;break;}continue;}
         for(const enemy of this.enemies){
           if(enemy.dead||projectile.hits.has(enemy.id))continue;
-          if(distance(projectile,enemy)<projectile.radius+enemy.radius&&Math.abs((projectile.y??this.groundAt(projectile.x,projectile.z)+1)-(this.groundAt(enemy.x,enemy.z)+1))<Math.max(1.4,enemy.radius)){this.hitProjectile(enemy,projectile);projectile.hits.add(enemy.id);if(projectile.type==='ember'){projectile.life=0;break;}}
+          if(hitAlong(previous,projectile,enemy,projectile.radius+enemy.radius,this.groundAt(enemy.x,enemy.z)+1,Math.max(1.4,enemy.radius))){
+            this.hitProjectile(enemy,projectile);projectile.hits.add(enemy.id);
+            if(projectile.bounce>0){
+              const next=this.enemies.filter(target=>!target.dead&&!projectile.hits.has(target.id)).sort((a,b)=>distance(a,projectile)-distance(b,projectile))[0];
+              if(next){const d=Math.max(.01,distance(next,projectile));projectile.bounce--;projectile.targetId=next.id;projectile.vx=(next.x-projectile.x)/d;projectile.vz=(next.z-projectile.z)/d;projectile.vy=(this.groundAt(next.x,next.z)+1-projectile.y)/d;break;}
+            }
+            if((projectile.pierce??0)<=0){projectile.life=0;break;}projectile.pierce--;
+          }
         }
       }
       this.projectiles=this.projectiles.filter(projectile=>projectile.life>0);
@@ -673,5 +717,5 @@
       for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
     }
   }
-  return { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, seeded, clamp };
+  return { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, xpForLevel, seeded, clamp };
 });

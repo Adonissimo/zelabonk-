@@ -40,7 +40,7 @@
         ['collector','A full pouch','Discover every weapon and charm.',this.items.length===UPGRADES.length]
       ];return entries.map(([id,name,desc,complete])=>({id,name,desc,complete}));
     }
-    upgradeCost(id){const item=PERMANENT.find(item=>item.id===id);return !item||this.upgrades[id]>=item.max?null:20*(this.upgrades[id]+1);}
+    upgradeCost(id){const item=PERMANENT.find(item=>item.id===id);return !item||this.upgrades[id]>=item.max?null:item.costs?item.costs[this.upgrades[id]]:20*(this.upgrades[id]+1);}
     purchase(id){const cost=this.upgradeCost(id);if(cost===null||this.rupees<cost)return false;this.rupees-=cost;this.upgrades[id]++;return true;}
     recordItem(id){if(!UPGRADES.some(item=>item.id===id)||this.items.includes(id))return false;this.items.push(id);return true;}
     recordGear(id){if(!Combat.item(id)||this.gear.includes(id))return false;this.gear.push(id);return true;}
@@ -86,7 +86,7 @@
       if(!raw||typeof raw!=='object'||raw.game!=='ZeldaBonk'||raw.version!==2)throw new Error('That is not a supported ZeldaBonk save.');
       for(const key of ['rupees','runs','wins','adventureWins','survivalWins','bestKills','totalKills'])if(!Number.isInteger(raw[key])||raw[key]<0||raw[key]>1e9)throw new Error('The save has invalid '+key+'.');
       if(!raw.upgrades||typeof raw.upgrades!=='object'||Array.isArray(raw.upgrades))throw new Error('The save has invalid upgrades.');
-      for(const item of PERMANENT)if(!Number.isInteger(raw.upgrades[item.id])||raw.upgrades[item.id]<0||raw.upgrades[item.id]>item.max)throw new Error('The save has an invalid upgrade rank.');
+      for(const item of PERMANENT){if(['weaponSlot','charmSlots'].includes(item.id)&&raw.upgrades[item.id]===undefined)continue;if(!Number.isInteger(raw.upgrades[item.id])||raw.upgrades[item.id]<0||raw.upgrades[item.id]>item.max)throw new Error('The save has an invalid upgrade rank.');}
       for(const key of ['guardians','items','rewardedRuns'])if(!Array.isArray(raw[key])||raw[key].length>512)throw new Error('The save has invalid collections.');
       if(raw.gear!==undefined&&(!Array.isArray(raw.gear)||raw.gear.length>Combat.GEAR.length||raw.gear.some(id=>!Combat.item(id))))throw new Error('The save has invalid equipment discoveries.');
       if(raw.bindings&&(!Object.keys(DEFAULT_BINDINGS).every(key=>validBinding(raw.bindings[key]))||new Set(Object.values(raw.bindings)).size!==Object.keys(DEFAULT_BINDINGS).length))throw new Error('The save has invalid control bindings.');

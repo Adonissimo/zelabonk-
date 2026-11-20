@@ -35,27 +35,27 @@ Survival uses the connected map network with immediate shrine rewards and the ti
 
 ## Combat and progression
 
-Weapons cast automatically. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Rank 7 awakens weapons. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
+Weapons cast automatically. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Start with three weapon and three charm slots. The Great Fairy camp unlocks a fourth weapon for 1500 rupees, then a fourth and fifth charm for 1200 and 3000 rupees. Weapons cap at level 8 and charms at 10. Adventure Pouch extends weapons to 10; Green Potion extends charms to 12. Shrine bonuses consume no learned slots. Weapon upgrades have five rarities, with real changes to damage, shot count, cooldown, speed, piercing, bounces and critical chance. The old automatic rank-7 awakening has been removed. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
 
 Bosses change phase at two-thirds and one-third health. Warnings precede slams, charges, volleys, summons and teleports. Time and enemy defeats charge your Ultimate. Animation states include idle, locomotion, attacks, casting, Ultimates, hurt, jump/glide, dash, spawn, wind-up, defeat and victory.
 
 Link, Zelda and Midna start unlocked. Helmaroc King unlocks Tetra; three different guardians unlock Sheik; Majora's Mask unlocks Skull Kid. Their automatic loadouts and survivor effects are crossover adaptations.
 
-Completed runs grant rupees. The Great Fairy camp sells five capped permanent upgrades: Heart Container, Power Bracelet, Mirror Shield, Wallet and Magic Jar. Custom bonuses apply to new runs. A journal tracks heroes, bosses, equipment, local enemies, and six achievements.
+Completed runs grant rupees. The Great Fairy camp sells capped permanent upgrades: Heart Container, Power Bracelet, Mirror Shield, Wallet, Magic Jar, and weapon/charm slot unlocks. Custom bonuses apply to new runs. A journal tracks heroes, bosses, equipment, local enemies, and six achievements.
 
 ## Treasure and Training Grounds
 
-Elites and every twentieth defeated enemy drop treasure; guardians drop a Rare-or-better chest. Walk over a chest to collect it. Twenty-four Zelda treasures cover five rarities and stack up to their listed limit, normally ten. Uncollected chests bank before travel, and checkpoints preserve pending rewards separately from acquired stacks.
+Elites and every twentieth defeated enemy drop treasure; guardians drop a Rare-or-better chest. Walk over a chest to collect it. Twenty-six Zelda treasures cover five rarities and stack up to their listed limit, normally ten. Uncollected chests bank before travel, and checkpoints preserve pending rewards separately from acquired stacks.
 
 Equipment modifies physical/magic damage, critical chance and damage, movement, projectile speed, armor, evasion, healing, regeneration, lifesteal, thorns and XP collection. Critical chance starts at 5%, with 175% critical damage. Above 100%, additional critical chance becomes mega-critical probability, capped at 200%. Fire, ice, splash and shock fruits add statuses; opposing fire/water effects produce steam, and shock chains from soaked targets. Inventory shows actual damage per weapon and effect.
 
-Choose **Training grounds** from the title. Try any of six heroes on any map/stage. Edit up to four weapons at ranks 0–8 and five charms at ranks 0–10, change treasure stacks, and manually spawn a stationary dummy, groups, elites, alphas or a map guardian. Inventory reopens Training controls. Incoming damage is disabled by default and can be enabled. Applying a build resets the arena; setting treasure alone preserves it. Training grants no rewards, discoveries or unlocks, and never replaces a saved Adventure. Training itself is not saved.
+Choose **Training grounds** from the title. Try any of six heroes on any map/stage. Edit up to four weapons at levels 0–8 and five charms at levels 0–10, extend the caps to 10/12 with the appropriate treasure, select each weapon’s upgrade rarity, change treasure stacks, and manually spawn a stationary dummy, groups, elites, alphas or a map guardian. Inventory reopens Training controls. Incoming damage is disabled by default and can be enabled. Applying a build resets the arena; setting treasure alone preserves it. Training grants no rewards, discoveries or unlocks, and never replaces a saved Adventure. Training itself is not saved.
 
 These are independently authored Zelda equivalents. PARITY.md identifies verified reference formulas and remaining differences; this release does not claim full PokéBonk parity.
 
 ## Saves and settings
 
-Safe checkpoints preserve map levels and pending upgrade choices. Boss encounters restart from the preceding safe checkpoint. Pause and return to title to save safe progress. Starting a new run protects an existing checkpoint with a replacement choice.
+Safe checkpoints preserve map levels, learned weapon rarity history, and pending choices with their rarities. Older oversized builds retain their slot capacity; older weapon ranks receive Common history because rarity was not previously stored. Boss encounters restart from the preceding safe checkpoint. Pause and return to title to save safe progress. Starting a new run protects an existing checkpoint with a replacement choice.
 
 Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, camera sensitivity, inverted Y, field of view, camera distance, free or captured cursor, keyboard rebinding, export and import. Move the mouse to look without holding a button. Touch uses an arena swipe. Duplicate key assignments are rejected; camera and keys have reset actions. Import validates data and backs up the current profile in browser storage before replacement. Profiles do not sync across devices; export before moving. Old basic records migrate automatically. If storage fails, play continues in memory and export remains available. Web Locks serialize profile mutations in browsers that support them. A stale run cannot overwrite another run's checkpoint.
 
@@ -110,4 +110,4 @@ The repository is connected to https://zelabonk.vercel.app . Static hosting uses
 
 Unofficial fan game, unaffiliated with Nintendo. Zelda's characters, names and settings belong to their respective owners. Pixel artwork and animations are independently authored. No Nintendo or PokéBonk sprites, music, models or source are bundled. Three.js uses MIT; Lilita One and Nunito use SIL Open Font License. License texts ship alongside those files.
 
-Reference: https://pokebonk.com/ . The public v0.10.15 client, official notes, and non-counting Training Grounds were inspected. These eight maps remain compact interpretations. Capture, fusion, transformations, additional modes, expanded catalogs, multiplayer, accounts and social systems are requested work that remains unfinished. No online backend exists yet.
+Reference: https://pokebonk.com/ . The public v0.10.15 and v0.10.17 clients, official notes, and non-counting Training Grounds were inspected. These eight maps remain compact interpretations. Capture, fusion, transformations, additional modes, expanded catalogs, multiplayer, accounts and social systems are requested work that remains unfinished. No online backend exists yet.

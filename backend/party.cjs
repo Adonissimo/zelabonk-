@@ -1,5 +1,5 @@
 'use strict';
-const { Game, REALMS, seeded } = require('../core.js');
+const { Game, REALMS, UPGRADES, seeded, xpForLevel } = require('../core.js');
 const { check, uuid } = require('./security.cjs');
 const ACTOR_FIELDS = [
   'hero',
@@ -23,6 +23,9 @@ const ACTOR_FIELDS = [
   'banished',
   'choices',
   'damageBySource',
+  'legacySlots',
+  'weaponUpgrades',
+  'orbitActive',
 ];
 const WORLD_FIELDS = Object.keys(new Game('link', 1)).filter(
   (key) => !ACTOR_FIELDS.includes(key) && !['random', 'events'].includes(key),
@@ -183,7 +186,7 @@ class PartyGame extends Game {
     if (this.state !== 'running' || this.xp < this.xpNeed) return;
     this.xp -= this.xpNeed;
     this.level++;
-    this.xpNeed = Math.floor(10 + this.level * 4 + Math.pow(this.level, 1.35));
+    this.xpNeed = xpForLevel(this.level);
     this.state = 'upgrade';
     for (const id of this.members.keys())
       this.withActor(id, () => {
@@ -291,10 +294,22 @@ class PartyGame extends Game {
       mode: saved.world.mode,
       difficulty: saved.world.difficulty,
     });
-    for (const key of WORLD_FIELDS) game[key] = saved.world[key];
-    game.members = new Map(saved.members.map(({ id, actor }) => [id, actor]));
+    for (const key of WORLD_FIELDS) if (Object.hasOwn(saved.world, key)) game[key] = saved.world[key];
+    for (const { id, actor } of saved.members) {
+      const defaults = game.members.get(id);
+      const restored = { ...defaults, ...actor, cooldowns: { ...defaults.cooldowns, ...actor.cooldowns } };
+      if (!actor.legacySlots) {
+        const learned = item => (restored.ranks[item.id] || 0) - (item.category === 'CHARM' ? [...game.shrines].filter(index => REALMS[index].gift === item.id).length : 0);
+        for (const [key, category] of [['weapons', 'WEAPON'], ['charms', 'CHARM']]) {
+          const pending = restored.choices.some(choice => UPGRADES.some(item => item.id === choice.id && item.category === category && learned(item) <= 0));
+          restored.legacySlots[key] = Math.min(6, UPGRADES.filter(item => item.category === category && learned(item) > 0).length + (pending ? 1 : 0));
+        }
+      }
+      game.members.set(id, restored);
+    }
     Object.assign(game, game.members.get(game.actorId));
     game.random = seeded(saved.randomState);
+    game.xpNeed = xpForLevel(game.level);
     game.boss = game.boss ? game.enemies.find((enemy) => enemy.id === game.boss.id) || null : null;
     return game;
   }
@@ -321,7 +336,7 @@ class PartyGame extends Game {
       })),
       own: {
         gear: own.gear,
-        choices: own.choices.map((choice) => ({ id: choice.id, name: choice.name })),
+        choices: own.choices.map((choice) => ({ id: choice.id, name: choice.name, rarity: choice.rarity ?? 0 })),
         refreshes: own.refreshes,
         skips: own.skips,
         banishes: own.banishes,
