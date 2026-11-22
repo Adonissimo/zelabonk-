@@ -15,7 +15,18 @@
     // The shrine is physical, while the activation ring remains accessible.
     obstacles.push(Object.freeze({id:1000,kind:'shrine',x:0,z:-7,radius:1.55,height:2.5,scale:1}));
     const cells=new Map();for(const obstacle of obstacles)for(let x=Math.floor((obstacle.x-obstacle.radius-3)/CELL);x<=Math.floor((obstacle.x+obstacle.radius+3)/CELL);x++)for(let z=Math.floor((obstacle.z-obstacle.radius-3)/CELL);z<=Math.floor((obstacle.z+obstacle.radius+3)/CELL);z++){const cell=x+':'+z;if(!cells.has(cell))cells.set(cell,[]);cells.get(cell).push(obstacle);}collisionCells.set(key,cells);
-    const result=Object.freeze({terraces:Object.freeze(terraces),obstacles:Object.freeze(obstacles)});cache.set(key,result);return result;
+    // Low dressing stays outside the fighting lanes and never changes collision geometry.
+    const details=[],patches=[],dress=random(95471+realm*2179+stage*7919);
+    for(let i=0;i<90;i++){
+      const x=(dress()-.5)*116,z=(dress()-.5)*116,variant=i%4;
+      patches.push(Object.freeze({x,z,radius:2+dress()*4}));
+      for(let j=0;j<7;j++){
+        const px=x+(dress()-.5)*7,pz=z+(dress()-.5)*7;
+        if(Math.hypot(px,pz)<3.4||Math.hypot(px,pz+7)<3||GATES.some(g=>pathDistance(px,pz,g)<2.5))continue;
+        details.push(Object.freeze({x:px,z:pz,kind:i%9===0&&j===0?'prop':'plant',variant,scale:.65+dress()*.8}));
+      }
+    }
+    const result=Object.freeze({terraces:Object.freeze(terraces),obstacles:Object.freeze(obstacles),details:Object.freeze(details),patches:Object.freeze(patches)});cache.set(key,result);return result;
   }
   function rawHeight(realm,stage,x,z){
     if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>LIMIT||Math.abs(z)>LIMIT)return 0;

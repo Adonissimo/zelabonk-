@@ -14,7 +14,7 @@ The user wants PokéBonk as the mechanics, graphics, and overall presentation re
 
 An unofficial single-player Zelda survivor featuring Link, Zelda, Midna, Tetra, Sheik, and Skull Kid. Adventure has eight connected maps, three numbered levels each, eight guardians, and final Ganondorf. The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Their enemy pools and landmark depictions match those Zelda locations. Health, time, equipment, XP, charge, and unfinished map levels persist through gates.
 
-Characters and foliage use independently drawn pixel-art billboards in a textured Three.js world. No official sprites, music, models, or PokéBonk source/assets are bundled. Zelda's characters, names, and setting are recognizable franchise elements.
+Characters use distinct 112×112 pixel art with eight camera-relative views and era-specific costumes. Characters and foliage use independently drawn pixel-art billboards in a textured Three.js world. No official sprites, music, models, or PokéBonk source/assets are bundled. Zelda's characters, names, and setting are recognizable franchise elements.
 
 ## Reference Evidence
 
@@ -23,15 +23,15 @@ The official v0.10.15 and v0.10.17 landing screen, public client, and Season 4 n
 ## Capabilities
 
 - Automatic weapons, measured XP thresholds, level-up choices, saved weapon rarity growth, three base weapon/charm slots, permanent slot unlocks and treasure-extended level caps.
-- Camera-relative movement, mouse look without dragging, wheel zoom, jump, glide, and dash.
+- Camera-relative movement, mouse look without dragging, continuous horizontal edge/captured-cursor rotation, wider terrain-safe vertical look, wheel zoom, jump, glide, and dash.
 - Auto/manual aim, separate target lock, and six charged Ultimates.
 - Kill streaks and finite refresh, skip, and banish resources.
 - Minimap, over-character health, loadout, Ultimate meter, and connected realm map.
 - Adventure: 24 levels. Clear 12 enemies in a map's first level and 18 in its second; advance at its central shrine. Its guardian waits in level three. Restore all eight seals, then challenge Ganondorf in Hyrule.
 - Survival: immediate shrine rewards and the four-minute Phantom Ganon encounter; boss health persists through travel.
-- Normal and Hard difficulty, six weapon families, three boss health phases, telegraphed patterns and map-specific enemy species.
+- Normal and Hard difficulty, six weapon families, three boss health phases, telegraphed patterns and map-specific enemy species. The requested modest pressure increase adds 5% regular-enemy health, 5% regular-enemy speed, 10% shorter normal spawn intervals, and 8% guardian health; hit damage and Training baselines stay unchanged.
 - Original idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat and victory animations.
-- Deterministic plateaus and ramps share height sampling with the renderer; trees, rocks and shrine structures have physical collisions.
+- Deterministic plateaus and ramps share height sampling with the renderer; trees, rocks and shrine structures have physical collisions. Deterministic non-blocking dressing adds worn trails, shorelines, causeways, lanterns, varied pixel foliage, textured houses/ruins and a Skyloft windmill. Instanced billboard batches and quality-dependent undergrowth density bound drawing cost. Root-anchored foliage wind follows simulation pause and reduced-motion settings.
 - Twenty-six stackable Zelda treasures across five rarities. Physical/magic damage, criticals/mega-criticals, armor, evasion, regeneration, lifesteal, thorns and damage breakdown.
 - Burn, freeze, shock and wet effects with steam and chain-shock reactions. Menus freeze their simulation clocks.
 - Non-counting Training Grounds with all six heroes, map/stage/level selection, four-weapon/five-charm builds, per-weapon rarity, treasure-extended caps, treasure stack editing, stationary dummies, groups, elites, alphas and map guardians.

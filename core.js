@@ -259,7 +259,7 @@
     spawnBoss(id, final=false) {
       if(!BOSSES[id]||(this.boss&&!this.boss.dead))return null;
       const spec=BOSSES[id],enemy=this.spawnEnemy('boss',clamp(this.player.x+10,-ARENA_LIMIT+4,ARENA_LIMIT-4),clamp(this.player.z-10,-ARENA_LIMIT+4,ARENA_LIMIT-4));
-      const health=(spec.hp+(this.mode==='adventure'&&!final?this.shrines.size*110:0))*(this.difficulty==='hard'?1.35:1);
+      const health=(spec.hp+(this.mode==='adventure'&&!final?this.shrines.size*110:0))*(this.difficulty==='hard'?1.35:1)*(this.mode==='training'?1:1.08);
       Object.assign(enemy,{bossId:id,name:spec.name,hp:health,maxHp:health,speed:spec.speed,radius:spec.radius,damage:spec.damage*(this.difficulty==='hard'?1.25:1),realm:this.realm,final,stage:1,attackTimer:1.6,windup:0,attackCycle:0,action:'spawn',actionAge:0,spawnTime:.8,chargeTimer:0});
       this.boss=enemy;this.bossSpawned=true;this.player.invincible=Math.max(this.player.invincible,1.5);
       this.emit('boss',{id,name:spec.name,realm:this.realm});return enemy;
@@ -466,10 +466,11 @@
       if(!specs[type])throw new Error('Unknown enemy.');
       const [baseHp, speed, radius, damage] = specs[type];
       if(type!=='boss'){x=clamp(x,-ARENA_LIMIT+1,ARENA_LIMIT-1);z=clamp(z,-ARENA_LIMIT+1,ARENA_LIMIT-1);}
-      const scale = (type === 'boss' ? 1 : this.mode==='adventure'?1+this.shrines.size*.12:Math.min(3.5,1+this.time/170))*(this.difficulty==='hard'?1.35:1)*(type!=='boss'&&this.mode==='adventure'?1+(this.stage-1)*.2:1);
+      const scale = (type === 'boss' ? 1 : this.mode==='adventure'?1+this.shrines.size*.12:Math.min(3.5,1+this.time/170))*(this.difficulty==='hard'?1.35:1)*(type!=='boss'&&this.mode==='adventure'?1+(this.stage-1)*.2:1)*(type!=='boss'&&this.mode!=='training'?1.05:1);
       const enemy = { id: this.nextId++, type, x, z, hp: baseHp * scale * (elite ? 3 : 1), maxHp: baseHp * scale * (elite ? 3 : 1), speed: speed + (type === 'boss' ? 0 : this.time / 650), radius: radius * (elite ? 1.3 : 1), damage, elite, hitFlash: 0, orbitHit: 0, attackTimer: 3, phase: 0, dead: false, knockX: 0, knockZ: 0 };
       enemy.enemyId=species||({slime:'chuchu',mushroom:'deku_baba',bat:'keese',boar:'bokoblin'})[type];enemy.name=ENEMIES[enemy.enemyId]?.name||'Enemy';enemy.realm=this.realm;enemy.mapStage=this.stage;
       enemy.action='walk';enemy.actionAge=0;enemy.windup=0;enemy.damage*=this.difficulty==='hard'?1.25:1;
+      if(type!=='boss'&&this.mode!=='training')enemy.speed*=1.05;
       if(type==='boss')Object.assign(enemy,{bossId:'phantom',name:BOSSES.phantom.name,stage:1,attackCycle:0,final:true,realm:this.realm,chargeTimer:0});
       this.enemies.push(enemy); if (type === 'boss') this.boss = enemy;
       return enemy;
@@ -622,7 +623,7 @@
       if (this.mode!=='training'&&(this.mode==='adventure'||this.time<240) && this.spawnTimer <= 0) {
         const batch = Math.min(this.mode==='adventure'?2:3,1+Math.floor(this.time/85));
         for (let i = 0; i < batch; i++) this.spawnRealmEnemy();
-        this.spawnTimer = Math.max(.35, .85 - this.time / 650-(this.mode==='adventure'?(this.stage-1)*.08:0));
+        this.spawnTimer = Math.max(.35, (.85 - this.time / 650-(this.mode==='adventure'?(this.stage-1)*.08:0))*.9);
       }
       const minute = Math.floor(this.time / 60);
       if (this.mode!=='training'&&minute > this.eliteMinute && minute < 4) { this.eliteMinute = minute; const elite=this.spawnRealmEnemy(undefined,undefined,true); this.emit('elite',{name:elite?.name||'Enemy'}); }

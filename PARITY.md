@@ -6,10 +6,10 @@ Reference versions inspected: PokéBonk v0.10.15 and v0.10.17, November 21, 2026
 
 | System | Reference evidence | ZeldaBonk coverage | Remaining work |
 |---|---|---|---|
-| Camera and movement | Training and public control settings | Camera-relative movement, mouse look without dragging, zoom, jump, glide, dash, lock-on, auto/manual aim | Measure camera response and additional platforming behavior against live play |
-| Terrain | Training with plateaus | Shared rendered and physical plateau/ramp terrain, trees and rocks, clear gate routes across 24 stages | More terrain shapes and environmental interactions |
+| Camera and movement | Training and public control settings | Camera-relative movement, mouse look without dragging, continuous horizontal edge/captured-cursor turns, wider terrain-safe vertical look, zoom, jump, glide, dash, lock-on, auto/manual aim | Measure camera response and additional platforming behavior against live play |
+| Terrain | Training with plateaus | Shared rendered and physical plateau/ramp terrain, trees and rocks, clear gate routes across 24 stages; varied pixel foliage, ground paths, shorelines, causeways and textured landmarks | More terrain shapes and environmental interactions |
 | Maps | Zone-based reference progression | Eight connected Zelda maps with three stages each, map-specific enemies and landmarks | Broader franchise coverage and richer authored level layouts |
-| Heroes and enemies | Reference roster and live training | Six animated Zelda heroes, regional mobs, eight guardians and Ganondorf | Larger roster, distinct passives and additional enemy roles |
+| Heroes and enemies | Reference roster and live training | Six Zelda heroes with era-specific costumes, eight camera-relative pixel views, articulated action poses, regional mobs, eight guardians and Ganondorf | Larger roster, distinct passives and additional enemy roles |
 | Attacks | Three base move slots; fourth Lab unlock costs 1500; normal cap 8, extended cap 10 | Six weapon families, three/four slots, measured rotating rarity growth and archetype stats, 8/10 caps, projectile speed/lifetime/pierce/bounce, timed orbit, saved rarity history | Move archive, broad move catalog, move-specific statuses and exact character balance |
 | Passive upgrades | Three base vitamin slots; upgrades cost 1200 and 3000; cap 10, extended cap 12 | Three/four/five charm slots, matching unlock prices, 10/12 caps; realm bonuses do not consume learned slots | Reference passive rarity/stat growth and full vitamin equivalents |
 | Equipment | Public item catalog and Training item editor | 26 Zelda treasures, five rarities, stack limits, modifiers, equipment journal, cap-extending Adventure Pouch/Green Potion and saves | Complete catalog, remaining special effects, insurance and source-specific drop tables |
@@ -44,10 +44,22 @@ The six attack families use measured archetype base damage, cooldown, projectile
 
 The Zelda equipment mapping, rarity roll weights and equipment allocation, passive stat growth, periodic treasure frequency, armor formula, status chances/durations, reaction damage and campaign rules are independently authored. They have not all been measured against live reference gameplay. Similar functionality does not establish exact numerical parity.
 
+## Requested difficulty and scenery refinement
+
+The user requested slightly harder play and richer pixel graphics after the reference progression pass. Regular enemies in real runs now have 5% more health and 5% more speed. Normal spawn intervals are multiplied by 0.9, retaining the existing 0.35-second lower bound. Guardians gain 8% health. Hit damage, wind-up times, XP rules and Training baselines are unchanged. These balance changes are an authored preference, not a reference-parity claim.
+
+All realms retain the same collision geometry and clear gate lanes. Additional dressing is deterministic and cosmetic. Trees/undergrowth are instanced pixel billboards; quality selects undergrowth density. Pixel edges, sprite equipment details, terrain mip levels, trails, shoreline/causeway art, textured masonry/timber/shingles, and regional lighting improve the incumbent world rather than replacing its Zelda identity. Physical-device performance remains unverified.
+
 ## Data and delivery constraints
 
 Training must never settle rewards, discover permanent items, unlock heroes, or replace an Adventure checkpoint. Pending treasure and acquired equipment must remain disjoint in saves. A chest can grant its reward once. Status timers freeze during menus. Proc and reaction damage cannot recursively trigger another proc chain.
 
-Upgrade rarity history and pending card rarities survive reloads. Legacy builds retain their equipment and pending choices, even when larger than the new starting capacity. Old weapon levels receive Common upgrade history because old saves did not record rarity. Local party actors own separate rarity histories and orbit timers. New local rooms use ruleset `2.2.0-local-1`; old persisted rooms retain their stored settlement ruleset label while their simulation migrates to these rules.
+Upgrade rarity history and pending card rarities survive reloads. Legacy builds retain their equipment and pending choices, even when larger than the new starting capacity. Old weapon levels receive Common upgrade history because old saves did not record rarity. Local party actors own separate rarity histories and orbit timers. New local rooms use ruleset `2.3.0-local-1`; old persisted rooms retain their stored settlement ruleset label while their simulation migrates to these rules.
 
 Online features require a real backend. Client-side records and local profiles are not authoritative ranked scores. Deployment provider selection, account access, security configuration and any hosting costs must be resolved before creating production resources.
+
+## Character and camera refinement
+
+The visual refinement replaces the shared box-body hero drawings with distinct 112×112 pixel adaptations of each hero’s named game. Direction selection uses the rendered camera heading. Hard alpha, nearest filtering, animated limbs/cloth/hair, a quieter ground tile and root-anchored foliage wind improve readability. Little Frox uses one central eye. No official sprite or animation assets were imported; these are authored adaptations, not claims of frame-exact franchise animation.
+
+The user chose unlimited horizontal rotation with a wider above-ground vertical view. Free-cursor edge turning and captured-cursor motion can make repeated revolutions. Vertical pitch retains safe pole margins, and camera height clears sampled terrain. Existing sensitivity, inversion, wheel zoom, reset, pause and touch behavior remain available. This is an authored camera preference, not a claim of measured reference-camera equivalence.

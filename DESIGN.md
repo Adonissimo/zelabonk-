@@ -277,7 +277,7 @@ Mouse movement looks around without holding a button. Optional cursor capture st
 
 ## Elevation & Depth
 
-Pixel billboards sit in textured 3D terrain with raised stone rims, landmarks, perspective, fog, and cast shadows. Original hero art uses a 64-by-80 canvas and four facing directions. Cached canvas, texture, and material variants include actor identity, action, direction, frame, and hit state. Nearest filtering and disabled mipmaps preserve crisp pixels.
+Pixel billboards sit in textured 3D terrain with raised stone rims, landmarks, perspective, fog, and cast shadows. Original hero art uses a 112-by-112 canvas and eight camera-relative views. Cached canvas, texture, and material variants include actor identity, action, direction, frame, and hit state. Nearest filtering and disabled mipmaps preserve crisp pixels.
 
 Animations include idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat, and victory. Walking now uses eight frames rather than the former two-frame loop. Boss depictions, local species, phase changes, and telegraphed attacks retain their specific poses and effects. Frame counts and rates belong to the animation table, recorded in sidecar metadata.
 

@@ -111,7 +111,7 @@ class Rooms {
       roomId: id,
       accountId: user.id,
       nextSeq: (room.seq.get(user.id) || 0) + 1,
-      ruleset: '2.2.0-local-1',
+      ruleset: '2.3.0-local-1',
     });
     this.broadcast(room);
   }
