@@ -305,7 +305,7 @@ Porcelain identity and timer panels pair with the circular minimap, following he
 
 ### Stage navigation
 
-Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps; in-run travel happens at gates through the bound Interact key or touch Activate action. Boss travel restrictions appear in instructions.
+Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps. Adventure cards retain three numbered enemy-level chips and show the separate final boss beneath them; later maps say Locked until their turn. The objective distinguishes the third wave, boss encounter, and cleared-map transition. Adventure advances automatically after each map boss; Survival travel uses gates through the bound Interact key or touch Activate action. Progression restrictions appear in instructions.
 
 The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. They remain authored arena interpretations, not complete canonical Zelda maps.
 

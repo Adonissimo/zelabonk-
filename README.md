@@ -16,7 +16,9 @@ Open http://127.0.0.1:4173 . PORT selects another port. Serving the game gives b
 
 ## Adventure: eight maps, three levels each
 
-Each map has an independent level state. Defeat 12 enemies in its first level and 18 in its second. Reach the central shrine and press E or tap Activate to advance. The third level ends with a guardian. Restore all eight seals, return to Hyrule Field, and challenge Ganondorf. Gates are sealed during Adventure boss encounters.
+Adventure follows the numbered map order below. Defeat 12 enemies in level 1 and 18 in level 2; reach the central shrine and press E or tap Activate to advance between levels. Level 3 is a full 24-enemy wave. After that wave clears and pending upgrades finish, the map’s separate final boss appears automatically. Defeat the boss to restore its seal, bank remaining treasure/XP, and move automatically to the next map at its first level. Health, equipment, charge, time, and upgrades carry onward. Adventure gates cannot skip ahead. After the eighth map boss, the game takes you to Hyrule Field for Ganondorf. Survival keeps free gate travel.
+
+Safe checkpoints retain partial waves, pending upgrades, and boss readiness. Menus freeze encounter transition timers. Reloading a cleared map starts at the next unfinished map. Older free-roam saves keep their seals, equipment, and per-map progress, then resume at the first unfinished map. Completed maps are skipped. A boss fight still restarts from its preceding safe checkpoint.
 
 | Map and levels | Local enemies | Guardian | Landmark interpretation |
 |---|---|---|---|

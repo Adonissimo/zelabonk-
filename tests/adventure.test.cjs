@@ -1,17 +1,27 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
-const {Game,HEROES,REALMS,BOSSES,UPGRADES}=require('../core.js');const{Profile}=require('../profile.js');
+const {Game,HEROES,REALMS,ADVENTURE_ROUTE,BOSSES,UPGRADES}=require('../core.js');const{Profile}=require('../profile.js');
 const chooseAll=game=>{let limit=100;while(game.state==='upgrade'&&limit-->0)game.choose(game.choices[0].id);assert.ok(limit>0);};
-test('Adventure completes 24 levels, eight distinct guardians, then Ganondorf',()=>{
+const until=(game,condition)=>{let steps=500;while(!condition()&&steps-->0){chooseAll(game);game.step(.02);}assert.ok(steps>0);};
+const clearWave=game=>{const quota=game.stageTarget;for(let i=0;i<quota;i++){const e=game.spawnRealmEnemy(3,0);game.hurtEnemy(e,1e6);chooseAll(game);}};
+test('Adventure clears three enemy levels before each separate boss and advances maps in order',()=>{
  const g=new Game('link',42,{mode:'adventure'});g.spawnTimer=999;assert.equal(g.realm,6);assert.equal(g.stageLabel,'1-1');
- for(const realm of [6,7,0,1,2,3,4,5]){
-  if(g.realm!==realm){g.travelCooldown=0;assert.equal(g.travel(realm),true);chooseAll(g);}
-  for(const level of [1,2]){assert.equal(g.stage,level);assert.equal(g.challengeGuardian(),false);assert.equal(g.advanceStage(),false);const quota=g.stageTarget;for(let i=0;i<quota;i++){const e=g.spawnRealmEnemy(3,0);g.hurtEnemy(e,1e6);chooseAll(g);}g.player.x=0;g.player.z=-7;assert.equal(g.stageReady,true);assert.equal(g.interact(),true);chooseAll(g);assert.equal(g.stageKills[realm],0);}
-  g.player.z=-7;assert.equal(g.interaction.kind,'guardian');assert.equal(g.interact(),true);assert.equal(g.boss.bossId,REALMS[realm].boss);assert.equal(g.travel(REALMS[realm].links[0]),false);g.hurtEnemy(g.boss,1e6);chooseAll(g);assert.equal(g.boss,null);assert.notEqual(g.state,'won');
+ assert.deepEqual(ADVENTURE_ROUTE,[6,7,0,1,2,3,4,5]);
+ for(const [map,realm]of ADVENTURE_ROUTE.entries()){
+  assert.equal(g.realm,realm);assert.equal(g.stage,1);assert.equal(g.stageLabel,(map+1)+'-1');
+  for(const level of [1,2,3]){
+   assert.equal(g.stage,level);assert.equal(g.boss,null);assert.equal(g.challengeGuardian(),false);assert.equal(g.advanceStage(),false);assert.equal(g.travel(REALMS[realm].links[1]),false);
+   clearWave(g);assert.equal(g.stageReady,true);
+   if(level<3){g.player.x=0;g.player.z=-7;assert.equal(g.interact(),true);chooseAll(g);assert.equal(g.stageKills[realm],0);}
+  }
+  assert.equal(g.advanceStage(),false);assert.equal(g.boss,null);until(g,()=>!!g.boss);
+  assert.equal(g.boss.bossId,REALMS[realm].boss);assert.equal(g.stageKills[realm],24);assert.equal(g.travel(REALMS[realm].links[0]),false);
+  g.hurtEnemy(g.boss,1e6);chooseAll(g);assert.equal(g.shrines.has(realm),true);assert.notEqual(g.state,'won');
+  if(map<7){until(g,()=>g.realm!==realm);assert.equal(g.realm,ADVENTURE_ROUTE[map+1]);assert.equal(g.stage,1);}
  }
- assert.equal(g.shrines.size,8);for(const realm of [6,7,0]){g.travelCooldown=0;assert.equal(g.travel(realm),true);chooseAll(g);}g.player.z=-7;assert.equal(g.interaction.kind,'final');assert.equal(g.interact(),true);assert.equal(g.boss.bossId,'ganondorf');g.hurtEnemy(g.boss,1e6);assert.equal(g.state,'won');assert.equal(g.kills,249);
+ assert.equal(g.shrines.size,8);until(g,()=>g.boss?.bossId==='ganondorf');assert.equal(g.realm,0);g.hurtEnemy(g.boss,1e6);assert.equal(g.state,'won');assert.equal(g.kills,441);
 });
 test('Adventure has no automatic four-minute ending or duplicate guardian reward',()=>{
- const g=new Game('midna',7,{mode:'adventure'});g.time=245;g.spawnTimer=999;g.step(.02);assert.equal(g.boss,null);g.realmStages[g.realm]=3;g.player.z=-7;g.interact();const boss=g.boss;g.hurtEnemy(boss,1e6);const hp=g.player.maxHp,level=g.level;g.hurtEnemy(boss,1e6);assert.equal(g.shrines.size,1);assert.equal(g.player.maxHp,hp);assert.equal(g.level,level);
+ const g=new Game('midna',7,{mode:'adventure'});g.time=245;g.spawnTimer=999;g.step(.02);assert.equal(g.boss,null);g.realmStages[g.realm]=3;g.stageKills[g.realm]=24;g.challengeGuardian();const boss=g.boss;g.hurtEnemy(boss,1e6);const hp=g.player.maxHp,level=g.level;g.hurtEnemy(boss,1e6);assert.equal(g.shrines.size,1);assert.equal(g.player.maxHp,hp);assert.equal(g.level,level);
 });
 test('bosses have distinct telegraphed attacks and retain HP through phase changes',()=>{
  for(const id of Object.keys(BOSSES)){const g=new Game();g.spawnTimer=999;g.player.hp=g.player.maxHp=1e6;const boss=g.spawnBoss(id,true);const hp=boss.hp;boss.hp=hp*.3;g.updateBoss(boss,.02);assert.equal(boss.stage,3);assert.equal(boss.hp,hp*.3);boss.spawnTime=0;boss.attackTimer=0;g.updateBoss(boss,.02);assert.ok(boss.windup>0);assert.ok(BOSSES[id].patterns.includes(boss.intent));assert.equal(boss.actionAge,0);for(let i=0;i<70;i++)g.updateBoss(boss,.02);assert.ok(g.projectiles.length+g.hazards.length+g.enemies.length>0);assert.ok(Number.isFinite(boss.x));}
@@ -21,7 +31,7 @@ test('Bombs hit a group once and Boomerangs return for a second hit',()=>{
  const h=new Game();h.ranks={boomerang:1};h.spawnTimer=999;const e=h.spawnEnemy('boar',4,0);e.hp=e.maxHp=1000;e.speed=0;h.fire('boomerang',e);for(let i=0;i<130;i++)h.step(.02);assert.ok(e.hp<=1000-h.weaponStats('boomerang').damage*2);assert.equal(h.projectiles.filter(p=>p.type==='boomerang').length<=2,true);
 });
 test('safe checkpoints round-trip progression and retain pending XP',()=>{
- const g=new Game('zelda',5,{mode:'adventure',upgrades:{heart:2,power:2},runId:'checkpoint-test'});g.ranks={leaf:3,vitality:2};g.player.maxHp=85+16+50;g.player.hp=g.player.maxHp*.6;g.time=77;g.shrines.add(0);g.realmStages[0]=3;g.visited.add(1);g.realm=1;g.energy=62;g.shards=[{value:30}];const raw=g.checkpoint(),restored=Game.fromCheckpoint(JSON.parse(JSON.stringify(raw)));assert.equal(restored.runId,g.runId);assert.equal(restored.realm,1);assert.equal(restored.time,77);assert.equal(restored.rank('leaf'),3);assert.equal(restored.player.maxHp,151);assert.ok(Math.abs(restored.player.hp-90.6)<.001);assert.equal(restored.energy,62);assert.equal(restored.state,'upgrade');assert.equal(restored.shards.length,0);assert.equal(restored.shrines.has(0),true);g.spawnBoss('helmaroc');assert.equal(g.checkpoint(),null);
+ const g=new Game('zelda',5,{mode:'adventure',upgrades:{heart:2,power:2},runId:'checkpoint-test'});g.ranks={leaf:3,vitality:2};g.player.maxHp=85+16+50;g.player.hp=g.player.maxHp*.6;g.time=77;g.shrines.add(0);g.realmStages[0]=3;g.energy=62;g.shards=[{value:30}];const raw=g.checkpoint(),restored=Game.fromCheckpoint(JSON.parse(JSON.stringify(raw)));assert.equal(restored.runId,g.runId);assert.equal(restored.realm,6);assert.equal(restored.time,77);assert.equal(restored.rank('leaf'),3);assert.equal(restored.player.maxHp,151);assert.ok(Math.abs(restored.player.hp-90.6)<.001);assert.equal(restored.energy,62);assert.equal(restored.state,'upgrade');assert.equal(restored.shards.length,0);assert.equal(restored.shrines.has(0),true);g.spawnBoss('helmaroc');assert.equal(g.checkpoint(),null);
 });
 test('checkpoint input rejects invalid heroes, ranks, realm data, health and oversized IDs',()=>{
  const raw=new Game('link',3,{mode:'adventure'}).checkpoint();for(const patch of [{hero:'__proto__'},{realm:8},{time:Infinity},{healthFraction:-1},{ranks:{ember:999}},{visited:[8]},{runId:'x'.repeat(81)}])assert.throws(()=>Game.fromCheckpoint({...raw,...patch}));assert.throws(()=>new Game('__proto__'));
@@ -50,8 +60,41 @@ test('death events keep their event name and carry actor identity for animation'
 test('each map only spawns its own canonical enemy pool, including elites and boss summons',()=>{
  const {ENEMIES}=require('../core.js');for(let realm=0;realm<REALMS.length;realm++){const g=new Game('link',realm+60,{mode:'adventure'});g.realm=realm;for(let i=0;i<30;i++){const e=g.spawnRealmEnemy(4,4,i===29);assert.ok(REALMS[realm].enemies.includes(e.enemyId));assert.equal(e.name,ENEMIES[e.enemyId].name);}assert.equal(new Set(REALMS[realm].enemies).size,3);const boss=g.spawnBoss(REALMS[realm].boss);boss.spawnTime=0;boss.intent='summon';boss.windup=.01;g.updateBoss(boss,.02);assert.ok(g.enemies.filter(e=>e.type!=='boss').every(e=>REALMS[realm].enemies.includes(e.enemyId)));}
 });
-test('stage progress survives travel and checkpoints without unlocking the next level early',()=>{
- const g=new Game('link',44,{mode:'adventure'});for(let i=0;i<5;i++)g.hurtEnemy(g.spawnRealmEnemy(3,0),999);g.travel(7);chooseAll(g);assert.equal(g.stageKills[6],5);g.travelCooldown=0;assert.equal(g.travel(6),true);const restored=Game.fromCheckpoint(g.checkpoint());assert.equal(restored.stageLabel,'1-1');assert.equal(restored.stageKills[6],5);assert.equal(restored.advanceStage(),false);assert.equal(restored.challengeGuardian(),false);assert.throws(()=>Game.fromCheckpoint({...g.checkpoint(),realmStages:[9]}));assert.throws(()=>Game.fromCheckpoint({...g.checkpoint(),stageKills:REALMS.map(()=>-1)}));
+test('early gates stay blocked and checkpoints preserve the current wave without unlocking later encounters',()=>{
+ const g=new Game('link',44,{mode:'adventure'});for(let i=0;i<5;i++)g.hurtEnemy(g.spawnRealmEnemy(3,0),999);chooseAll(g);assert.equal(g.travel(7),false);const restored=Game.fromCheckpoint(g.checkpoint());assert.equal(restored.stageLabel,'1-1');assert.equal(restored.stageKills[6],5);assert.equal(restored.advanceStage(),false);assert.equal(restored.challengeGuardian(),false);assert.throws(()=>Game.fromCheckpoint({...g.checkpoint(),realmStages:[9]}));assert.throws(()=>Game.fromCheckpoint({...g.checkpoint(),stageKills:REALMS.map(()=>-1)}));assert.throws(()=>Game.fromCheckpoint({...g.checkpoint(),adventureDelay:-1}));
+});
+
+test('third-wave outro waits for upgrades, freezes on pause, and resumes safely from its checkpoint',()=>{
+ const g=new Game('link',12,{mode:'adventure'});g.realmStages[6]=3;clearWave(g);
+ assert.equal(g.stageKills[6],24);assert.equal(g.boss,null);assert.equal(g.challengeGuardian(),false);
+ const saved=JSON.parse(JSON.stringify(g.checkpoint())),restored=Game.fromCheckpoint(saved);assert.equal(restored.state,'upgrade');const pending=restored.adventureDelay;restored.step(.05);assert.equal(restored.adventureDelay,pending);chooseAll(restored);
+ const remaining=restored.adventureDelay;restored.pause();for(let i=0;i<100;i++)restored.step(.02);assert.equal(restored.adventureDelay,remaining);assert.equal(restored.boss,null);
+ restored.resume();until(restored,()=>!!restored.boss);assert.equal(restored.boss.bossId,'gohma');assert.equal(restored.enemies.length,1);assert.equal(restored.loot.length,0);
+ const kills=restored.kills;restored.step(.02);assert.equal(restored.kills,kills);assert.equal(restored.enemies.filter(e=>e.type==='boss').length,1);
+});
+
+test('guardian victory carries equipment, XP and charge once into the next map without replaying levels',()=>{
+ const g=new Game('link',31,{mode:'adventure'});g.realmStages[6]=3;g.stageKills[6]=24;g.challengeGuardian();
+ const boss=g.boss;g.hurtEnemy(boss,1e6);chooseAll(g);g.energy=63;const kills=g.kills;
+ assert.equal(g.realm,6);assert.equal(g.shrines.has(6),true);assert.ok(g.adventureDelay>0);
+ g.dropGear(40,40,2);const before=Object.values(g.gear).reduce((a,b)=>a+b,0),loot=g.loot.length;
+ g.pause();const time=g.adventureDelay;g.step(.05);assert.equal(g.adventureDelay,time);g.resume();until(g,()=>g.realm===7);chooseAll(g);
+ assert.equal(g.stageLabel,'2-1');assert.equal(g.kills,kills);assert.ok(g.energy>=63);assert.equal(g.loot.length,0);
+ assert.equal(Object.values(g.gear).reduce((a,b)=>a+b,0),before+loot);g.hurtEnemy(boss,1e6);assert.equal(g.shrines.size,1);
+ const restored=Game.fromCheckpoint(g.checkpoint());assert.equal(restored.realm,7);assert.equal(restored.stage,1);assert.equal(restored.shrines.size,1);
+});
+
+test('legacy free-roam saves keep seals and partial waves while returning to the first unfinished map',()=>{
+ const g=new Game('link',9,{mode:'adventure'});g.realm=1;g.visited.add(1);g.realmStages[6]=2;g.stageKills[6]=7;g.realmStages[1]=3;g.stageKills[1]=9;
+ g.activateShrine(7);g.ranks.ember=1;const raw=JSON.parse(JSON.stringify(g.checkpoint()));delete raw.adventureDelay;
+ const restored=Game.fromCheckpoint(raw);assert.equal(restored.realm,6);assert.equal(restored.stage,2);assert.equal(restored.stageKills[6],7);assert.equal(restored.realmStages[1],3);assert.equal(restored.stageKills[1],9);assert.ok(restored.shrines.has(7));assert.equal(restored.runId,g.runId);assert.equal(restored.travel(1),false);
+});
+
+test('a final-battle checkpoint banks pending guardian loot before Ganondorf appears',()=>{
+ const g=new Game('link',88,{mode:'adventure'});for(const realm of ADVENTURE_ROUTE)g.activateShrine(realm);
+ g.dropGear(30,30,2);g.shards=[{value:100}];const before=Object.values(g.gear).reduce((a,b)=>a+b,0);
+ const restored=Game.fromCheckpoint(g.checkpoint());assert.equal(restored.realm,0);chooseAll(restored);until(restored,()=>restored.boss?.bossId==='ganondorf');
+ assert.equal(restored.loot.length,0);assert.equal(Object.values(restored.gear).reduce((a,b)=>a+b,0),before+1);assert.equal(restored.shrines.size,8);
 });
 test('repeated vitality rewards remain valid through the full set of map shrines',()=>{
  const g=new Game('link',3);g.ranks.vitality=5;g.player.maxHp=225;for(const realm of REALMS.map((_,i)=>i))g.activateShrine(realm);const restored=Game.fromCheckpoint(g.checkpoint());assert.equal(restored.rank('vitality'),8);assert.equal(restored.player.maxHp,g.player.maxHp);assert.equal(restored.shrines.size,8);

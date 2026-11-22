@@ -223,8 +223,8 @@ class PartyGame extends Game {
     for (const member of this.members.values())
       Object.assign(member.player, { x: 0, z: 0, y: 0, ground: 0, vy: 0, invincible: 2 });
   }
-  travel(destination) {
-    const result = super.travel(destination);
+  enterRealm(destination) {
+    const result = super.enterRealm(destination);
     if (result) this.resetPartyPositions();
     return result;
   }
@@ -311,6 +311,7 @@ class PartyGame extends Game {
     game.random = seeded(saved.randomState);
     game.xpNeed = xpForLevel(game.level);
     game.boss = game.boss ? game.enemies.find((enemy) => enemy.id === game.boss.id) || null : null;
+    if(game.alignAdventure())game.resetPartyPositions();
     return game;
   }
   publicState(user) {

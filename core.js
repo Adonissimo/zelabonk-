@@ -39,6 +39,8 @@
   const origins=['Ocarina of Time / Breath of the Wild','The Wind Waker','Twilight Princess','Skyward Sword','Tears of the Kingdom','Majora’s Mask','Ocarina of Time','Ocarina of Time / Twilight Princess'];
   REALMS[0].boss='kingbulblin';
   REALMS.forEach((realm,index)=>{realm.links=[(index+7)%8,(index+1)%8,(index+4)%8];realm.enemies=pools[index];realm.origin=origins[index];realm.landmark=['Hyrule Castle','Tower of the Gods','Mirror of Twilight','Statue of the Goddess','Lightroot','Clock Tower','Great Deku Tree','Water Temple'][index];realm.number=[3,4,5,6,7,8,1,2][index];});
+  const ADVENTURE_ROUTE=Object.freeze(REALMS.map((_,index)=>index).sort((a,b)=>REALMS[a].number-REALMS[b].number));
+  const STAGE_TARGETS=Object.freeze([12,18,24]);
   const GATES = [{x:-48,z:-48},{x:48,z:-48},{x:0,z:55}];
   const BOSSES = {
     kingbulblin:{name:'King Bulblin',origin:'Twilight Princess',hp:600,speed:1.3,radius:1.8,damage:19,color:'#aac684',height:4.8,patterns:['charge','slam','summon']},
@@ -107,7 +109,7 @@
       this.level = 1; this.xp = 0; this.xpNeed = xpForLevel(1); this.kills = 0; this.nextId = 1; this.ranks = { [HEROES[hero].weapon]: 1 };
       this.cooldowns = { ember: .3, nova: 1.5, leaf: .4, bomb: .7, boomerang: .4, orbit:.1 }; this.spawnTimer = .2; this.eliteMinute = 0;
       this.bossSpawned = false; this.boss = null; this.choices = []; this.orbitAngle = 0; this.damageTaken = 0; this.damageDealt = 0;
-      this.realm = this.mode==='adventure'||this.mode==='training'?6:0; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.travelCooldown = 0; this.shrineCharge = 0;
+      this.realm = this.mode==='adventure'||this.mode==='training'?6:0; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.travelCooldown = 0; this.shrineCharge = 0;this.adventureDelay=0;
       this.energy = 25; this.streak = 0; this.streakTimer = 0; this.bestStreak = 0;
       this.aimMode = 'auto'; this.cameraYaw = Math.PI / 4; this.lockedTarget = null;
       this.refreshes = 2; this.skips = 2; this.banishes = 1; this.banished = new Set();
@@ -228,10 +230,12 @@
     }
     get stage(){return this.realmStages[this.realm];}
     get stageLabel(){return REALMS[this.realm].number+'-'+this.stage;}
-    get stageTarget(){return this.stage===1?12:this.stage===2?18:0;}
-    get stageReady(){return this.stage<3&&this.stageKills[this.realm]>=this.stageTarget;}
+    get stageTarget(){return STAGE_TARGETS[this.stage-1];}
+    get stageReady(){return this.stageKills[this.realm]>=this.stageTarget;}
+    get nextAdventureRealm(){return ADVENTURE_ROUTE.find(index=>!this.shrines.has(index))??null;}
+    get adventureTransition(){return this.mode==='adventure'&&!this.boss&&(this.shrines.has(this.realm)||this.stage===3&&this.stageReady);}
     advanceStage(){
-      if(this.mode!=='adventure'||this.state!=='running'||this.boss||!this.stageReady)return false;
+      if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.stage>=3||!this.stageReady||this.shrines.has(this.realm))return false;
       const banked=this.shards.reduce((sum,item)=>sum+item.value,0);this.shards=[];this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
       this.bankLoot();this.realmStages[this.realm]++;this.stageKills[this.realm]=0;this.player.x=0;this.player.z=0;this.player.y=0;this.player.ground=0;this.player.vy=0;this.player.invincible=2;this.heal(15);this.spawnTimer=.8;this.checkpointRevision++;
       this.emit('stage',{realm:this.realm,stage:this.stage,label:this.stageLabel});if(banked)this.collect(banked);return true;
@@ -243,7 +247,8 @@
       this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;
     }
     get travelBlockedReason() {
-      if(this.mode==='adventure'&&this.boss&&!this.boss.dead)return 'Defeat '+this.boss.name+' to reopen the gates.';
+      if(this.mode==='adventure'&&this.boss&&!this.boss.dead)return 'Defeat '+this.boss.name+' to advance.';
+      if(this.mode==='adventure')return this.shrines.has(this.realm)?'Map cleared. The next encounter starts automatically.':'Clear all three levels and defeat '+BOSSES[REALMS[this.realm].boss].name+' to advance.';
       if(this.travelCooldown>0)return 'Gate recharging · '+Math.ceil(this.travelCooldown)+'s';
       return '';
     }
@@ -265,8 +270,36 @@
       this.emit('boss',{id,name:spec.name,realm:this.realm});return enemy;
     }
     challengeGuardian() {
-      if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.shrines.has(this.realm)||this.stage!==3)return false;
+      if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.shrines.has(this.realm)||this.stage!==3||!this.stageReady||this.adventureDelay>0)return false;
+      // Bank the third wave before opening the separate boss encounter. Upgrades finish first.
+      this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
+      if(!this.bankBossRewards())return false;
       return !!this.spawnBoss(REALMS[this.realm].boss,false);
+    }
+    bankBossRewards(){
+      const banked=this.shards.reduce((sum,item)=>sum+item.value,0);this.shards=[];this.bankLoot();
+      if(banked)this.collect(banked);return this.state==='running';
+    }
+    progressAdventure(dt){
+      if(!this.adventureTransition)return false;
+      this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
+      this.player.action='idle';this.player.actionTime=0;this.player.invincible=2;
+      this.adventureDelay=Math.max(0,this.adventureDelay-dt);
+      if(this.adventureDelay>0)return true;
+      if(!this.shrines.has(this.realm)){this.challengeGuardian();return true;}
+      const next=this.nextAdventureRealm;
+      if(next!==null)this.enterRealm(next);
+      else if(this.realm!==0)this.enterRealm(0);
+      else if(this.bankBossRewards())this.spawnBoss('ganondorf',true);
+      return true;
+    }
+    alignAdventure(){
+      if(this.mode!=='adventure'||this.boss)return false;
+      const next=this.nextAdventureRealm??0;
+      // Older free-roam saves keep every seal and stage, then resume at the first unfinished map.
+      if(this.realm===next)return false;
+      this.realm=next;this.visited.add(next);this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;this.adventureDelay=0;
+      Object.assign(this.player,{x:0,z:0,y:0,ground:0,vy:0,invincible:2});this.checkpointRevision++;return true;
     }
     addHazard(x,z,radius,delay,damage=24) {
       if(this.hazards.length>=90)return;
@@ -332,7 +365,7 @@
     get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade'].includes(this.state)&&this.player.hp>0&&!this.boss;}
     checkpoint(){
       if(!this.canCheckpoint)return null;
-      return {version:2,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
+      return {version:2,adventureDelay:this.adventureDelay,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
     }
     static fromCheckpoint(raw){
       const validNumber=(value,min,max,integer=false)=>Number.isFinite(value)&&value>=min&&value<=max&&(!integer||Number.isInteger(value));
@@ -341,6 +374,7 @@
       const indices=value=>Array.isArray(value)&&value.length<=REALMS.length&&new Set(value).size===value.length&&value.every(v=>validNumber(v,0,REALMS.length-1,true));
       if(!indices(raw.shrines)||!indices(raw.visited)||!raw.visited.includes(raw.realm)||!raw.ranks||typeof raw.ranks!=='object'||Array.isArray(raw.ranks)||!Array.isArray(raw.banished)||raw.banished.length>1||raw.banished.some(id=>!UPGRADES.some(u=>u.id===id)))throw new Error('Invalid checkpoint collection.');
       const game=new Game(raw.hero,Date.now(),{mode:raw.mode,difficulty:raw.difficulty,upgrades:raw.permanent,runId:raw.runId});
+      if(raw.adventureDelay!==undefined){if(!validNumber(raw.adventureDelay,0,2))throw new Error('Invalid saved encounter transition.');game.adventureDelay=raw.adventureDelay;}
       game.shrines=new Set(raw.shrines);if(raw.gear!==undefined)game.gear=Combat.validateGear(raw.gear);
       if(Object.keys(raw.ranks).some(id=>!UPGRADES.some(item=>item.id===id)))throw new Error('Invalid checkpoint rank.');
       game.ranks={};for(const upgrade of UPGRADES){const value=raw.ranks[upgrade.id]??0;if(!validNumber(value,0,game.rankLimit(upgrade.id),true))throw new Error('Invalid checkpoint rank.');if(value)game.ranks[upgrade.id]=value;}
@@ -377,7 +411,7 @@
       if(raw.state==='upgrade'){
         if(!Array.isArray(raw.choices)||raw.choices.length<1||raw.choices.length>3||new Set(raw.choices).size!==raw.choices.length||raw.choices.some(id=>id!=='feast'&&!game.canOffer(UPGRADES.find(item=>item.id===id))))throw new Error('Invalid saved upgrade choices.');
         game.state='upgrade';game.choices=raw.choices.map(id=>({...id==='feast'?{id:'feast',name:'Red Potion',category:'RESTORE',icon:'plus',desc:'Restore all health.',max:Infinity}:UPGRADES.find(item=>item.id===id),rarity:raw.choiceRarities?.[id]??0}));
-      }else game.checkLevel();return game;
+      }else game.checkLevel();game.alignAdventure();return game;
     }
 
     emit(type, data = {}) {
@@ -429,6 +463,10 @@
     }
     travel(destination) {
       if (this.state !== 'running' || this.travelBlockedReason || !REALMS[this.realm].links.includes(destination)) return false;
+      return this.enterRealm(destination);
+    }
+    enterRealm(destination) {
+      if(this.state!=='running'||!Number.isInteger(destination)||!REALMS[destination])return false;
       this.bankLoot();this.realm = destination; this.visited.add(destination); this.travelCooldown = 5;
       this.player.x = 0; this.player.z = 0; this.player.y = 0;this.player.ground=0; this.player.vy = 0; this.player.invincible = 2;
       this.enemies = this.enemies.filter(e => e.type === 'boss' && !e.dead);
@@ -441,9 +479,9 @@
     get interaction(){
       if(Math.hypot(this.player.x,this.player.z+7)<3.4){
         if(this.mode==='adventure'&&!this.boss){
-          if(this.realm===0&&this.shrines.size===REALMS.length)return{kind:'final',name:'Challenge Ganondorf'};
+          if(this.adventureTransition)return null;
           if(!this.shrines.has(this.realm)&&this.stage<3)return{kind:'stage',name:this.stageReady?'Enter '+REALMS[this.realm].number+'-'+(this.stage+1):'Defeat '+Math.max(0,this.stageTarget-this.stageKills[this.realm])+' more enemies',blockedReason:this.stageReady?'':'Clear this level’s enemy wave first.'};
-          if(!this.shrines.has(this.realm))return{kind:'guardian',name:'Challenge '+BOSSES[REALMS[this.realm].boss].name};
+          if(!this.shrines.has(this.realm))return{kind:'stage',name:'Defeat '+Math.max(0,this.stageTarget-this.stageKills[this.realm])+' more enemies',blockedReason:'Clear level '+this.stageLabel+' before the final boss.'};
         }else if(this.mode==='survival'&&!this.shrines.has(this.realm))return{kind:'shrine',name:REALMS[this.realm].blessing};
       }
       for(let i=0;i<GATES.length;i++)if(distance(this.player,GATES[i])<3.5)return{kind:'gate',destination:REALMS[this.realm].links[i],name:REALMS[REALMS[this.realm].links[i]].name,blockedReason:this.travelBlockedReason};
@@ -453,8 +491,6 @@
       if(this.state!=='running')return false;const nearby=this.interaction;if(!nearby)return false;
       if(nearby.kind==='gate')return this.travel(nearby.destination);
       if(nearby.kind==='stage')return this.advanceStage();
-      if(nearby.kind==='guardian')return this.challengeGuardian();
-      if(nearby.kind==='final')return !!this.spawnBoss('ganondorf',true);
       return this.activateShrine();
     }
 
@@ -493,12 +529,12 @@
         if(e.type==='boss'){
           this.enemies=this.enemies.filter(enemy=>!enemy.dead);
           if(this.mode==='training'){this.boss=null;this.bossSpawned=false;return dealt;}
-          if(this.mode==='adventure'&&!e.final){this.boss=null;this.bossSpawned=false;this.activateShrine(e.realm);this.heal(30);this.dropGear(e.x,e.z,2);this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name});this.collect(18+this.shrines.size*9);return dealt;}
+          if(this.mode==='adventure'&&!e.final){this.boss=null;this.bossSpawned=false;this.activateShrine(e.realm);this.heal(30);this.dropGear(e.x,e.z,2);this.adventureDelay=1.8;this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name,nextRealm:this.nextAdventureRealm??0});this.collect(18+this.shrines.size*9);return dealt;}
           this.state='won';this.setAction('victory',1.2);this.emit('end',{won:true});return dealt;
         }
-        if(this.mode==='adventure'&&this.stage<3&&e.realm===this.realm&&e.mapStage===this.stage){
+        if(this.mode==='adventure'&&!this.shrines.has(this.realm)&&!this.stageReady&&e.realm===this.realm&&e.mapStage===this.stage){
           this.stageKills[this.realm]++;this.checkpointRevision++;
-          if(this.stageKills[this.realm]===this.stageTarget)this.emit('stageClear',{realm:this.realm,stage:this.stage,label:this.stageLabel});
+          if(this.stageReady){if(this.stage===3)this.adventureDelay=1.4;this.emit('stageClear',{realm:this.realm,stage:this.stage,label:this.stageLabel});}
         }
         this.shards.push({ id: this.nextId++, x: e.x, z: e.z, value: e.elite ? 18 : e.type === 'boar' ? 4 : 2 });
         // Preserve XP when the player leaves shards behind for a long run.
@@ -618,15 +654,16 @@
     step(dt,input={x:0,y:0}){
       if(this.state!=='running'||!Number.isFinite(dt)||dt<=0)return;
       dt=Math.min(dt,.05);this.time+=dt;this.travelCooldown=Math.max(0,this.travelCooldown-dt);this.updateActors(dt,input);
+      if(this.progressAdventure(dt))return;
       const p=this.player;
       this.spawnTimer -= dt;
-      if (this.mode!=='training'&&(this.mode==='adventure'||this.time<240) && this.spawnTimer <= 0) {
+      if ((this.mode==='adventure'?!this.boss&&!this.stageReady:this.mode==='survival'&&this.time<240) && this.spawnTimer <= 0) {
         const batch = Math.min(this.mode==='adventure'?2:3,1+Math.floor(this.time/85));
         for (let i = 0; i < batch; i++) this.spawnRealmEnemy();
         this.spawnTimer = Math.max(.35, (.85 - this.time / 650-(this.mode==='adventure'?(this.stage-1)*.08:0))*.9);
       }
       const minute = Math.floor(this.time / 60);
-      if (this.mode!=='training'&&minute > this.eliteMinute && minute < 4) { this.eliteMinute = minute; const elite=this.spawnRealmEnemy(undefined,undefined,true); this.emit('elite',{name:elite?.name||'Enemy'}); }
+      if (this.mode!=='training'&&!(this.mode==='adventure'&&(this.stageReady||this.boss))&&minute > this.eliteMinute && minute < 4) { this.eliteMinute = minute; const elite=this.spawnRealmEnemy(undefined,undefined,true); this.emit('elite',{name:elite?.name||'Enemy'}); }
       if(this.mode==='survival'&&this.time>=240&&!this.bossSpawned)this.spawnBoss('phantom',true);
       if (this.bossSpawned && this.spawnTimer <= 0 && this.boss && !this.boss.dead) { this.spawnRealmEnemy(); this.spawnTimer = 1.4; }
       for(const enemy of this.enemies){
@@ -718,5 +755,5 @@
       for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
     }
   }
-  return { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, xpForLevel, seeded, clamp };
+  return { Game, HEROES, REALMS, ADVENTURE_ROUTE, STAGE_TARGETS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, xpForLevel, seeded, clamp };
 });

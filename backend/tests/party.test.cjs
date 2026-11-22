@@ -15,6 +15,17 @@ const create = () =>
     { mode: 'survival', seed: 123, flatTerrain: true },
   );
 
+test('Adventure map transitions move the whole party and survive a room restart',()=>{
+  const game=new PartyGame(crypto.randomUUID(),[{id:a,hero:'link'},{id:b,hero:'zelda'}],{mode:'adventure',seed:7});
+  game.members.get(a).player.x=20;game.members.get(b).player.z=21;
+  game.realmStages[6]=3;game.stageKills[6]=24;game.activateShrine(6);game.adventureDelay=.04;
+  const restored=PartyGame.restore(game.serialize());assert.equal(restored.realm,7);assert.equal(restored.stage,1);
+  for(const member of restored.members.values()){assert.equal(member.player.x,0);assert.equal(member.player.z,0);}
+  game.step(.02);assert.equal(game.realm,6);game.step(.02);assert.equal(game.realm,7);
+  for(const member of game.members.values()){assert.equal(member.player.x,0);assert.equal(member.player.z,0);}
+  assert.equal(game.travel(0),false);
+});
+
 test('weapon rarities and orbit timers remain actor-owned through choices and restart', () => {
   const game = create();
   game.collect(15);

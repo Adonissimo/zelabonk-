@@ -2,7 +2,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   if(!window.BonkCore||!window.BonkProfile||!window.RelicArt||!window.THREE){$('error-screen').hidden=false;return;}
-  const { Game, HEROES, REALMS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, seeded, clamp } = BonkCore;
+  const { Game, HEROES, REALMS, ADVENTURE_ROUTE, STAGE_TARGETS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, seeded, clamp } = BonkCore;
   const {Profile,DEFAULT_BINDINGS,validBinding}=BonkProfile;
   const ICONS = {
     relic:'<path d="m12 2 5 8H7Zm-5 8 5 9H2Zm10 0 5 9H12Z"/>',
@@ -476,9 +476,9 @@
     $('rupee-count').textContent=storage.rupees+' rupees';$('heroes-count').textContent=storage.unlocked.length+'/'+Object.keys(HEROES).length;$('achievement-count').textContent=storage.achievements.filter(item=>item.complete).length+'/'+storage.achievements.length;
     $('best-note').textContent=storage.runs?'Best: '+storage.bestKills+' defeated · '+storage.wins+' victories · '+storage.runs+' runs':'Eight maps. Three levels each. One final battle.';
     const checkpoint=storage.checkpoint;$('continue-button').hidden=!checkpoint;$('checkpoint-summary').hidden=!checkpoint;
-    if(checkpoint){$('continue-button').querySelector('span').textContent='Continue '+(checkpoint.mode==='adventure'?'adventure':'survival');$('checkpoint-summary').textContent=HEROES[checkpoint.hero].name+' · '+REALMS[checkpoint.realm].name+(checkpoint.mode==='adventure'?' '+REALMS[checkpoint.realm].number+'-'+(checkpoint.realmStages?.[checkpoint.realm]||1):'')+' · '+checkpoint.shrines.length+'/'+REALMS.length+' · '+formatTime(checkpoint.time);}
+    if(checkpoint){const realm=checkpoint.mode==='adventure'?(ADVENTURE_ROUTE.find(index=>!checkpoint.shrines.includes(index))??0):checkpoint.realm;$('continue-button').querySelector('span').textContent='Continue '+(checkpoint.mode==='adventure'?'adventure':'survival');$('checkpoint-summary').textContent=HEROES[checkpoint.hero].name+' · '+REALMS[realm].name+(checkpoint.mode==='adventure'?' '+REALMS[realm].number+'-'+(checkpoint.realmStages?.[realm]||1):'')+' · '+checkpoint.shrines.length+'/'+REALMS.length+' · '+formatTime(checkpoint.time);}
     $('start-button').classList.toggle('start-secondary',!!checkpoint);$('start-button').querySelector('span').textContent=(checkpoint?'New ': 'Begin ')+(selectedMode==='adventure'?'adventure':'survival');
-    $('run-note').textContent=selectedMode==='adventure'?'Defeat eight guardians, then Ganondorf in Hyrule.':'Survive four minutes, then defeat Phantom Ganon.';
+    $('run-note').textContent=selectedMode==='adventure'?'Clear three levels, defeat the map boss, then travel onward.':'Survive four minutes, then defeat Phantom Ganon.';
     $('hero-choice-label').textContent='Hero: '+HEROES[selectedHero].name;$('hero-perk').textContent=HEROES[selectedHero].perk;
     document.querySelectorAll('.hero-option').forEach(button=>{const selected=button.dataset.hero===selectedHero;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
     if(currentDialog()==='camp-dialog')renderCamp();if(currentDialog()==='heroes-dialog')renderHeroes();if(currentDialog()==='journal-dialog')renderJournal();
@@ -486,7 +486,7 @@
   async function saveCheckpoint(force=false){
     if(!game||checkpointSaving||!game.canCheckpoint||(!force&&game.checkpointRevision===checkpointSavedRevision))return;
     const run=game,revision=run.checkpointRevision;checkpointSaving=true;
-    try{const saved=await profileTransaction(profile=>profile.saveCheckpoint(run));if(game===run){checkpointSavedRevision=revision;$('checkpoint-indicator').textContent=saved?(storageAvailable?'Realm checkpoint saved':'Progress in memory'):'Checkpoint owned by another tab';}}
+    try{const saved=await profileTransaction(profile=>run.canCheckpoint?profile.saveCheckpoint(run):null);if(game===run&&saved!==null){checkpointSavedRevision=revision;$('checkpoint-indicator').textContent=saved?(storageAvailable?'Realm checkpoint saved':'Progress in memory'):'Checkpoint owned by another tab';}}
     catch(error){toast(error.message);}finally{checkpointSaving=false;}
   }
   function setupRun(run){
@@ -526,15 +526,16 @@
     const root=$('realm-map');root.textContent='';
     for(const realm of [...REALMS].sort((a,b)=>a.number-b.number)){
       const index=REALMS.indexOf(realm),button=document.createElement('button'),stage=game?.realmStages[index]||1;button.className='realm-node'+(game?.realm===index?' current':'');button.style.setProperty('--realm-color',realm.color);
-      const sealed=game?.shrines.has(index),status=game?.realm===index?'YOU ARE HERE':sealed?'SEAL RESTORED':realm.origin;
-      button.innerHTML='<span class="realm-orb">'+icon(realmIcons[index])+'</span><b>'+realm.name+'</b><small>'+status+'</small><span class="map-levels">'+[1,2,3].map(level=>'<i class="'+(sealed||stage>level?'complete':stage===level?'active':'')+'">'+realm.number+'-'+level+'</i>').join('')+'</span>';
-      button.setAttribute('aria-label',realm.name+', levels '+realm.number+'-1 through '+realm.number+'-3'+(game?.realm===index?', current map':''));
-      button.addEventListener('click',()=>{if(!game){view.portalGroups.forEach(portal=>{portal.texture.dispose();portal.material.dispose();});view.buildRealm(index);}$('map-description').textContent=realm.name+' · Seen in '+realm.origin;$('map-travel-hint').textContent='Landmark: '+realm.landmark+'. Enemies: '+realm.enemies.map(id=>ENEMIES[id].name).join(', ')+'. Guardian: '+BOSSES[realm.boss].name+'. Gates: '+realm.links.map(index=>REALMS[index].name).join(', ')+'.';});root.appendChild(button);
+      const sealed=game?.shrines.has(index),status=game?.realm===index?'YOU ARE HERE':sealed?'MAP CLEARED':game?.mode==='adventure'?'LOCKED':realm.origin;
+      const thirdCleared=game?.stageKills[index]>=STAGE_TARGETS[2],bossStatus=sealed?'Defeated':game?.realm===index&&game.boss?'In battle':stage===3&&thirdCleared?'Next encounter':'After '+realm.number+'-3';
+      button.innerHTML='<span class="realm-orb">'+icon(realmIcons[index])+'</span><b>'+realm.name+'</b><small>'+status+'</small><span class="map-levels">'+[1,2,3].map(level=>'<i class="'+(sealed||stage>level||level===3&&thirdCleared?'complete':stage===level&&game?.realm===index?'active':'')+'">'+realm.number+'-'+level+'</i>').join('')+'</span><small>Final boss: '+BOSSES[realm.boss].name+'<br>'+bossStatus+'</small>';
+      button.setAttribute('aria-label',realm.name+', levels '+realm.number+'-1 through '+realm.number+'-3, final boss '+BOSSES[realm.boss].name+', '+bossStatus+', '+status);
+      button.addEventListener('click',()=>{if(!game){view.portalGroups.forEach(portal=>{portal.texture.dispose();portal.material.dispose();});view.buildRealm(index);}$('map-description').textContent=realm.name+' · Seen in '+realm.origin;$('map-travel-hint').textContent='Landmark: '+realm.landmark+'. Enemies: '+realm.enemies.map(id=>ENEMIES[id].name).join(', ')+'. Final boss: '+BOSSES[realm.boss].name+'. '+(game?.mode==='adventure'?'After victory: '+(REALMS[ADVENTURE_ROUTE[realm.number]]?.name||'Ganondorf in Hyrule Field')+'.':'Gates: '+realm.links.map(index=>REALMS[index].name).join(', ')+'.');});root.appendChild(button);
     }
     $('map-shrine-status').textContent=game?game.shrines.size+' / '+REALMS.length+' seals restored':'24 levels across eight connected Zelda maps.';
   }
   function openMap(){
-    if(game&&!['running','paused'].includes(game.state))return;buildMap();$('map-description').textContent=game?.mode==='adventure'?'Restore the eight seals, then return to Hyrule.':'Eight maps. Ancient gates. Every path leads somewhere.';
+    if(game&&!['running','paused'].includes(game.state))return;buildMap();$('map-description').textContent=game?.mode==='adventure'?'Clear three levels, then the final boss on each map. Victory takes you to the next map automatically.':'Eight maps. Ancient gates. Every path leads somewhere.';
     $('map-travel-hint').textContent=game?(game.travelBlockedReason||'At a gate, press E or tap Activate. Progress travels with you.'):'Select a realm to preview it. Close the map to begin.';openDialog('map-dialog');
   }
   function showUpgrade(){
@@ -618,11 +619,11 @@
     c.translate(center,center);c.rotate(-view.yaw);c.fillStyle='#fff8e3';c.beginPath();c.moveTo(0,-7);c.lineTo(5,6);c.lineTo(0,3);c.lineTo(-5,6);c.closePath();c.fill();c.restore();c.strokeStyle='#fff7dc';c.lineWidth=6;c.beginPath();c.arc(center,center,105,0,Math.PI*2);c.stroke();c.fillStyle='#fff7dc';c.font='900 11px Nunito,sans-serif';c.textAlign='center';c.fillText('N',110,18);
   }
   function updateHud(){
-    if(!game)return;const p=game.player,hero=HEROES[game.hero];$('hero-name').textContent=hero.name;$('hero-title').textContent=hero.title;$('hero-portrait').src=artURL('hero',game.hero);$('health-text').textContent=Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp);$('health-fill').style.width=p.hp/p.maxHp*100+'%';$('stamina-fill').style.width=p.stamina*100+'%';$('timer').textContent=formatTime(game.time);$('kills').textContent=game.kills;$('realm-name').textContent=REALMS[game.realm].name+(game.mode==='adventure'?' '+game.stageLabel:'');$('shrines-count').textContent=game.shrines.size+' / '+REALMS.length+' '+(game.mode==='adventure'?'seals':'shrines');$('xp-fill').style.width=Math.min(100,game.xp/game.xpNeed*100)+'%';$('level-label').textContent='LV. '+game.level;$('xp-label').textContent=game.mode==='training'?'PRACTICE':Math.floor(game.xp)+' / '+game.xpNeed;
-    $('objective').textContent=game.mode==='training'?'TRAINING · NO PROGRESS SAVED':game.boss?'DEFEAT '+game.boss.name.toUpperCase():game.mode==='adventure'?game.shrines.size===REALMS.length?'RETURN TO HYRULE · GANONDORF':game.stage<3?'LEVEL '+game.stageLabel+' · '+Math.min(game.stageTarget,game.stageKills[game.realm])+'/'+game.stageTarget+' ENEMIES':'LEVEL '+game.stageLabel+' · CHALLENGE GUARDIAN':'PHANTOM GANON AT 4:00';
+    if(!game)return;const p=game.player,hero=HEROES[game.hero];$('hero-name').textContent=hero.name;$('hero-title').textContent=hero.title;$('hero-portrait').src=artURL('hero',game.hero);$('health-text').textContent=Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp);$('health-fill').style.width=p.hp/p.maxHp*100+'%';$('stamina-fill').style.width=p.stamina*100+'%';$('timer').textContent=formatTime(game.time);$('kills').textContent=game.kills;$('realm-name').textContent=REALMS[game.realm].name+(game.mode==='adventure'?(game.boss?' · Final boss':' '+game.stageLabel):'');$('shrines-count').textContent=game.shrines.size+' / '+REALMS.length+' '+(game.mode==='adventure'?'seals':'shrines');$('xp-fill').style.width=Math.min(100,game.xp/game.xpNeed*100)+'%';$('level-label').textContent='LV. '+game.level;$('xp-label').textContent=game.mode==='training'?'PRACTICE':Math.floor(game.xp)+' / '+game.xpNeed;
+    $('objective').textContent=game.mode==='training'?'TRAINING · NO PROGRESS SAVED':game.boss?'DEFEAT '+game.boss.name.toUpperCase():game.mode==='adventure'?game.shrines.has(game.realm)?'MAP CLEARED · TRAVELLING':game.stage===3&&game.stageReady?'LEVEL CLEARED · BOSS NEXT':'LEVEL '+game.stageLabel+' · '+Math.min(game.stageTarget,game.stageKills[game.realm])+'/'+game.stageTarget+' ENEMIES':'PHANTOM GANON AT 4:00';
     $('dash-label').textContent=p.dashCooldown>0?'Dash '+p.dashCooldown.toFixed(1)+'s':'Dash ready';$('touch-dash').style.opacity=p.dashCooldown>0?'.5':'1';$('boss-hud').hidden=!game.boss||game.boss.dead;
     if(game.boss){$('boss-name').textContent=game.boss.name.toUpperCase();$('boss-phase').textContent='PHASE '+game.boss.stage;$('boss-fill').style.width=Math.max(0,game.boss.hp/game.boss.maxHp*100)+'%';}
-    const nearby=game.interaction;$('interaction').hidden=!nearby||game.state!=='running';if(nearby)$('interaction-label').textContent=nearby.kind==='gate'?(nearby.blockedReason||'Travel to '+nearby.name):nearby.kind==='guardian'||nearby.kind==='final'||nearby.kind==='stage'?nearby.name:'Recover '+nearby.name;
+    const nearby=game.interaction;$('interaction').hidden=!nearby||game.state!=='running';if(nearby)$('interaction-label').textContent=nearby.kind==='gate'?(nearby.blockedReason||'Travel to '+nearby.name):nearby.kind==='stage'?nearby.name:'Recover '+nearby.name;
     const key=JSON.stringify(game.ranks);if(key!==loadoutKey){loadoutKey=key;$('loadout').textContent='';const equipped=UPGRADES.filter(item=>item.category==='WEAPON'&&game.rank(item.id));$('hud').style.setProperty('--weapon-count',equipped.length);for(const item of equipped){const el=document.createElement('div');el.className='weapon-slot';el.title=item.name+' · Rank '+game.rank(item.id);el.setAttribute('aria-label',el.title);el.innerHTML=icon(item.icon)+'<strong>'+item.name+'</strong><small>LV. '+game.rank(item.id)+'</small>';$('loadout').appendChild(el);}}
     $('player-health-fill').style.width=p.hp/p.maxHp*100+'%';$('player-health-value').textContent=Math.ceil(p.hp);$('ultimate-charge').style.strokeDashoffset=170*(1-game.energy/100);$('ultimate-button').disabled=game.energy<100||game.state!=='running';$('ultimate-button').classList.toggle('ready',game.energy>=100);$('ultimate-button').setAttribute('aria-label',game.energy>=100?'Use '+hero.ultimateName:hero.ultimateName+' '+Math.floor(game.energy)+'% charged');$('ultimate-label').textContent=hero.ultimateName.toUpperCase();$('streak').hidden=game.streak<2;$('streak-value').textContent='×'+game.streak;$('aim-button').innerHTML=(game.lockedTarget!==null?'TARGET LOCKED':game.aimMode.toUpperCase()+' AIM')+' <kbd>'+keyName(storage.bindings.aim)+'</kbd>';updateMinimap();
   }
@@ -651,16 +652,16 @@
       if(event.type==='dash')view.ringEffect(event.x,event.z,'#d0eaca',2,.3);
       if(event.type==='nova'||event.type==='explosion')view.ringEffect(event.x,event.z,event.color||'#f3c18d',event.radius,event.type==='explosion'?.55:.48);
       if(event.type==='slam'||event.type==='blink')view.ringEffect(event.x,event.z,'#e9c1d2',3,.4);
-      if(event.type==='travel'){view.portalGroups.forEach(portal=>{portal.texture.dispose();portal.material.dispose();});view.clearDynamic();view.buildRealm(event.realm,game.stage);view.cameraTarget.set(0,.4,0);view.camera.position.set(15,20,15);announce(REALMS[event.realm]);loadoutKey='';}
+      if(event.type==='travel'){view.portalGroups.forEach(portal=>{portal.texture.dispose();portal.material.dispose();});view.clearDynamic();view.buildRealm(event.realm,game.stage);view.cameraTarget.set(0,.4,0);view.camera.position.set(15,20,15);announce({name:REALMS[event.realm].name+(game.mode==='adventure'&&game.shrines.size<REALMS.length?' '+game.stageLabel:''),subtitle:game.mode==='adventure'?(game.shrines.size===REALMS.length?'The final battle with Ganondorf.':'Three levels, then this map’s final boss.'):REALMS[event.realm].subtitle});loadoutKey='';}
       if(event.type==='shrine')toast(REALMS[event.realm].blessing+' · '+REALMS[event.realm].benefit);
       if(event.type==='guardian'){
-        upgradeReadyAt=titleTime+.85;sound('guardian');toast(event.name+' defeated · seal '+game.shrines.size+'/'+REALMS.length);
+        upgradeReadyAt=titleTime+.85;sound('guardian');announce({name:REALMS[event.realm].name+' cleared',subtitle:event.name+' defeated. Next: '+REALMS[event.nextRealm].name+'.'});toast('Seal '+game.shrines.size+'/'+REALMS.length+' · rewards carry into the next encounter.');
         profileTransaction(profile=>profile.recordGuardian(event.id)).then(unlocks=>{if(unlocks.length)setTimeout(()=>toast(unlocks.map(id=>HEROES[id].name).join(', ')+' unlocked!'),1800);}).catch(error=>toast(error.message));
       }
       if(event.type==='elite')toast('Elite '+event.name+' has entered the map.');
-      if(event.type==='stageClear'){sound('guardian');toast('Level '+event.label+' cleared. Reach the central shrine for the next level.');}
-      if(event.type==='stage'){$('toast').classList.remove('visible');clearTimeout(toastTimer);view.clearDynamic();announce({name:REALMS[event.realm].name+' '+event.label,subtitle:event.stage===3?'The guardian awaits at the central shrine.':'Clear the wave, then reach the central shrine.'});}
-      if(event.type==='boss'){announce({name:event.name,subtitle:game.mode==='adventure'?'Guardian battle · the gates are sealed':'Watch the wind-up. Dodge the warning circles.'});view.shake=reducedMotion?0:.5;}
+      if(event.type==='stageClear'){sound('guardian');toast('Level '+event.label+' cleared. '+(event.stage===3?'The map’s final boss approaches.':'Reach the central shrine for the next level.'));}
+      if(event.type==='stage'){$('toast').classList.remove('visible');clearTimeout(toastTimer);view.clearDynamic();announce({name:REALMS[event.realm].name+' '+event.label,subtitle:event.stage===3?'Clear 24 enemies. The final boss follows.':'Clear the wave, then reach the central shrine.'});}
+      if(event.type==='boss'){announce({name:event.name,subtitle:game.mode==='adventure'?(event.id==='ganondorf'?'Final battle · restore the realms':'Three levels cleared · map final boss'):'Watch the wind-up. Dodge the warning circles.'});view.shake=reducedMotion?0:.5;}
       if(event.type==='bossPhase'){toast(event.name+' · Phase '+event.stage);view.ringEffect(event.x,event.z,BOSSES[event.id].color,4,.65);}
       if(event.type==='level')upgradeReadyAt=Math.max(upgradeReadyAt,titleTime+.12);
       if(event.type==='ultimate'){view.ringEffect(event.x,event.z,event.color,event.radius,.8);view.ringEffect(event.x,event.z,event.color,event.radius*.7,.55);view.ultimateEffect(event);toast(event.name+'!');sound('nova');}

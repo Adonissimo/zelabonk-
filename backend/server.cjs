@@ -99,7 +99,7 @@ async function createBackend(options = {}) {
         send(200, {
           status: 'ok',
           service: 'zeldabonk-local',
-          ruleset: '2.3.0-local-1',
+          ruleset: '2.5.0-local-1',
           onlineDeployment: false,
         });
         return;
