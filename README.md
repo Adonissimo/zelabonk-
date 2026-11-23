@@ -1,6 +1,6 @@
 # ZeldaBonk
 
-An unofficial single-player Legend of Zelda survivor, using PokéBonk as its gameplay and presentation reference. Animated pixel actors inhabit eight connected 3D arenas. Adventure has 24 numbered levels and a final Ganondorf encounter. Survival has a four-minute Phantom Ganon challenge.
+An unofficial single-player Legend of Zelda survivor, using PokéBonk as its gameplay and presentation reference. Animated pixel actors inhabit eight distinct 3D maps. Adventure has 24 numbered levels and a final Ganondorf encounter. Survival has a four-minute Phantom Ganon challenge.
 
 Repository: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . A Git push and a live deployment are separate events; verify the current revision before treating it as deployed.
 
@@ -16,28 +16,28 @@ Open http://127.0.0.1:4173 . PORT selects another port. Serving the game gives b
 
 ## Adventure: eight maps, three levels each
 
-Adventure follows the numbered map order below. Defeat 12 enemies in level 1 and 18 in level 2; reach the central shrine and press E or tap Activate to advance between levels. Level 3 is a full 24-enemy wave. After that wave clears and pending upgrades finish, the map’s separate final boss appears automatically. Defeat the boss to restore its seal, bank remaining treasure/XP, and move automatically to the next map at its first level. Health, equipment, charge, time, and upgrades carry onward. Adventure gates cannot skip ahead. After the eighth map boss, the game takes you to Hyrule Field for Ganondorf. Survival keeps free gate travel.
+Adventure follows the numbered map order below. Defeat 12 enemies in level 1 and 18 in level 2; reach the central shrine and press E or tap Activate to advance between levels. Level 3 is a full 24-enemy wave. After that wave clears and pending upgrades finish, you automatically enter a separate landmark arena for that map’s guardian. Each guardian introduces a signature attack with ground warnings, and its later phases increase the pressure. Defeat the boss to restore its seal, bank remaining treasure/XP, then see a results screen with that map’s time, enemies defeated, damage dealt and damage taken. Choose Continue to enter the next map, or Main Menu to leave and resume later. Health, equipment, charge, time, and upgrades carry onward. After the eighth map boss, the game takes you to Hyrule Field for Ganondorf.
 
-Safe checkpoints retain partial waves, pending upgrades, and boss readiness. Menus freeze encounter transition timers. Reloading a cleared map starts at the next unfinished map. Older free-roam saves keep their seals, equipment, and per-map progress, then resume at the first unfinished map. Completed maps are skipped. A boss fight still restarts from its preceding safe checkpoint.
+Safe checkpoints retain partial waves, pending upgrades, boss readiness and pending map results. Menus freeze encounter transition timers. Reloading from a map-results checkpoint reopens the results. Older checkpoints without map results retain their previous resume behavior. Older free-roam saves keep their seals, equipment, and per-map progress, then resume at the first unfinished map. Completed maps are skipped. A boss fight still restarts from its preceding safe checkpoint.
 
-| Map and levels | Local enemies | Guardian | Landmark interpretation |
+| Map and levels | Local enemies | Guardian | Guardian arena |
 |---|---|---|---|
-| Kokiri Forest 1-1, 1-2, 1-3 | Deku Baba, Deku Scrub, Skulltula | Gohma | Great Deku Tree and tree houses |
-| Lake Hylia 2-1, 2-2, 2-3 | Octorok, Tektite, Lizalfos | Morpha | Lakeshore and Water Temple ruins |
-| Hyrule Field 3-1, 3-2, 3-3 | Chuchu, Keese, Bokoblin | King Bulblin | Hyrule Castle skyline |
-| Great Sea 4-1, 4-2, 4-3 | Blue ChuChu, Bokoblin, Seahat | Helmaroc King | Red sailing boat and Tower of the Gods |
-| Twilight Realm 5-1, 5-2, 5-3 | Shadow Vermin, Shadow Kargarok, Shadow Beast | Zant | Twilight architecture and mirror |
-| Skyloft 6-1, 6-2, 6-3 | Chuchu, Keese, Remlit | Ghirahim | Statue of the Goddess and sky islands |
-| Depths 7-1, 7-2, 7-3 | Little Frox, Gloom Bokoblin, Evermean | Colgera | Lightroot and gloom fissures |
-| Termina Field 8-1, 8-2, 8-3 | Blue ChuChu, Deku Baba, Takkuri | Majora's Mask | Clock Tower and moon |
+| Kokiri Forest 1-1, 1-2, 1-3 | Deku Baba, Deku Scrub, Skulltula | Gohma | Great Deku Tree |
+| Lake Hylia 2-1, 2-2, 2-3 | Octorok, Tektite, Lizalfos | Morpha | Water Temple |
+| Hyrule Field 3-1, 3-2, 3-3 | Chuchu, Keese, Bokoblin | King Bulblin | Hyrule Castle Courtyard |
+| Great Sea 4-1, 4-2, 4-3 | Blue ChuChu, Bokoblin, Seahat | Helmaroc King | Forsaken Fortress |
+| Twilight Realm 5-1, 5-2, 5-3 | Shadow Vermin, Shadow Kargarok, Shadow Beast | Zant | Palace of Twilight |
+| Skyloft 6-1, 6-2, 6-3 | Chuchu, Keese, Remlit | Ghirahim | Sky Keep |
+| Depths 7-1, 7-2, 7-3 | Little Frox, Gloom Bokoblin, Evermean | Colgera | Wind Temple |
+| Termina Field 8-1, 8-2, 8-3 | Blue ChuChu, Deku Baba, Takkuri | Majora's Mask | Inside the Moon |
 
-Kokiri Forest is the canonical name of the village location. Stage layouts, central progression shrines, crossover encounters and combat formulas are authored for this game, rather than exact reproductions of Zelda maps. Map changes preserve health, XP, equipment, charge and each map's unfinished level progress. Each arena measures 128 by 128 playable units, about six times the prior area. Stage layouts vary while retaining the location's terrain and landmarks.
+Kokiri Forest is the canonical name of the village location. Stage layouts, central progression shrines, crossover encounters and combat formulas are authored for this game, rather than exact reproductions of Zelda maps. Map changes preserve health, XP, equipment, charge and each map's unfinished level progress. Each regular map measures 128 by 128 playable units. Guardian arenas are smaller and flat, with a distinct look. Stage layouts vary while retaining the location’s terrain and landmarks.
 
-Survival uses the connected map network with immediate shrine rewards and the timed final boss. It does not require Adventure's three-level campaign progression. Phantom Ganon follows you through gates without recovering health.
+Use the title-screen Realm selector to choose any of the eight maps before starting Survival. In Adventure, it previews the campaign maps without skipping progression. That run stays on the chosen map, with an immediate shrine reward and a Phantom Ganon fight once the clock reaches four minutes.
 
 ## Combat and progression
 
-Weapons cast automatically. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Start with three weapon and three charm slots. The Great Fairy camp unlocks a fourth weapon for 1500 rupees, then a fourth and fifth charm for 1200 and 3000 rupees. Weapons cap at level 8 and charms at 10. Adventure Pouch extends weapons to 10; Green Potion extends charms to 12. Shrine bonuses consume no learned slots. Weapon upgrades have five rarities, with real changes to damage, shot count, cooldown, speed, piercing, bounces and critical chance. The old automatic rank-7 awakening has been removed. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
+Weapons cast automatically. Link’s Master Sword wave and Zelda’s Light Arrows visually follow their aim. Midna uses a directional, close-range Fused Shadow claw instead of orbiting relics. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Start with three weapon and three charm slots. The Great Fairy camp unlocks a fourth weapon for 1500 rupees, then a fourth and fifth charm for 1200 and 3000 rupees. Weapons cap at level 8 and charms at 10. Adventure Pouch extends weapons to 10; Green Potion extends charms to 12. Shrine bonuses consume no learned slots. Weapon upgrades have five rarities, with real changes to damage, shot count, cooldown, speed, piercing, bounces and critical chance. The old automatic rank-7 awakening has been removed. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
 
 Normal runs now apply a modest pressure increase: regular enemies have 5% more health and 5% more movement speed, the normal spawn interval is 10% shorter, and guardians have 8% more health. Hit damage and attack telegraphs are unchanged. Hard retains its existing multipliers; Training keeps its existing baseline and manual spawns.
 
@@ -79,7 +79,7 @@ Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, cam
 | Shift | Dash with brief protection |
 | Q / right-click | Aim mode / nearest-target lock |
 | R | Fully charged Ultimate |
-| E | Gate, level shrine or guardian interaction |
+| E | Level shrine or Survival shrine interaction |
 | M | Realm map and level status |
 | I / Tab | Inventory |
 | Escape / P | Pause; Escape closes auxiliary dialogs |

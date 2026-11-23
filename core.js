@@ -10,18 +10,18 @@
   const HEROES = {
     link: { name: 'Link', title: 'Hero of Courage', hp: 100, speed: 6, weapon: 'ember', color: '#72cfc8', perk: '+20% damage · Master Sword', damage: 1.2, origin: 'Ocarina of Time', ultimateName: 'Spin Attack', ultimateColor: '#efdc83', ultimateDamage: 200, ultimateRadius: 12 },
     zelda: { name: 'Zelda', title: 'Princess of Hyrule', hp: 85, speed: 7, weapon: 'leaf', color: '#c6b0e1', perk: 'Fast movement · Light Arrows', damage: 1, origin: 'Breath of the Wild', ultimateName: 'Sealing Power', ultimateColor: '#fff0b4', ultimateDamage: 150, ultimateRadius: 14, ultimateHeal: 30 },
-    midna: { name: 'Midna', title: 'Twilight Princess', hp: 150, speed: 5.1, weapon: 'orbit', color: '#86c4bc', perk: '+50 health · Fused Shadow', damage: 1, origin: 'Twilight Princess', ultimateName: 'Fused Shadow', ultimateColor: '#a2e5d3', ultimateDamage: 230, ultimateRadius: 10, ultimateShield: 3 },
+    midna: { name: 'Midna', title: 'Twilight Princess', hp: 150, speed: 5.1, weapon: 'orbit', color: '#86c4bc', perk: '+50 health · Shadow Claw', damage: 1, origin: 'Twilight Princess', ultimateName: 'Fused Shadow', ultimateColor: '#a2e5d3', ultimateDamage: 230, ultimateRadius: 10, ultimateShield: 3 },
     tetra: { name: 'Tetra', title: 'Pirate Captain', hp: 100, speed: 6.5, weapon: 'bomb', color: '#79bbd1', perk: 'Quick footwork · Bombs', damage: 1.05, origin: 'The Wind Waker', ultimateName: 'Bombs', ultimateColor: '#f5b57c', ultimateDamage: 250, ultimateRadius: 11, unlockBoss: 'helmaroc', unlockText: 'Defeat the Helmaroc King' },
     sheik: { name: 'Sheik', title: 'Sheikah Warrior', hp: 90, speed: 7.2, weapon: 'boomerang', color: '#9cafd9', perk: 'Swift movement · Boomerang', damage: 1.1, origin: 'Ocarina of Time', ultimateName: 'Nocturne of Shadow', ultimateColor: '#b5b7eb', ultimateDamage: 170, ultimateRadius: 13, ultimateShield: 2, unlockSeals: 3, unlockText: 'Defeat three different guardians' },
     skullkid: { name: 'Skull Kid', title: 'Lost Woods Trickster', hp: 90, speed: 6.4, weapon: 'nova', color: '#d4a768', perk: 'Wide magic · Din’s Fire', damage: 1.15, origin: 'Majora’s Mask', ultimateName: 'Majora’s Mask', ultimateColor: '#d5a7de', ultimateDamage: 260, ultimateRadius: 13, unlockBoss: 'majora', unlockText: 'Defeat Majora’s Mask' }
   };
   const REALMS = [
-    { id: 'hyrule', name: 'Hyrule Field', subtitle: 'Where courage begins', color: '#a3c874', sky: '#d4e8d3', ground: '#88aa60', fog: '#cadfc6', accent: '#e6cc81', blessing: 'Wallet', benefit: '+45% XP collection range', gift: 'magnet', boss: 'gohma', links: [1,5,3] },
-    { id: 'sea', name: 'The Great Sea', subtitle: 'Follow the wind beyond the horizon', color: '#76c9c6', sky: '#cbe9e6', ground: '#d5c18c', fog: '#d1e8de', accent: '#53c7d4', blessing: 'Heart Container', benefit: '+25 maximum health. Restore 35 health.', gift: 'vitality', boss: 'helmaroc', links: [0,2,4] },
-    { id: 'twilight', name: 'Twilight Realm', subtitle: 'A light between two worlds', color: '#ad91ca', sky: '#555b80', ground: '#636a8d', fog: '#73728c', accent: '#f4b583', blessing: 'Power Bracelet', benefit: '+18% weapon damage', gift: 'power', boss: 'zant', links: [1,3,5] },
-    { id: 'skyloft', name: 'Skyloft', subtitle: 'The earth ends. The adventure does not.', color: '#abd6df', sky: '#cae6ef', ground: '#a3b97a', fog: '#e0eff0', accent: '#f4dd9b', blessing: 'Wind Waker', benefit: 'Weapons attack 10% faster', gift: 'haste', boss: 'ghirahim', links: [2,4,0] },
-    { id: 'depths', name: 'The Depths', subtitle: 'Follow the lightroots through the gloom', color: '#9e8bac', sky: '#39303d', ground: '#685660', fog: '#634c61', accent: '#e6e8a3', blessing: 'Fairy', benefit: 'Restore 1 health per second', gift: 'regen', boss: 'colgera', links: [3,5,1] },
-    { id: 'termina', name: 'Termina Field', subtitle: 'Every ending holds another beginning', color: '#b6b9de', sky: '#5a6986', ground: '#7e8f9d', fog: '#9aabc1', accent: '#e3d99e', blessing: 'Bunny Hood', benefit: '+10% movement speed', gift: 'speed', boss: 'majora', links: [4,0,2] }
+    { id: 'hyrule', name: 'Hyrule Field', subtitle: 'Where courage begins', color: '#a3c874', sky: '#d4e8d3', ground: '#88aa60', fog: '#cadfc6', accent: '#e6cc81', blessing: 'Wallet', benefit: '+45% XP collection range', gift: 'magnet', boss: 'gohma' },
+    { id: 'sea', name: 'The Great Sea', subtitle: 'Follow the wind beyond the horizon', color: '#76c9c6', sky: '#cbe9e6', ground: '#d5c18c', fog: '#d1e8de', accent: '#53c7d4', blessing: 'Heart Container', benefit: '+25 maximum health. Restore 35 health.', gift: 'vitality', boss: 'helmaroc' },
+    { id: 'twilight', name: 'Twilight Realm', subtitle: 'A light between two worlds', color: '#ad91ca', sky: '#555b80', ground: '#636a8d', fog: '#73728c', accent: '#f4b583', blessing: 'Power Bracelet', benefit: '+18% weapon damage', gift: 'power', boss: 'zant' },
+    { id: 'skyloft', name: 'Skyloft', subtitle: 'The earth ends. The adventure does not.', color: '#abd6df', sky: '#cae6ef', ground: '#a3b97a', fog: '#e0eff0', accent: '#f4dd9b', blessing: 'Wind Waker', benefit: 'Weapons attack 10% faster', gift: 'haste', boss: 'ghirahim' },
+    { id: 'depths', name: 'The Depths', subtitle: 'Follow the lightroots through the gloom', color: '#9e8bac', sky: '#39303d', ground: '#685660', fog: '#634c61', accent: '#e6e8a3', blessing: 'Fairy', benefit: 'Restore 1 health per second', gift: 'regen', boss: 'colgera' },
+    { id: 'termina', name: 'Termina Field', subtitle: 'Every ending holds another beginning', color: '#b6b9de', sky: '#5a6986', ground: '#7e8f9d', fog: '#9aabc1', accent: '#e3d99e', blessing: 'Bunny Hood', benefit: '+10% movement speed', gift: 'speed', boss: 'majora' }
   ];
   REALMS.push(
     {id:'kokiri',name:'Kokiri Forest',subtitle:'The village beneath the Great Deku Tree',color:'#83bc7d',sky:'#c8e3c1',ground:'#78a65b',fog:'#afcba7',accent:'#e7d38d',blessing:'Heart Container',benefit:'+25 maximum health. Restore 35 health.',gift:'vitality',boss:'gohma'},
@@ -38,10 +38,20 @@
   const pools=[['chuchu','keese','bokoblin'],['blue_chuchu','bokoblin','seahat'],['shadow_vermin','shadow_kargarok','shadow_beast'],['chuchu','keese','remlit'],['little_frox','gloom_bokoblin','evermean'],['blue_chuchu','deku_baba','takkuri'],['deku_baba','deku_scrub','skulltula'],['octorok','tektite','lizalfos']];
   const origins=['Ocarina of Time / Breath of the Wild','The Wind Waker','Twilight Princess','Skyward Sword','Tears of the Kingdom','Majora’s Mask','Ocarina of Time','Ocarina of Time / Twilight Princess'];
   REALMS[0].boss='kingbulblin';
-  REALMS.forEach((realm,index)=>{realm.links=[(index+7)%8,(index+1)%8,(index+4)%8];realm.enemies=pools[index];realm.origin=origins[index];realm.landmark=['Hyrule Castle','Tower of the Gods','Mirror of Twilight','Statue of the Goddess','Lightroot','Clock Tower','Great Deku Tree','Water Temple'][index];realm.number=[3,4,5,6,7,8,1,2][index];});
+  REALMS.forEach((realm,index)=>{realm.enemies=pools[index];realm.origin=origins[index];realm.landmark=['Hyrule Castle','Tower of the Gods','Mirror of Twilight','Statue of the Goddess','Lightroot','Clock Tower','Great Deku Tree','Water Temple'][index];realm.number=[3,4,5,6,7,8,1,2][index];});
   const ADVENTURE_ROUTE=Object.freeze(REALMS.map((_,index)=>index).sort((a,b)=>REALMS[a].number-REALMS[b].number));
+  // Indexed by realm ID (not campaign order), keeping old saves and routes compatible.
+  const GUARDIAN_LANDMARKS=Object.freeze([
+    {name:'Hyrule Castle Courtyard',subtitle:'The warlord waits beneath the castle banners',style:'fortress',ground:'#6c7361',wall:'#495245',accent:'#d5ae69',sky:'#8b9a79',limit:26,attack:'Shieldbreak Charge'},
+    {name:'Forsaken Fortress',subtitle:'The tower above the pirate stronghold',style:'tower',ground:'#647574',wall:'#35454e',accent:'#cbc184',sky:'#688c9e',limit:24,attack:'Raking Dive'},
+    {name:'Palace of Twilight',subtitle:'Cross the shattered throne room',style:'twilight',ground:'#58526d',wall:'#342d4b',accent:'#eaac77',sky:'#332541',limit:24,attack:'Shadow Ambush'},
+    {name:'Sky Keep',subtitle:'A chamber of blades above the clouds',style:'sky',ground:'#8a8b80',wall:'#636c78',accent:'#f3cd84',sky:'#a3bac5',limit:23,attack:'Blade Lattice'},
+    {name:'Wind Temple',subtitle:'From the Depths to the storm above',style:'wind',ground:'#617b85',wall:'#435866',accent:'#a5e3e7',sky:'#6e9eb0',limit:26,attack:'Cyclone Barrage'},
+    {name:'Inside the Moon',subtitle:'The field beyond the Clock Tower',style:'moon',ground:'#8a9268',wall:'#5d5d69',accent:'#e7cf9d',sky:'#8387a6',limit:24,attack:'Moonfall'},
+    {name:'Great Deku Tree',subtitle:'Deep inside the roots of Kokiri Forest',style:'roots',ground:'#6b6344',wall:'#463929',accent:'#d4a764',sky:'#443d28',limit:23,attack:'Falling Brood'},
+    {name:'Water Temple',subtitle:'The inner sanctum beneath Lake Hylia',style:'water',ground:'#527782',wall:'#325769',accent:'#8fd7d5',sky:'#37677c',limit:25,attack:'Tidal Cross'}
+  ].map(Object.freeze));
   const STAGE_TARGETS=Object.freeze([12,18,24]);
-  const GATES = [{x:-48,z:-48},{x:48,z:-48},{x:0,z:55}];
   const BOSSES = {
     kingbulblin:{name:'King Bulblin',origin:'Twilight Princess',hp:600,speed:1.3,radius:1.8,damage:19,color:'#aac684',height:4.8,patterns:['charge','slam','summon']},
     morpha:{name:'Morpha',origin:'Ocarina of Time',hp:560,speed:1.4,radius:1.9,damage:18,color:'#86d6ed',height:4.7,patterns:['slam','volley','teleport']},
@@ -56,7 +66,7 @@
   };
   const UPGRADES = [
     {id:'ember',name:'Master Sword',category:'WEAPON',icon:'sword',desc:'Straight sword beams strike a nearby enemy.',max:8,origin:'Ocarina of Time / Skyward Sword'},
-    {id:'orbit',name:'Fused Shadow',category:'WEAPON',icon:'orbit',desc:'Dark relics circle you and strike nearby enemies.',max:8,origin:'Twilight Princess'},
+    {id:'orbit',name:'Fused Shadow',category:'WEAPON',icon:'orbit',desc:'Midna strikes with a close shadow claw. Other heroes summon orbiting relics.',max:8,origin:'Twilight Princess'},
     {id:'nova',name:'Din’s Fire',category:'WEAPON',icon:'flame',desc:'A ring of fire blasts nearby enemies.',max:8,origin:'Ocarina of Time'},
     {id:'leaf',name:'Light Arrows',category:'WEAPON',icon:'arrow',desc:'Homing light arrows track nearby enemies.',max:8,origin:'Ocarina of Time / Breath of the Wild'},
     {id:'bomb',name:'Bombs',category:'WEAPON',icon:'flame',desc:'Lob a bomb that explodes across a wide area.',max:8,origin:'Recurring Zelda item'},
@@ -109,13 +119,20 @@
       this.level = 1; this.xp = 0; this.xpNeed = xpForLevel(1); this.kills = 0; this.nextId = 1; this.ranks = { [HEROES[hero].weapon]: 1 };
       this.cooldowns = { ember: .3, nova: 1.5, leaf: .4, bomb: .7, boomerang: .4, orbit:.1 }; this.spawnTimer = .2; this.eliteMinute = 0;
       this.bossSpawned = false; this.boss = null; this.choices = []; this.orbitAngle = 0; this.damageTaken = 0; this.damageDealt = 0;
-      this.realm = this.mode==='adventure'||this.mode==='training'?6:0; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.travelCooldown = 0; this.shrineCharge = 0;this.adventureDelay=0;
+      this.realm = this.mode==='survival'?(Number.isInteger(options.realm)&&REALMS[options.realm]?options.realm:0):6; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.shrineCharge = 0;this.adventureDelay=0;this.landmarkActive=false;
+      this.reviewMapClears=this.mode==='adventure'&&options.reviewMapClears===true;
+      this.awaitingMapClear=false;this.mapFinishedTime=null;this.mapStart={time:0,kills:0,damageDealt:0,damageTaken:0};
       this.energy = 25; this.streak = 0; this.streakTimer = 0; this.bestStreak = 0;
       this.aimMode = 'auto'; this.cameraYaw = Math.PI / 4; this.lockedTarget = null;
       this.refreshes = 2; this.skips = 2; this.banishes = 1; this.banished = new Set();
       this.player.maxHp+=this.permanent.heart*8;this.player.hp=this.player.maxHp;this.player.action='idle';this.player.actionTime=0;this.player.actionAge=0;this.player.attackKind=null;
     }
-    groundAt(x,z){return this.flatTerrain?0:Terrain.height(this.realm,this.stage,x,z);}
+    get landmark(){return this.landmarkActive?GUARDIAN_LANDMARKS[this.realm]:null;}
+    get arenaLimit(){return this.landmark?.limit??ARENA_LIMIT;}
+    groundAt(x,z){return this.flatTerrain||this.landmarkActive?0:Terrain.height(this.realm,this.stage,x,z);}
+    placeAtLandmarkEntrance(){
+      Object.assign(this.player,{x:0,z:9,y:0,ground:0,vy:0,gliding:false,dash:0,dx:0,dz:-1,facing:Math.PI,invincible:2});
+    }
     get weaponSlots(){return this.mode==='training'?4:Math.max(3+(this.permanent.weaponSlot||0),this.legacySlots?.weapons||0);}
     get charmSlots(){return this.mode==='training'?5:Math.max(3+(this.permanent.charmSlots||0),this.legacySlots?.charms||0);}
     shrineRanks(id){return Combat.WEAPONS[id]?0:[...this.shrines].filter(index=>REALMS[index].gift===id).length;}
@@ -180,7 +197,8 @@
       const available=Combat.GEAR.filter(item=>(this.gear[item.id]||0)<item.max&&item.rarity>=minimum);if(!available.length)return null;
       const total=available.reduce((sum,item)=>sum+Combat.RARITIES[item.rarity].weight,0);let roll=this.random()*total;
       const item=available.find(item=>(roll-=Combat.RARITIES[item.rarity].weight)<0)||available.at(-1);
-      const drop={id:this.nextId++,gearId:item.id,x:clamp(x,-ARENA_LIMIT+1,ARENA_LIMIT-1),z:clamp(z,-ARENA_LIMIT+1,ARENA_LIMIT-1)};
+      const bound=this.arenaLimit-1;
+      const drop={id:this.nextId++,gearId:item.id,x:clamp(x,-bound,bound),z:clamp(z,-bound,bound)};
       this.loot.push(drop);this.checkpointRevision++;this.emit('lootDrop',{x:drop.x,z:drop.z,rarity:item.rarity});return drop;
     }
     collectLoot(id){
@@ -243,14 +261,8 @@
     spawnRealmEnemy(x,z,elite=false){const pool=REALMS[this.realm].enemies,index=elite?pool.length-1:Math.floor(this.random()*pool.length);return this.spawnEnemy(pool[index],x,z,elite);}
     setAction(action, duration) {
       const priority={idle:0,walk:0,jump:1,glide:1,dash:2,attack:3,cast:3,ultimate:4,hurt:5,death:6,victory:6};
-      if(this.player.actionTime>0&&(priority[this.player.action]||0)>(priority[action]||0))return;
-      this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;
-    }
-    get travelBlockedReason() {
-      if(this.mode==='adventure'&&this.boss&&!this.boss.dead)return 'Defeat '+this.boss.name+' to advance.';
-      if(this.mode==='adventure')return this.shrines.has(this.realm)?'Map cleared. The next encounter starts automatically.':'Clear all three levels and defeat '+BOSSES[REALMS[this.realm].boss].name+' to advance.';
-      if(this.travelCooldown>0)return 'Gate recharging · '+Math.ceil(this.travelCooldown)+'s';
-      return '';
+      if(this.player.actionTime>0&&(priority[this.player.action]||0)>(priority[action]||0))return false;
+      this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;return true;
     }
     activateShrine(realm=this.realm) {
       if(this.shrines.has(realm))return false;
@@ -263,22 +275,43 @@
     }
     spawnBoss(id, final=false) {
       if(!BOSSES[id]||(this.boss&&!this.boss.dead))return null;
-      const spec=BOSSES[id],enemy=this.spawnEnemy('boss',clamp(this.player.x+10,-ARENA_LIMIT+4,ARENA_LIMIT-4),clamp(this.player.z-10,-ARENA_LIMIT+4,ARENA_LIMIT-4));
+      const spec=BOSSES[id],landmark=this.landmark;
+      const enemy=this.spawnEnemy('boss',landmark?0:clamp(this.player.x+10,-ARENA_LIMIT+4,ARENA_LIMIT-4),landmark?-8:clamp(this.player.z-10,-ARENA_LIMIT+4,ARENA_LIMIT-4));
       const health=(spec.hp+(this.mode==='adventure'&&!final?this.shrines.size*110:0))*(this.difficulty==='hard'?1.35:1)*(this.mode==='training'?1:1.08);
       Object.assign(enemy,{bossId:id,name:spec.name,hp:health,maxHp:health,speed:spec.speed,radius:spec.radius,damage:spec.damage*(this.difficulty==='hard'?1.25:1),realm:this.realm,final,stage:1,attackTimer:1.6,windup:0,attackCycle:0,action:'spawn',actionAge:0,spawnTime:.8,chargeTimer:0});
       this.boss=enemy;this.bossSpawned=true;this.player.invincible=Math.max(this.player.invincible,1.5);
-      this.emit('boss',{id,name:spec.name,realm:this.realm});return enemy;
+      this.emit('boss',{id,name:spec.name,realm:this.realm,...(landmark?{landmark:landmark.name}:{})});return enemy;
     }
     challengeGuardian() {
       if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.shrines.has(this.realm)||this.stage!==3||!this.stageReady||this.adventureDelay>0)return false;
       // Bank the third wave before opening the separate boss encounter. Upgrades finish first.
       this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
       if(!this.bankBossRewards())return false;
+      this.landmarkActive=true;
+      this.placeAtLandmarkEntrance();
       return !!this.spawnBoss(REALMS[this.realm].boss,false);
     }
     bankBossRewards(){
       const banked=this.shards.reduce((sum,item)=>sum+item.value,0);this.shards=[];this.bankLoot();
       if(banked)this.collect(banked);return this.state==='running';
+    }
+    get mapResult(){
+      if(this.state!=='map-clear')return null;
+      const next=this.nextAdventureRealm;
+      return {realm:this.realm,nextRealm:next??0,nextIsFinal:next===null,
+        time:Math.max(0,(this.mapFinishedTime??this.time)-this.mapStart.time),kills:Math.max(0,this.kills-this.mapStart.kills),
+        damageDealt:Math.max(0,this.damageDealt-this.mapStart.damageDealt),damageTaken:Math.max(0,this.damageTaken-this.mapStart.damageTaken)};
+    }
+    continueAfterMap(){
+      if(this.state!=='map-clear'||!this.awaitingMapClear)return false;
+      const next=this.nextAdventureRealm??0;
+      this.awaitingMapClear=false;this.mapFinishedTime=null;this.state='running';this.adventureDelay=0;this.checkpointRevision++;
+      const entered=this.enterRealm(next);
+      if(entered&&this.nextAdventureRealm===null)this.adventureDelay=.7;
+      return entered;
+    }
+    startMapCounters(){
+      this.mapStart={time:this.time,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken};
     }
     progressAdventure(dt){
       if(!this.adventureTransition)return false;
@@ -287,18 +320,22 @@
       this.adventureDelay=Math.max(0,this.adventureDelay-dt);
       if(this.adventureDelay>0)return true;
       if(!this.shrines.has(this.realm)){this.challengeGuardian();return true;}
+      if(this.awaitingMapClear){
+        if(this.bankBossRewards()){this.state='map-clear';this.checkpointRevision++;this.emit('mapClear',{realm:this.realm});}
+        return true;
+      }
       const next=this.nextAdventureRealm;
       if(next!==null)this.enterRealm(next);
       else if(this.realm!==0)this.enterRealm(0);
-      else if(this.bankBossRewards())this.spawnBoss('ganondorf',true);
+      else if(this.bankBossRewards()){this.landmarkActive=false;this.spawnBoss('ganondorf',true);}
       return true;
     }
     alignAdventure(){
-      if(this.mode!=='adventure'||this.boss)return false;
+      if(this.mode!=='adventure'||this.boss||this.awaitingMapClear)return false;
       const next=this.nextAdventureRealm??0;
       // Older free-roam saves keep every seal and stage, then resume at the first unfinished map.
       if(this.realm===next)return false;
-      this.realm=next;this.visited.add(next);this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;this.adventureDelay=0;
+      this.landmarkActive=false;this.realm=next;this.visited.add(next);this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;this.adventureDelay=0;this.startMapCounters();
       Object.assign(this.player,{x:0,z:0,y:0,ground:0,vy:0,invincible:2});this.checkpointRevision++;return true;
     }
     addHazard(x,z,radius,delay,damage=24) {
@@ -310,51 +347,115 @@
       const target=this.targetFor(enemy),y=this.groundAt(enemy.x,enemy.z)+1,d=Math.max(1,distance(enemy,target));
       this.projectiles.push({id:this.nextId++,ownerId:enemy.id,type:'hostile',hostile:true,x:enemy.x,z:enemy.z,y,vy:(target.y+target.ground+1-y)/d,vx:Math.cos(angle),vz:Math.sin(angle),speed,life:3.4,age:0,damage:enemy.damage*.8,radius:.28,hits:new Set(),color:BOSSES[enemy.bossId]?.color||'#d894b1'});
     }
+    // Every landmark adds its own marked pattern to the guardian's standard rotation.
+    markLandmarkAttack(enemy, target){
+      const bound=this.arenaLimit-2, stage=enemy.stage, wait=enemy.windup, style=this.landmark.style;
+      const x=clamp(target.x,-bound,bound),z=clamp(target.z,-bound,bound);
+      const damage=enemy.damage*1.06, marked=new Set();
+      const mark=(xx,zz,r)=>{
+        const hx=clamp(xx,-bound,bound),hz=clamp(zz,-bound,bound),key=Math.round(hx*10)+','+Math.round(hz*10);
+        if(!marked.has(key)){marked.add(key);this.addHazard(hx,hz,r,wait,damage);}
+      };
+      const line=(xx,zz,angle,count,gap,r)=>{for(let i=0;i<count;i++)mark(xx+Math.cos(angle)*i*gap,zz+Math.sin(angle)*i*gap,r);};
+      if(style==='roots'){
+        mark(x,z,3.1);
+        for(let i=0;i<stage+2;i++){const a=i*TAU/(stage+2)+enemy.attackCycle*.3;mark(x+Math.cos(a)*4.7,z+Math.sin(a)*4.7,1.45);}
+      }else if(style==='water'){
+        line(x-6,z,0,5,3,1.6);line(x,z-6,Math.PI/2,5,3,1.6);
+      }else if(style==='fortress'){
+        const a=Math.atan2(z-enemy.z,x-enemy.x),length=Math.min(34,Math.max(7,distance(enemy,{x,z})+2)),count=Math.ceil(length/2.8);
+        line(enemy.x,enemy.z,a,count+1,length/count,1.65+stage*.15);
+      }else if(style==='tower'){
+        line(x-8,z,0,7,2.6,1.5);
+        if(stage>1)line(x-8,z+4,0,7,2.6,1.3);
+      }else if(style==='twilight'){
+        mark(x,z,3.3);mark(-x,-z,2.7);
+        if(stage>1){mark(x+4,z-4,1.7);mark(x-4,z+4,1.7);}
+      }else if(style==='sky'){
+        line(x,z-8,Math.PI/2,7,2.6,1.45);
+        line(x+(stage===3?-4:4),z-8,Math.PI/2,7,2.6,1.45);
+      }else if(style==='wind'){
+        mark(x,z,2.8);
+        for(let i=0;i<stage+2;i++){const a=(i+.15)*(TAU/(stage+3))+enemy.attackCycle*.4;line(x+Math.cos(a)*4,z+Math.sin(a)*4,a,2,2.75,1.45);}
+      }else if(style==='moon'){
+        mark(x,z,4.25);
+        if(stage>1)for(let i=0;i<3;i++){const a=i*TAU/3+enemy.attackCycle*.35;mark(x+Math.cos(a)*6.7,z+Math.sin(a)*6.7,1.75);}
+      }
+    }
+    finishLandmarkAttack(enemy, angle){
+      const style=this.landmark.style, stage=enemy.stage;
+      if(style==='roots'){
+        for(let i=0;i<stage;i++){const a=angle+(i-(stage-1)/2)*1.1;this.spawnRealmEnemy(enemy.x+Math.cos(a)*4,enemy.z+Math.sin(a)*4);}
+      }else if(style==='fortress'){
+        const duration=clamp(distance(enemy,{x:enemy.targetX,z:enemy.targetZ})/25,.26,1.3);
+        enemy.chargeTimer=duration;enemy.chargeX=Math.cos(angle)*25;enemy.chargeZ=Math.sin(angle)*25;
+      }else if(style==='twilight'){
+        const bound=this.arenaLimit-2;
+        enemy.x=clamp(enemy.targetX+Math.cos(angle+Math.PI/2)*6,-bound,bound);
+        enemy.z=clamp(enemy.targetZ+Math.sin(angle+Math.PI/2)*6,-bound,bound);
+        const follow=Math.atan2(enemy.targetZ-enemy.z,enemy.targetX-enemy.x);
+        for(let i=-1;i<=1;i++)this.enemyBolt(enemy,follow+i*.25,8);
+        this.emit('blink',{x:enemy.x,z:enemy.z});
+      }
+    }
     updateBoss(enemy,dt) {
-      const spec=BOSSES[enemy.bossId]||BOSSES.phantom,p=this.targetFor(enemy);
+      const spec=BOSSES[enemy.bossId]||BOSSES.phantom,p=this.targetFor(enemy), landmark=this.landmark, bound=this.arenaLimit-1;
       const stage=enemy.hp<enemy.maxHp*.33?3:enemy.hp<enemy.maxHp*.66?2:1;
       if(stage>enemy.stage){enemy.stage=stage;enemy.attackTimer=Math.min(enemy.attackTimer,.7);this.emit('bossPhase',{id:enemy.bossId,name:enemy.name,stage,x:enemy.x,z:enemy.z});}
       enemy.actionAge=(enemy.actionAge||0)+dt;
       if(enemy.spawnTime>0){enemy.spawnTime=Math.max(0,enemy.spawnTime-dt);enemy.action='spawn';if(enemy.spawnTime===0)enemy.actionAge=0;return;}
-      if(enemy.chargeTimer>0){enemy.chargeTimer-=dt;enemy.x=clamp(enemy.x+enemy.chargeX*dt,-ARENA_LIMIT+1,ARENA_LIMIT-1);enemy.z=clamp(enemy.z+enemy.chargeZ*dt,-ARENA_LIMIT+1,ARENA_LIMIT-1);enemy.action='attack';return;}
+      if(enemy.chargeTimer>0){enemy.chargeTimer-=dt;enemy.x=clamp(enemy.x+enemy.chargeX*dt,-bound,bound);enemy.z=clamp(enemy.z+enemy.chargeZ*dt,-bound,bound);enemy.action='attack';return;}
       if(enemy.windup>0){
         enemy.windup=Math.max(0,enemy.windup-dt);enemy.action='windup';
         if(enemy.windup===0){
           const angle=Math.atan2(enemy.targetZ-enemy.z,enemy.targetX-enemy.x),kind=enemy.intent;
-          if(kind==='charge'){enemy.chargeTimer=.65;enemy.chargeX=Math.cos(angle)*22;enemy.chargeZ=Math.sin(angle)*22;}
+          if(kind==='landmark'&&landmark)this.finishLandmarkAttack(enemy,angle);
+          else if(kind==='charge'){enemy.chargeTimer=.65;enemy.chargeX=Math.cos(angle)*22;enemy.chargeZ=Math.sin(angle)*22;}
           else if(kind==='volley'){const count=6+enemy.stage*2;for(let i=0;i<count;i++)this.enemyBolt(enemy,angle+i*TAU/count,6.5+enemy.stage);}
-          else if(kind==='teleport'){enemy.x=clamp(enemy.targetX+Math.cos(enemy.phase)*5,-23,23);enemy.z=clamp(enemy.targetZ+Math.sin(enemy.phase)*5,-23,23);for(let i=-1;i<=1;i++)this.enemyBolt(enemy,angle+i*.22,8);this.emit('blink',{x:enemy.x,z:enemy.z});}
-          else if(kind==='summon'){for(let i=0;i<2+enemy.stage;i++){const a=i*TAU/(2+enemy.stage);this.spawnRealmEnemy(clamp(enemy.x+Math.cos(a)*3,-ARENA_LIMIT+1,ARENA_LIMIT-1),clamp(enemy.z+Math.sin(a)*3,-ARENA_LIMIT+1,ARENA_LIMIT-1));}}
-          enemy.action='attack';enemy.actionAge=0;enemy.attackTimer=Math.max(1.25,3.4-enemy.stage*.4);
+          else if(kind==='teleport'){
+            const edge=landmark?bound-1:23;
+            enemy.x=clamp(enemy.targetX+Math.cos(enemy.phase)*5,-edge,edge);enemy.z=clamp(enemy.targetZ+Math.sin(enemy.phase)*5,-edge,edge);
+            const aim=landmark?Math.atan2(enemy.targetZ-enemy.z,enemy.targetX-enemy.x):angle;
+            for(let i=-1;i<=1;i++)this.enemyBolt(enemy,aim+i*.22,8);this.emit('blink',{x:enemy.x,z:enemy.z});
+          }
+          else if(kind==='summon'){for(let i=0;i<2+enemy.stage;i++){const a=i*TAU/(2+enemy.stage);this.spawnRealmEnemy(clamp(enemy.x+Math.cos(a)*3,-bound,bound),clamp(enemy.z+Math.sin(a)*3,-bound,bound));}}
+          enemy.action='attack';enemy.actionAge=0;enemy.attackTimer=landmark?2.8-enemy.stage*.37:Math.max(1.25,3.4-enemy.stage*.4);
         }
         return;
       }
       enemy.attackTimer-=dt;enemy.action=enemy.actionAge<.3?'attack':'walk';
       if(enemy.attackTimer<=0){
-        enemy.intent=spec.patterns[(enemy.attackCycle||0)%spec.patterns.length];enemy.attackCycle=(enemy.attackCycle||0)+1;enemy.windup=Math.max(.6,1.1-enemy.stage*.1);enemy.actionAge=0;enemy.targetX=p.x;enemy.targetZ=p.z;
+        const cycle=enemy.attackCycle||0, signature=landmark&&(cycle%(enemy.stage===3?2:3)===0);
+        const normalCycle=landmark?(enemy.landmarkNormalCycle||0):cycle;
+        enemy.intent=signature?'landmark':spec.patterns[normalCycle%spec.patterns.length];
+        if(landmark&&!signature)enemy.landmarkNormalCycle=normalCycle+1;
+        enemy.attackCycle=cycle+1;enemy.windup=signature?1.3-enemy.stage*.1:Math.max(.6,1.1-enemy.stage*.1);enemy.actionAge=0;enemy.targetX=p.x;enemy.targetZ=p.z;
+        if(signature)this.markLandmarkAttack(enemy,p);
         if(enemy.intent==='slam'){this.addHazard(p.x,p.z,3.2,enemy.windup,enemy.damage);if(enemy.stage>1)for(let i=0;i<enemy.stage;i++)this.addHazard(p.x+(this.random()-.5)*10,p.z+(this.random()-.5)*10,2.5,enemy.windup,enemy.damage);}
-        if(enemy.intent==='charge'){const a=Math.atan2(p.z-enemy.z,p.x-enemy.x);for(let i=1;i<=6;i++)this.addHazard(clamp(enemy.x+Math.cos(a)*i*2.2,-ARENA_LIMIT+1,ARENA_LIMIT-1),clamp(enemy.z+Math.sin(a)*i*2.2,-ARENA_LIMIT+1,ARENA_LIMIT-1),.9,enemy.windup,enemy.damage*.75);}
-        this.emit('warning',{x:enemy.x,z:enemy.z,kind:enemy.intent});return;
+        if(enemy.intent==='charge'){const a=Math.atan2(p.z-enemy.z,p.x-enemy.x);for(let i=1;i<=6;i++)this.addHazard(clamp(enemy.x+Math.cos(a)*i*2.2,-bound,bound),clamp(enemy.z+Math.sin(a)*i*2.2,-bound,bound),.9,enemy.windup,enemy.damage*.75);}
+        this.emit('warning',{x:enemy.x,z:enemy.z,kind:enemy.intent,...(signature?{label:landmark.attack}:{})});return;
       }
       const d=Math.max(.01,distance(enemy,p)),desired=enemy.bossId==='colgera'||enemy.bossId==='helmaroc'?5:2;
       if(d>desired){enemy.x+=(p.x-enemy.x)/d*enemy.speed*dt;enemy.z+=(p.z-enemy.z)/d*enemy.speed*dt;}
     }
     weaponStats(id,rank=this.rank(id),rarity=0) {
-      const base=Combat.ATTACKS[id];if(!base)return null;
+      const melee=id==='orbit'&&this.hero==='midna',base=melee?Combat.SHADOW_CLAW:Combat.ATTACKS[id];if(!base)return null;
       const r=Math.max(1,rank),history=(this.weaponUpgrades[id]||[]).slice(0,r-1);while(history.length<r-1)history.push(history.length<this.rank(id)-1?0:rarity);
-      const growth=Combat.upgradeGrowth(id,history);
-      return{damage:base.damage*growth.damage*(1+(r-1)*.04)*this.damageMultiplier,count:base.count+growth.count,cooldown:base.cooldown*growth.cooldown*this.cooldownMultiplier,radius:base.radius*growth.area,speed:base.speed*growth.speed,duration:base.duration*growth.duration,pierce:base.pierce+growth.pierce,bounce:growth.bounce,critical:growth.critical,status:growth.status,homing:!!base.homing};
+      const growth=Combat.upgradeGrowth(id,history,base);
+      return{damage:base.damage*growth.damage*(1+(r-1)*.04)*this.damageMultiplier,count:base.count+growth.count,cooldown:base.cooldown*growth.cooldown*this.cooldownMultiplier,radius:base.radius*growth.area,speed:base.speed*growth.speed,duration:base.duration*growth.duration,pierce:base.pierce+growth.pierce,bounce:growth.bounce,critical:growth.critical,status:growth.status,homing:!!base.homing,...(melee?{melee:true,arc:base.arc}:{})};
     }
     upgradeSummary(id) {
       const rank=this.rank(id),before=this.weaponStats(id,rank),after=this.weaponStats(id,rank+1,this.choices.find(choice=>choice.id===id)?.rarity||0);
       if(!after)return UPGRADES.find(u=>u.id===id)?.desc||'Restore all health.';
       const multiplier=this.stats[Combat.WEAPONS[id]]||1,damage=Math.round(after.damage*multiplier),first=rank?Math.round(before.damage*multiplier)+' → '+damage:String(damage);
-      const details=['Damage '+first,after.count+(id==='orbit'?' relics':' shots'),after.cooldown.toFixed(2)+'s'];
-      for(const [key,label,format]of [['pierce','pierce',value=>value],['bounce','bounces',value=>value],['speed','speed',value=>value.toFixed(1)],['radius','radius',value=>value.toFixed(1)],['duration','duration',value=>value.toFixed(1)+'s'],['critical','crit bonus',value=>Math.round(value*100)+'%']])if(rank&&Math.abs(after[key]-before[key])>.00001)details.push(label+' '+format(before[key])+' → '+format(after[key]));
+      const details=[(after.melee?'Shadow claw · ':'')+'Damage '+first,after.count+(after.melee?' targets':id==='orbit'?' relics':' shots'),after.cooldown.toFixed(2)+'s'];
+      if(after.melee&&!rank)details.push('Reach '+after.radius.toFixed(1));
+      for(const [key,label,format]of [['pierce','pierce',value=>value],['bounce','bounces',value=>value],['speed','speed',value=>value.toFixed(1)],['radius',after.melee?'reach':'radius',value=>value.toFixed(1)],['duration','duration',value=>value.toFixed(1)+'s'],['critical','crit bonus',value=>Math.round(value*100)+'%']])if(rank&&Math.abs(after[key]-before[key])>.00001)details.push(label+' '+format(before[key])+' → '+format(after[key]));
       return details.join(' · ');
     }
     weaponSummary(id){
       const stats=this.weaponStats(id);if(!stats)return '';
+      if(stats.melee)return 'Shadow claw · '+Math.round(stats.damage*this.stats.magic)+' damage per target · '+stats.count+' targets · reach '+stats.radius.toFixed(1)+' · '+stats.cooldown.toFixed(2)+'s'+(stats.critical?' · +'+Math.round(stats.critical*100)+'% crit':'');
       return 'Damage '+Math.round(stats.damage*(this.stats[Combat.WEAPONS[id]]||1))+' · '+stats.count+(id==='orbit'?' relics':' shots')+' · '+stats.cooldown.toFixed(2)+'s'+(id==='nova'||id==='bomb'||id==='orbit'?' · radius '+stats.radius.toFixed(1):'')+(id==='orbit'?' · active '+stats.duration.toFixed(1)+'s':'')+(stats.pierce&&stats.pierce<99?' · '+stats.pierce+' pierce':'')+(stats.bounce?' · '+stats.bounce+' bounces':'')+(stats.critical?' · +'+Math.round(stats.critical*100)+'% crit':'');
     }
     explode(projectile) {
@@ -362,10 +463,10 @@
       this.emit('explosion',{x:projectile.x,z:projectile.z,radius:projectile.blastRadius||3,color:'#f0b46d'});
       for(const enemy of this.enemies)if(distance(enemy,projectile)<(projectile.blastRadius||3)+enemy.radius)this.hitProjectile(enemy,projectile,5);
     }
-    get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade'].includes(this.state)&&this.player.hp>0&&!this.boss;}
+    get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade','map-clear'].includes(this.state)&&this.player.hp>0&&!this.boss;}
     checkpoint(){
       if(!this.canCheckpoint)return null;
-      return {version:2,adventureDelay:this.adventureDelay,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
+      return {version:2,...(this.reviewMapClears?{reviewMapClears:true,awaitingMapClear:this.awaitingMapClear,mapFinishedTime:this.mapFinishedTime,mapStart:{...this.mapStart}}:{}),adventureDelay:this.adventureDelay,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
     }
     static fromCheckpoint(raw){
       const validNumber=(value,min,max,integer=false)=>Number.isFinite(value)&&value>=min&&value<=max&&(!integer||Number.isInteger(value));
@@ -373,7 +474,7 @@
       for(const [key,min,max,integer]of [['realm',0,REALMS.length-1,true],['time',0,7200,false],['level',1,500,true],['xp',0,1e7,false],['healthFraction',.0001,1,false],['energy',0,100,false],['kills',0,1e6,true],['refreshes',0,2,true],['skips',0,2,true],['banishes',0,1,true]])if(!validNumber(raw[key],min,max,integer))throw new Error('Invalid checkpoint '+key+'.');
       const indices=value=>Array.isArray(value)&&value.length<=REALMS.length&&new Set(value).size===value.length&&value.every(v=>validNumber(v,0,REALMS.length-1,true));
       if(!indices(raw.shrines)||!indices(raw.visited)||!raw.visited.includes(raw.realm)||!raw.ranks||typeof raw.ranks!=='object'||Array.isArray(raw.ranks)||!Array.isArray(raw.banished)||raw.banished.length>1||raw.banished.some(id=>!UPGRADES.some(u=>u.id===id)))throw new Error('Invalid checkpoint collection.');
-      const game=new Game(raw.hero,Date.now(),{mode:raw.mode,difficulty:raw.difficulty,upgrades:raw.permanent,runId:raw.runId});
+      const game=new Game(raw.hero,Date.now(),{mode:raw.mode,difficulty:raw.difficulty,upgrades:raw.permanent,runId:raw.runId,reviewMapClears:raw.reviewMapClears===true});
       if(raw.adventureDelay!==undefined){if(!validNumber(raw.adventureDelay,0,2))throw new Error('Invalid saved encounter transition.');game.adventureDelay=raw.adventureDelay;}
       game.shrines=new Set(raw.shrines);if(raw.gear!==undefined)game.gear=Combat.validateGear(raw.gear);
       if(Object.keys(raw.ranks).some(id=>!UPGRADES.some(item=>item.id===id)))throw new Error('Invalid checkpoint rank.');
@@ -407,16 +508,29 @@
       for(const key of ['criticalHits','megaCriticalHits','reactions'])if(raw[key]!==undefined){if(!validNumber(raw[key],0,1e9,true))throw new Error('Invalid saved combat count.');game[key]=raw[key];}
       game.refreshStats();game.player.hp=raw.healthFraction*game.player.maxHp;game.player.invincible=2;
       game.energy=raw.energy;game.kills=raw.kills;game.damageDealt=validNumber(raw.damageDealt,0,1e10)?raw.damageDealt:0;game.damageTaken=validNumber(raw.damageTaken,0,1e8)?raw.damageTaken:0;
+      if(raw.awaitingMapClear!==undefined&&typeof raw.awaitingMapClear!=='boolean')throw new Error('Invalid saved map result.');
+      if(raw.awaitingMapClear===true||raw.state==='map-clear'){
+        if(!game.reviewMapClears||raw.awaitingMapClear!==true||!game.shrines.has(game.realm)||!['running','paused','upgrade','map-clear'].includes(raw.state))throw new Error('Invalid saved map result.');
+        game.awaitingMapClear=true;game.landmarkActive=true;game.placeAtLandmarkEntrance();
+      }
+      if(raw.mapStart!==undefined){
+        if(!raw.mapStart||typeof raw.mapStart!=='object'||Array.isArray(raw.mapStart)||Object.keys(game.mapStart).some(key=>!validNumber(raw.mapStart[key],0,game[key],key==='kills')))throw new Error('Invalid saved map statistics.');
+        for(const key of Object.keys(game.mapStart))game.mapStart[key]=raw.mapStart[key];
+      }else if(game.realm!==ADVENTURE_ROUTE[0])game.startMapCounters();
+      if(raw.mapFinishedTime!==undefined&&raw.mapFinishedTime!==null){
+        if(!game.awaitingMapClear||!validNumber(raw.mapFinishedTime,game.mapStart.time,game.time))throw new Error('Invalid saved map finish time.');
+        game.mapFinishedTime=raw.mapFinishedTime;
+      }
       game.refreshes=raw.refreshes;game.skips=raw.skips;game.banishes=raw.banishes;game.banished=new Set(raw.banished);game.checkpointRevision=Number.isInteger(raw.revision)?Math.max(1,raw.revision):1;game.eliteMinute=Math.floor(game.time/60);game.spawnTimer=1.5;
       if(raw.state==='upgrade'){
         if(!Array.isArray(raw.choices)||raw.choices.length<1||raw.choices.length>3||new Set(raw.choices).size!==raw.choices.length||raw.choices.some(id=>id!=='feast'&&!game.canOffer(UPGRADES.find(item=>item.id===id))))throw new Error('Invalid saved upgrade choices.');
         game.state='upgrade';game.choices=raw.choices.map(id=>({...id==='feast'?{id:'feast',name:'Red Potion',category:'RESTORE',icon:'plus',desc:'Restore all health.',max:Infinity}:UPGRADES.find(item=>item.id===id),rarity:raw.choiceRarities?.[id]??0}));
-      }else game.checkLevel();game.alignAdventure();return game;
+      }else if(raw.state==='map-clear')game.state='map-clear';else game.checkLevel();game.alignAdventure();return game;
     }
 
     emit(type, data = {}) {
       if(this.events.length>=300){
-        const important=['end','guardian','boss','travel','level','shrine','bossPhase','stage','stageClear'];
+        const important=['end','guardian','boss','travel','level','shrine','bossPhase','stage','stageClear','mapClear'];
         if(!important.includes(type))return;
         const discard=this.events.findIndex(event=>!important.includes(event.type));this.events.splice(discard<0?0:discard,1);
       }
@@ -453,30 +567,28 @@
       const enemy = this.nearest(24); this.lockedTarget = enemy ? enemy.id : null; return !!enemy;
     }
     attackTarget(range) {
-      if (this.lockedTarget !== null) {
-        const locked = this.enemies.find(e => e.id === this.lockedTarget && !e.dead && distance(e, this.player) <= range);
-        if (locked) return locked;
-        this.lockedTarget = null;
+      if(this.lockedTarget!==null){
+        const locked=this.enemies.find(e=>e.id===this.lockedTarget&&!e.dead);
+        if(locked&&distance(locked,this.player)<=range)return locked;
+        // A short-range weapon must not cancel a living target locked for a longer-range weapon.
+        if(!locked||distance(locked,this.player)>26)this.lockedTarget=null;
       }
-      if (this.aimMode === 'auto') return this.nearest(range);
-      return { x: this.player.x - Math.sin(this.cameraYaw) * range, z: this.player.z - Math.cos(this.cameraYaw) * range, id: null };
-    }
-    travel(destination) {
-      if (this.state !== 'running' || this.travelBlockedReason || !REALMS[this.realm].links.includes(destination)) return false;
-      return this.enterRealm(destination);
+      if(this.aimMode==='auto')return this.nearest(range);
+      return {x:this.player.x-Math.sin(this.cameraYaw)*range,z:this.player.z-Math.cos(this.cameraYaw)*range,id:null};
     }
     enterRealm(destination) {
-      if(this.state!=='running'||!Number.isInteger(destination)||!REALMS[destination])return false;
-      this.bankLoot();this.realm = destination; this.visited.add(destination); this.travelCooldown = 5;
+      // Only the ordered Adventure sequence can advance to another map.
+      if(this.mode!=='adventure'||this.state!=='running'||this.boss||!this.shrines.has(this.realm)||this.awaitingMapClear||destination===this.realm||destination!==(this.nextAdventureRealm??0))return false;
+      this.bankLoot();this.landmarkActive=false;this.realm = destination; this.visited.add(destination);
       this.player.x = 0; this.player.z = 0; this.player.y = 0;this.player.ground=0; this.player.vy = 0; this.player.invincible = 2;
-      this.enemies = this.enemies.filter(e => e.type === 'boss' && !e.dead);
-      if (this.boss && !this.boss.dead) { this.boss.x = 12; this.boss.z = -12; }
-      // Shards travel with the player; they cannot be duplicated or lost at a gate.
+      this.enemies = [];
+      // Bank leftover shards once when moving to the next Adventure map.
       const banked = this.shards.reduce((sum, s) => sum + s.value, 0); this.shards = [];
       this.projectiles = []; this.hazards = []; this.shrineCharge = 0; this.lockedTarget = null;
-      this.checkpointRevision++;this.emit('travel', { realm: destination }); if (banked) this.collect(banked); return true;
+      this.startMapCounters();this.checkpointRevision++;this.emit('travel', { realm: destination }); if (banked) this.collect(banked); return true;
     }
     get interaction(){
+      if(this.landmarkActive)return null;
       if(Math.hypot(this.player.x,this.player.z+7)<3.4){
         if(this.mode==='adventure'&&!this.boss){
           if(this.adventureTransition)return null;
@@ -484,12 +596,10 @@
           if(!this.shrines.has(this.realm))return{kind:'stage',name:'Defeat '+Math.max(0,this.stageTarget-this.stageKills[this.realm])+' more enemies',blockedReason:'Clear level '+this.stageLabel+' before the final boss.'};
         }else if(this.mode==='survival'&&!this.shrines.has(this.realm))return{kind:'shrine',name:REALMS[this.realm].blessing};
       }
-      for(let i=0;i<GATES.length;i++)if(distance(this.player,GATES[i])<3.5)return{kind:'gate',destination:REALMS[this.realm].links[i],name:REALMS[REALMS[this.realm].links[i]].name,blockedReason:this.travelBlockedReason};
       return null;
     }
     interact(){
       if(this.state!=='running')return false;const nearby=this.interaction;if(!nearby)return false;
-      if(nearby.kind==='gate')return this.travel(nearby.destination);
       if(nearby.kind==='stage')return this.advanceStage();
       return this.activateShrine();
     }
@@ -501,7 +611,7 @@
       const specs = { slime: [17, 1.65, .6, 10], mushroom: [29, 1.3, .7, 14], bat: [12, 2.85, .48, 9], boar: [48, 2.05, .85, 17], boss: [2900, 1.3, 2.1, 26] };
       if(!specs[type])throw new Error('Unknown enemy.');
       const [baseHp, speed, radius, damage] = specs[type];
-      if(type!=='boss'){x=clamp(x,-ARENA_LIMIT+1,ARENA_LIMIT-1);z=clamp(z,-ARENA_LIMIT+1,ARENA_LIMIT-1);}
+      if(type!=='boss'){const bound=this.arenaLimit-1;x=clamp(x,-bound,bound);z=clamp(z,-bound,bound);}
       const scale = (type === 'boss' ? 1 : this.mode==='adventure'?1+this.shrines.size*.12:Math.min(3.5,1+this.time/170))*(this.difficulty==='hard'?1.35:1)*(type!=='boss'&&this.mode==='adventure'?1+(this.stage-1)*.2:1)*(type!=='boss'&&this.mode!=='training'?1.05:1);
       const enemy = { id: this.nextId++, type, x, z, hp: baseHp * scale * (elite ? 3 : 1), maxHp: baseHp * scale * (elite ? 3 : 1), speed: speed + (type === 'boss' ? 0 : this.time / 650), radius: radius * (elite ? 1.3 : 1), damage, elite, hitFlash: 0, orbitHit: 0, attackTimer: 3, phase: 0, dead: false, knockX: 0, knockZ: 0 };
       enemy.enemyId=species||({slime:'chuchu',mushroom:'deku_baba',bat:'keese',boar:'bokoblin'})[type];enemy.name=ENEMIES[enemy.enemyId]?.name||'Enemy';enemy.realm=this.realm;enemy.mapStage=this.stage;
@@ -529,7 +639,7 @@
         if(e.type==='boss'){
           this.enemies=this.enemies.filter(enemy=>!enemy.dead);
           if(this.mode==='training'){this.boss=null;this.bossSpawned=false;return dealt;}
-          if(this.mode==='adventure'&&!e.final){this.boss=null;this.bossSpawned=false;this.activateShrine(e.realm);this.heal(30);this.dropGear(e.x,e.z,2);this.adventureDelay=1.8;this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name,nextRealm:this.nextAdventureRealm??0});this.collect(18+this.shrines.size*9);return dealt;}
+          if(this.mode==='adventure'&&!e.final){this.boss=null;this.bossSpawned=false;this.activateShrine(e.realm);this.heal(30);this.dropGear(e.x,e.z,2);this.adventureDelay=1.8;this.awaitingMapClear=this.reviewMapClears;this.mapFinishedTime=this.reviewMapClears?this.time:null;this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name,nextRealm:this.nextAdventureRealm??0});this.collect(18+this.shrines.size*9);return dealt;}
           this.state='won';this.setAction('victory',1.2);this.emit('end',{won:true});return dealt;
         }
         if(this.mode==='adventure'&&!this.shrines.has(this.realm)&&!this.stageReady&&e.realm===this.realm&&e.mapStage===this.stage){
@@ -598,19 +708,53 @@
       if (id === 'vitality') { const hp=this.player.hp;this.refreshStats();this.player.hp=hp;this.heal(35); }
       this.choices = []; this.state = 'running'; this.checkpointRevision++; this.emit('choose', { id }); this.checkLevel(); return true;
     }
-    fire(type,target,angleOffset=0) {
+    attackPose(action,kind,duration,dx,dz){
+      if(!this.setAction(action,duration))return;
+      this.player.attackKind=kind;
+      this.player.attackFacing=Math.hypot(dx,dz)>.001?Math.atan2(dx,dz):this.player.facing;
+    }
+    fire(type,target,angleOffset=0,lane=0) {
       if(this.projectiles.length>=300)return;
-      const p=this.player,stats=this.weaponStats(type),angle=Math.atan2(target.z-p.z,target.x-p.x)+angleOffset;
-      const y=p.y+(p.ground||0)+1,vy=(this.groundAt(target.x,target.z)+1-y)/Math.max(1,distance(p,target));
-      this.projectiles.push({id:this.nextId++,actorId:this.actorId||null,type,x:p.x,z:p.z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:stats.duration,duration:stats.duration,age:0,speed:stats.speed*this.stats.projectileSpeed,damage:stats.damage,radius:type==='bomb'?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,pierce:stats.pierce,bounce:stats.bounce,homing:stats.homing,hits:new Set(),targetId:target.id,returning:false});
-      this.setAction(type==='leaf'||type==='bomb'?'cast':'attack',.42);this.player.attackKind=type;
+      const p=this.player,stats=this.weaponStats(type),dx=target.x-p.x,dz=target.z-p.z;
+      if(!stats)return;
+      const baseAngle=Math.hypot(dx,dz)>.001?Math.atan2(dz,dx):Math.PI/2-p.facing;
+      // A volley starts at separate nocks and converges on the enemy, not a fixed screen axis.
+      const x=p.x-Math.sin(baseAngle)*lane,z=p.z+Math.cos(baseAngle)*lane;
+      const manual=target.id===null,aimX=manual?dx:target.x-x,aimZ=manual?dz:target.z-z,horizontal=Math.hypot(aimX,aimZ);
+      const angle=(horizontal>.001?Math.atan2(aimZ,aimX):baseAngle)+angleOffset;
+      const y=p.y+(p.ground||0)+1,vy=manual?0:(this.groundAt(target.x,target.z)+1-y)/Math.max(.15,horizontal);
+      this.projectiles.push({id:this.nextId++,actorId:this.actorId||null,type,x,z,y,vy,vx:Math.cos(angle),vz:Math.sin(angle),life:stats.duration,duration:stats.duration,age:0,speed:stats.speed*this.stats.projectileSpeed,damage:stats.damage,radius:type==='bomb'?.3:stats.radius,blastRadius:type==='bomb'?stats.radius:0,pierce:stats.pierce,bounce:stats.bounce,homing:stats.homing,hits:new Set(),targetId:target.id,returning:false});
+      this.attackPose(type==='leaf'||type==='bomb'?'cast':'attack',type,.42,dx,dz);
+    }
+    shadowStrike(stats){
+      const p=this.player,y=p.y+(p.ground||0)+1;
+      const close=this.enemies.filter(e=>!e.dead&&distance(e,p)<=stats.radius+e.radius&&Math.abs(this.groundAt(e.x,e.z)+1-y)<=Math.max(1.65,e.radius))
+        .sort((a,b)=>distance(a,p)-distance(b,p));
+      const locked=close.find(e=>e.id===this.lockedTarget),target=locked||(this.aimMode==='auto'?close[0]:null);
+      if(!target&&this.aimMode==='auto')return false;
+      const dx=target?target.x-p.x:-Math.sin(this.cameraYaw),dz=target?target.z-p.z:-Math.cos(this.cameraYaw);
+      const facing=Math.hypot(dx,dz)>.001?Math.atan2(dx,dz):p.facing;
+      this.attackPose('attack','shadow',stats.duration,dx,dz);
+      this.emit('shadowStrike',{x:p.x,z:p.z,y,facing,radius:stats.radius,arc:stats.arc,duration:stats.duration});
+      const inArc=e=>{
+        const x=e.x-p.x,z=e.z-p.z,d=Math.hypot(x,z);
+        return d<.001||(x*Math.sin(facing)+z*Math.cos(facing))/d>=Math.cos(stats.arc*.5);
+      };
+      const victims=target?[target,...close.filter(e=>e!==target&&inArc(e))]:close.filter(inArc);
+      for(const enemy of victims.slice(0,stats.count))this.hitEnemy(enemy,stats.damage,'orbit',3.5);
+      return true;
     }
     updateWeapons(dt) {
       for(const id of Object.keys(Combat.WEAPONS))this.cooldowns[id]-=dt;
-      const target=this.attackTarget(26),p=this.player;
-      for(const id of ['ember','leaf','bomb','boomerang'])if(target&&this.rank(id)&&this.cooldowns[id]<=0){
-        const stats=this.weaponStats(id);
-        for(let i=0;i<stats.count;i++)this.fire(id,target,(i-(stats.count-1)/2)*(id==='leaf'?.19:.16));
+      const p=this.player;
+      for(const id of ['ember','leaf','bomb','boomerang'])if(this.rank(id)&&this.cooldowns[id]<=0){
+        const stats=this.weaponStats(id),range=id==='ember'||id==='leaf'?Math.min(26,stats.duration*stats.speed*this.stats.projectileSpeed):26;
+        const target=this.attackTarget(range);if(!target)continue;
+        for(let i=0;i<stats.count;i++){
+          const offset=i-(stats.count-1)/2;
+          if(id==='leaf'||id==='ember')this.fire(id,target,0,offset*Math.min(.68,1.5/Math.max(1,stats.count-1)));
+          else this.fire(id,target,offset*.16);
+        }
         this.cooldowns[id]=stats.cooldown;this.emit(id==='ember'?'shoot':id,{x:p.x,z:p.z});
       }
       if(this.rank('nova')&&this.cooldowns.nova<=0){const stats=this.weaponStats('nova');if(this.nearest(stats.radius+1)){
@@ -619,7 +763,13 @@
         this.cooldowns.nova=stats.cooldown;
       }}
       this.orbitActive=Math.max(0,this.orbitActive-dt);
-      if(this.rank('orbit')){const stats=this.weaponStats('orbit');this.orbitAngle+=dt*stats.speed;
+      if(this.rank('orbit')){const stats=this.weaponStats('orbit');
+      if(stats.melee){
+        this.orbitActive=0;
+        if(this.cooldowns.orbit<=0&&this.shadowStrike(stats))this.cooldowns.orbit=stats.cooldown;
+        return;
+      }
+      this.orbitAngle+=dt*stats.speed;
       if(this.cooldowns.orbit<=0){this.orbitActive=stats.duration;this.cooldowns.orbit=stats.cooldown;}
       for(const enemy of this.enemies){
         const key=this.actorId||'solo';enemy.orbitHits=enemy.orbitHits||{};enemy.orbitHits[key]=(enemy.orbitHits[key]||0)-dt;if(enemy.dead||enemy.orbitHits[key]>0)continue;
@@ -647,13 +797,14 @@
       if (Math.hypot(dx, dz) > .05) { p.dx = dx; p.dz = dz; p.facing = Math.atan2(dx, dz); }
       if (p.dash > 0) { dx = p.dx * 4.2; dz = p.dz * 4.2; p.dash = Math.max(0, p.dash - dt); }
       const speed = p.speed * (1 + this.rank('speed') * .1) * this.stats.moveSpeed * (p.gliding ? 1.3 : 1);
-      const moved=this.flatTerrain?{x:clamp(p.x+dx*speed*dt,-ARENA_LIMIT,ARENA_LIMIT),z:clamp(p.z+dz*speed*dt,-ARENA_LIMIT,ARENA_LIMIT),ground:0}:Terrain.resolve(this.realm,this.stage,p.x,p.z,p.x+dx*speed*dt,p.z+dz*speed*dt,p.y,p.radius);
+      const limit=this.arenaLimit;
+      const moved=this.flatTerrain||this.landmarkActive?{x:clamp(p.x+dx*speed*dt,-limit,limit),z:clamp(p.z+dz*speed*dt,-limit,limit),ground:0}:Terrain.resolve(this.realm,this.stage,p.x,p.z,p.x+dx*speed*dt,p.z+dz*speed*dt,p.y,p.radius);
       p.y=Math.max(0,p.y+(p.ground||0)-moved.ground);p.x=moved.x;p.z=moved.z;p.ground=moved.ground;
       if (this.rank('regen')||this.stats.regen) this.heal((this.rank('regen')+this.stats.regen)*dt);
     }
     step(dt,input={x:0,y:0}){
       if(this.state!=='running'||!Number.isFinite(dt)||dt<=0)return;
-      dt=Math.min(dt,.05);this.time+=dt;this.travelCooldown=Math.max(0,this.travelCooldown-dt);this.updateActors(dt,input);
+      dt=Math.min(dt,.05);this.time+=dt;this.updateActors(dt,input);
       if(this.progressAdventure(dt))return;
       const p=this.player;
       this.spawnTimer -= dt;
@@ -665,7 +816,7 @@
       const minute = Math.floor(this.time / 60);
       if (this.mode!=='training'&&!(this.mode==='adventure'&&(this.stageReady||this.boss))&&minute > this.eliteMinute && minute < 4) { this.eliteMinute = minute; const elite=this.spawnRealmEnemy(undefined,undefined,true); this.emit('elite',{name:elite?.name||'Enemy'}); }
       if(this.mode==='survival'&&this.time>=240&&!this.bossSpawned)this.spawnBoss('phantom',true);
-      if (this.bossSpawned && this.spawnTimer <= 0 && this.boss && !this.boss.dead) { this.spawnRealmEnemy(); this.spawnTimer = 1.4; }
+      if (!this.landmarkActive && this.bossSpawned && this.spawnTimer <= 0 && this.boss && !this.boss.dead) { this.spawnRealmEnemy(); this.spawnTimer = 1.4; }
       for(const enemy of this.enemies){
         if(enemy.dead)continue;this.updateStatuses(enemy,dt);if(enemy.dead)continue;const oldX=enemy.x,oldZ=enemy.z;
         if(enemy.dummy||enemy.statuses?.freeze||enemy.statuses?.shock){enemy.hitFlash=Math.max(0,enemy.hitFlash-dt);enemy.action='idle';continue;}
@@ -684,7 +835,7 @@
           const sway=enemy.type==='bat'?Math.sin(enemy.phase*4+enemy.id)*.55:0,hop=enemy.type==='slime'?(.65+Math.max(0,Math.sin(enemy.phase*5))*.65):1;
           enemy.x+=(towardX+(-towardZ)*sway)*enemy.speed*hop*dt;enemy.z+=(towardZ+towardX*sway)*enemy.speed*hop*dt;enemy.action='walk';
         }
-        if(!this.flatTerrain&&enemy.type!=='bat'&&!BOSSES[enemy.bossId]?.flying){const next=Terrain.resolve(this.realm,this.stage,oldX,oldZ,enemy.x,enemy.z,0,enemy.radius*.7);enemy.x=next.x;enemy.z=next.z;}
+        if(!this.flatTerrain&&!this.landmarkActive&&enemy.type!=='bat'&&!BOSSES[enemy.bossId]?.flying){const next=Terrain.resolve(this.realm,this.stage,oldX,oldZ,enemy.x,enemy.z,0,enemy.radius*.7);enemy.x=next.x;enemy.z=next.z;}
         enemy.ground=this.groundAt(enemy.x,enemy.z);
         enemy.x+=enemy.knockX*dt;enemy.z+=enemy.knockZ*dt;enemy.knockX*=Math.exp(-10*dt);enemy.knockZ*=Math.exp(-10*dt);
         d=distance(p,enemy);
@@ -705,11 +856,18 @@
         }
         const key = cx + ',' + cz; if (!cells.has(key)) cells.set(key, []); cells.get(key).push(e);
       }
+      if(this.landmarkActive){
+        for(const enemy of this.enemies){
+          const bound=this.arenaLimit-enemy.radius;
+          enemy.x=clamp(enemy.x,-bound,bound);enemy.z=clamp(enemy.z,-bound,bound);
+        }
+      }
       this.updateAllWeapons(dt);
       for(const projectile of this.projectiles){
         const p=this.projectileOwner(projectile);
         const previous={x:projectile.x,z:projectile.z,y:projectile.y??this.groundAt(projectile.x,projectile.z)+1};
         projectile.life-=dt;projectile.age=(projectile.age||0)+dt;
+        if(this.landmarkActive&&Math.max(Math.abs(projectile.x),Math.abs(projectile.z))>this.arenaLimit+1){if(projectile.type==='bomb')this.explode(projectile);projectile.life=0;continue;}
         if(projectile.type==='bomb'){
           projectile.speed*=Math.exp(-dt*1.4);projectile.x+=projectile.vx*projectile.speed*dt;projectile.z+=projectile.vz*projectile.speed*dt;
           if(projectile.life<=0)this.explode(projectile);continue;
@@ -755,5 +913,5 @@
       for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
     }
   }
-  return { Game, HEROES, REALMS, ADVENTURE_ROUTE, STAGE_TARGETS, GATES, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, xpForLevel, seeded, clamp };
+  return { Game, HEROES, REALMS, GUARDIAN_LANDMARKS, ADVENTURE_ROUTE, STAGE_TARGETS, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, ARENA_LIMIT, xpForLevel, seeded, clamp };
 });

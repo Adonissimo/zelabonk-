@@ -86,3 +86,31 @@ select{padding:7px 27px 7px 10px;border:1px solid #b7b4c3;border-radius:7px;back
 }
 @media(max-height:680px){.menu{top:52%;max-height:calc(100dvh - 104px)}.menu .title-lockup{width:190px}.menu .title-relic{font-size:42px}.menu .title-wilds{font-size:53px}.menu .title-rule{padding:8px 28px 2px}.menu h1{margin:8px 0 5px;font-size:20px}.hero-option{height:64px}.hero-option>img{height:27px;width:23px}.run-setup{margin-top:8px}.hero-select{margin:8px 0}.camp-nav{margin-top:6px}.menu-intro{font-size:10px}.hero-select legend{margin-bottom:4px}.menu-footer{bottom:4px}.best-note,.run-note{font-size:8px}}
 @media(max-width:560px){.menu{top:max(78px,calc(env(safe-area-inset-top) + 64px));bottom:max(66px,calc(env(safe-area-inset-bottom) + 54px));transform:none;max-height:none}}
+
+/* Landmark titles share the announcement surface; preserve room for the fight HUD. */
+.realm-announcement.landmark-arrival{background:#211e38f2;border:1px solid #eee0ad70;box-shadow:0 9px 28px #140e21a1;padding:16px 24px;line-height:1.1}
+.realm-announcement.landmark-arrival b{display:block;color:#f3d68b;text-transform:uppercase;font-size:9px;letter-spacing:.21em;margin:0 0 7px}
+.realm-announcement.landmark-arrival>span{font-family:var(--display);letter-spacing:.02em;text-wrap:balance}
+.realm-announcement.landmark-arrival small{color:#fff8df;line-height:1.4;font-style:normal;text-wrap:balance}
+@media(max-width:560px){.realm-announcement.landmark-arrival{padding:14px 16px;max-width:min(85vw,380px)}.realm-announcement.landmark-arrival>span{font-size:clamp(21px,6vw,28px)}}
+.boss-hud #boss-attack-cue{display:block;margin:6px 0 0;color:#fbe1a2;text-align:center;font-size:10px;letter-spacing:.08em}
+
+.realm-picker{display:flex;align-items:center;gap:12px;width:min(336px,100%);margin-top:8px;padding:5px 7px 5px 10px;border-radius:8px;background:#292c46d9;color:#fffdf4;font-size:10px;line-height:1.3}
+.realm-picker span{white-space:nowrap}
+.realm-picker select{flex:1;min-width:0;min-height:33px;padding:5px 8px;font-size:11px}
+
+.realm-picker-note{margin:5px 0 0 2px;line-height:1.45;font-size:10px;color:#fff0c9;max-width:336px}
+.map-clear-modal{width:510px}
+.map-clear-kicker{margin:10px 0 7px;color:#6b7346;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.map-clear-modal h2{margin-top:0;text-wrap:balance}
+.map-clear-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 16px}
+.map-clear-stats div{display:flex;flex-direction:column-reverse;gap:4px;min-width:0;padding:11px 1px 9px;border-top:1px solid #bcb799}
+.map-clear-stats dt{font-size:10px;line-height:1.35;color:#5c7056}
+.map-clear-stats dd{overflow-wrap:anywhere;margin:0;color:var(--ink);font-family:var(--display);font-weight:400;font-size:clamp(19px,4.3vw,29px);font-variant-numeric:tabular-nums;line-height:1.1}
+.map-clear-next{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#eae8d0;color:#31483b;text-align:left;padding:10px 13px;border-radius:8px;font-size:12px}
+.map-clear-next span{font-size:9px;text-transform:uppercase;letter-spacing:.09em}
+.map-clear-actions{display:flex;align-items:stretch;gap:9px;margin-top:16px}
+.map-clear-actions .primary-button,.map-clear-actions .secondary-button{width:auto;margin:0;flex:1;min-height:44px;justify-content:center}
+.map-clear-actions .secondary-button{flex:0 1 132px}
+.modal .map-clear-status{margin:9px 0 0;color:#536548;font-size:11px}
+@media(max-width:420px){.map-clear-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}.map-clear-modal{padding:20px 16px}.map-clear-actions .secondary-button{flex-basis:105px}.realm-picker-note{font-size:9px}}

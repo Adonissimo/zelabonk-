@@ -2,7 +2,7 @@
   "name": "zeldabonk",
   "version": "2.5.0",
   "private": true,
-  "description": "A Zelda survivor with connected realms, physical terrain, treasure combat, and non-counting training.",
+  "description": "A Zelda survivor with eight separate realms, physical terrain, treasure combat, and non-counting training.",
   "scripts": {
     "test": "node --test",
     "start": "node server.cjs",

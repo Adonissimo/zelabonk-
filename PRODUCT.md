@@ -12,7 +12,7 @@ The user wants PokéBonk as the mechanics, graphics, and overall presentation re
 
 ## Current Game
 
-An unofficial single-player Zelda survivor featuring Link, Zelda, Midna, Tetra, Sheik, and Skull Kid. Adventure has eight connected maps, three numbered levels each, eight guardians, and final Ganondorf. The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Their enemy pools and landmark depictions match those Zelda locations. Adventure follows that numbered order, with a separate boss after each map’s three enemy levels and automatic onward travel. Health, time, equipment, XP, charge, and upgrades persist between maps. Survival retains free gate travel.
+An unofficial single-player Zelda survivor featuring Link, Zelda, Midna, Tetra, Sheik, and Skull Kid. Adventure has eight distinct maps, three numbered levels each, eight guardians, and final Ganondorf. The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Their enemy pools and landmark depictions match those Zelda locations. Adventure follows that numbered order, with a separate boss after each map’s three enemy levels and a map-results stop before onward travel. Health, time, equipment, XP, charge, and upgrades persist between maps. Survival lets the player select one map per run.
 
 Characters use distinct 112×112 pixel art with eight camera-relative views and era-specific costumes. Characters and foliage use independently drawn pixel-art billboards in a textured Three.js world. No official sprites, music, models, or PokéBonk source/assets are bundled. Zelda's characters, names, and setting are recognizable franchise elements.
 
@@ -26,9 +26,9 @@ The official v0.10.15 and v0.10.17 landing screen, public client, and Season 4 n
 - Camera-relative movement, mouse look without dragging, continuous horizontal edge/captured-cursor rotation, wider terrain-safe vertical look, wheel zoom, jump, glide, and dash.
 - Auto/manual aim, separate target lock, and six charged Ultimates.
 - Kill streaks and finite refresh, skip, and banish resources.
-- Minimap, over-character health, loadout, Ultimate meter, and connected realm map.
-- Adventure: 24 enemy levels. Clear 12/18/24 enemies in each map’s three levels. The central shrine advances levels 1 and 2. After level 3, finish pending upgrades and fight the map’s separate final boss. Boss victory banks rewards and automatically enters the next numbered map. After all eight map bosses, travel automatically to Hyrule for Ganondorf. Gates cannot bypass Adventure progression. Older saves preserve completed seals/partial waves and resume at the first unfinished map.
-- Survival: immediate shrine rewards and the four-minute Phantom Ganon encounter; boss health persists through travel.
+- Minimap, over-character health, loadout, Ultimate meter, and realm guide.
+- Adventure: 24 enemy levels. Clear 12/18/24 enemies in each map’s three levels. The central shrine advances levels 1 and 2. After level 3 and any pending upgrades, enter a distinct landmark arena. Each map guardian has a signature attack with visible ground telegraphs and stronger later phases. Boss victory banks rewards and opens per-map statistics. Continue moves to the next numbered map; Main Menu preserves the checkpoint. After the eighth map boss, Continue opens the Ganondorf finale in Hyrule. Older saves preserve completed seals/partial waves and resume at the first unfinished map.
+- Survival: one chosen map per run, an immediate shrine reward, and the four-minute Phantom Ganon encounter.
 - Normal and Hard difficulty, six weapon families, three boss health phases, telegraphed patterns and map-specific enemy species. The requested modest pressure increase adds 5% regular-enemy health, 5% regular-enemy speed, 10% shorter normal spawn intervals, and 8% guardian health; hit damage and Training baselines stay unchanged.
 - Original idle, walk, attack, cast, Ultimate, hurt, jump, glide, dash, spawn, wind-up, defeat and victory animations.
 - Deterministic plateaus and ramps share height sampling with the renderer; trees, rocks and shrine structures have physical collisions. Deterministic non-blocking dressing adds worn trails, shorelines, causeways, lanterns, varied pixel foliage, textured houses/ruins and a Skyloft windmill. Instanced billboard batches and quality-dependent undergrowth density bound drawing cost. Root-anchored foliage wind follows simulation pause and reduced-motion settings.
@@ -51,7 +51,7 @@ The production game uses static HTML/CSS/JavaScript with vendored Three.js, with
 
 ## Principles
 
-- Preserve run progress across ordered Adventure transitions and Survival gates.
+- Preserve run progress across ordered Adventure transitions and within the chosen Survival map.
 - Freeze simulation during menus, upgrades, and focus loss.
 - Preserve each map's three-level progress and restrict normal, elite and summoned mobs to its enemy pool.
 - Settle completed runs once; retain another tab's checkpoint and serialize profile changes with native Web Locks where supported.

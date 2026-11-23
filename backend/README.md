@@ -28,7 +28,7 @@ npm test
 
 Tests use isolated databases and generated local accounts. They exercise actual HTTP and two WebSocket clients, real-time movement, authorization, save conflicts, shared XP, team pause, disconnect/reconnect, service restart, deterministic simulation snapshots, duplicate settlement, escrow, concurrent overspending and transaction rollback. Tests never use the user's PokéBonk account or cloud credentials.
 
-The authoritative party reuses `core.js`. Every actor has its own hero, build, health and cooldowns. Enemies target living party members; projectiles and status damage retain their owner. XP is shared, with the party's mean equipment XP bonus. All living players choose their own upgrade before the world resumes. Gate travel moves the whole party. Current co-op rules are this project's local ruleset, not a claim of exact PokéBonk parity.
+The authoritative party reuses `core.js`. Every actor has its own hero, build, health and cooldowns. Enemies target living party members; projectiles and status damage retain their owner. XP is shared, with the party's mean equipment XP bonus. All living players choose their own upgrade before the world resumes. The local co-op simulation still moves the whole party automatically between Adventure maps. The static single-player build has an interactive map-results screen. Current co-op rules are this project's local ruleset, not a claim of exact PokéBonk parity.
 
 ## Authentication and request rules
 
