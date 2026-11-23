@@ -265,7 +265,7 @@ Frontmatter records current desktop menu roles. ZELDA uses 64px and BONK 80px. T
 
 ## Layout
 
-A fixed canvas fills the viewport. The scrollable left menu includes Adventure/Survival, difficulty, three quick hero choices, continue/new-run actions, and progression navigation. The full roster contains six heroes. The menu remains bounded by viewport height instead of displacing the world preview.
+A fixed canvas fills the viewport. The scrollable left menu includes Adventure/Survival, difficulty, three quick hero choices, continue/new-run actions, and progression navigation. The full roster contains 11 heroes, with Ocarina of Time allies grouped separately. The menu remains bounded by viewport height instead of displacing the world preview.
 
 Each playable map spans 128 by 128 units. Adventure progresses through three numbered stages per map. Preserve location-specific terrain, landmarks, enemy pools, guardian encounters, and stage status when extending the world.
 
@@ -323,7 +323,7 @@ Continue/checkpoint status, new-run replacement, import confirmation, and export
 
 ### Do:
 
-- **Do** preserve the actual Zelda theme and all six recognizable hero fan depictions.
+- **Do** preserve the actual Zelda theme and the recognizable original hero designs and the five Ocarina of Time allies.
 - **Do** retain crisp cached sprites, action and phase animation, local enemy species, textured ground, and three-dimensional landmarks.
 - **Do** keep porcelain status and progression surfaces separate from dark backed actions and announcements.
 - **Do** bind stage, charge, rank, resource, unlock, checkpoint, and disabled visuals to actual run or profile state.

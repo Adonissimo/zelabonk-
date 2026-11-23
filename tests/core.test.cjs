@@ -77,7 +77,7 @@ test('movement follows camera yaw without changing speed',()=>{
   const a=new Game(),b=new Game();a.step(.05,{x:0,y:1,cameraYaw:0});b.step(.05,{x:0,y:1,cameraYaw:Math.PI/2});assert.ok(Math.abs(a.player.x)<1e-9);assert.ok(a.player.z<0);assert.ok(b.player.x<0);assert.ok(Math.abs(b.player.z)<1e-9);
 });
 test('Ultimate requires charge, damages enemies once, and remains frozen while paused',()=>{
-  const g=new Game();const e=g.spawnEnemy('boar',2,0);assert.equal(g.ultimate(),false);g.energy=100;g.pause();assert.equal(g.ultimate(),false);g.resume();assert.equal(g.ultimate(),true);assert.equal(e.dead,true);assert.ok(g.energy<100);assert.equal(g.ultimate(),false);assert.equal(g.kills,1);
+  const g=new Game();const e=g.spawnEnemy('boar',2,0);assert.equal(g.ultimate(),false);g.energy=100;g.pause();assert.equal(g.ultimate(),false);g.resume();assert.equal(g.ultimate(),true);assert.equal(!!e.dead,false);g.pause();g.step(.05);assert.equal(g.player.actionAge,0);g.resume();for(let i=0;i<9;i++)g.step(.05);assert.equal(e.dead,true);assert.ok(g.energy<100);assert.equal(g.ultimate(),false);assert.equal(g.kills,1);
 });
 test('target lock and manual aim preserve their separate roles',()=>{
   const g=new Game(),e=g.spawnEnemy('slime',3,0);assert.equal(g.lockTarget(),true);g.cameraYaw=0;assert.equal(g.attackTarget(20),e);g.toggleAim();assert.equal(g.aimMode,'manual');assert.equal(g.lockedTarget,null);assert.equal(g.attackTarget(20).id,null);assert.equal(g.attackTarget(20).z,-20);g.lockTarget();assert.equal(g.attackTarget(20),e);g.hurtEnemy(e,100);assert.equal(g.attackTarget(20).id,null);

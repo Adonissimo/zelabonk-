@@ -37,13 +37,13 @@ Use the title-screen Realm selector to choose any of the eight maps before start
 
 ## Combat and progression
 
-Weapons cast automatically. Link’s Master Sword wave and Zelda’s Light Arrows visually follow their aim. Midna uses a directional, close-range Fused Shadow claw instead of orbiting relics. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Start with three weapon and three charm slots. The Great Fairy camp unlocks a fourth weapon for 1500 rupees, then a fourth and fifth charm for 1200 and 3000 rupees. Weapons cap at level 8 and charms at 10. Adventure Pouch extends weapons to 10; Green Potion extends charms to 12. Shrine bonuses consume no learned slots. Weapon upgrades have five rarities, with real changes to damage, shot count, cooldown, speed, piercing, bounces and critical chance. The old automatic rank-7 awakening has been removed. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
+Weapons cast automatically. Link uses a hand-held slash below full health and sends an animated sword beam at full hearts. Zelda’s Light Arrows point along their flight path. Midna uses a close strike with her giant hair-hand. Collect XP shards to choose weapons and charms. The six weapon families are Master Sword, Fused Shadow, Din's Fire, Light Arrows, Bombs and Boomerang. Bombs explode across an area; Boomerangs strike outward and on return. Start with three weapon and three charm slots. The Great Fairy camp unlocks a fourth weapon for 1500 rupees, then a fourth and fifth charm for 1200 and 3000 rupees. Weapons cap at level 8 and charms at 10. Adventure Pouch extends weapons to 10; Green Potion extends charms to 12. Shrine bonuses consume no learned slots. Weapon upgrades have five rarities, with real changes to damage, shot count, cooldown, speed, piercing, bounces and critical chance. The old automatic rank-7 awakening has been removed. A run provides two refreshes, two skips and one banish. Banish excludes a choice from later rolls without removing equipped ranks.
 
 Normal runs now apply a modest pressure increase: regular enemies have 5% more health and 5% more movement speed, the normal spawn interval is 10% shorter, and guardians have 8% more health. Hit damage and attack telegraphs are unchanged. Hard retains its existing multipliers; Training keeps its existing baseline and manual spawns.
 
 Bosses change phase at two-thirds and one-third health. Warnings precede slams, charges, volleys, summons and teleports. Time and enemy defeats charge your Ultimate. Animation states include idle, locomotion, attacks, casting, Ultimates, hurt, jump/glide, dash, spawn, wind-up, defeat and victory.
 
-Link, Zelda and Midna start unlocked. Helmaroc King unlocks Tetra; three different guardians unlock Sheik; Majora's Mask unlocks Skull Kid. Their automatic loadouts and survivor effects are crossover adaptations.
+Link, Zelda, and Midna start unlocked. Helmaroc King unlocks Tetra; three different guardians unlock Sheik; Majora's Mask unlocks Skull Kid. Their automatic loadouts and survivor effects are crossover adaptations.
 
 Completed runs grant rupees. The Great Fairy camp sells capped permanent upgrades: Heart Container, Power Bracelet, Mirror Shield, Wallet, Magic Jar, and weapon/charm slot unlocks. Custom bonuses apply to new runs. A journal tracks heroes, bosses, equipment, local enemies, and six achievements.
 
@@ -53,7 +53,7 @@ Elites and every twentieth defeated enemy drop treasure; guardians drop a Rare-o
 
 Equipment modifies physical/magic damage, critical chance and damage, movement, projectile speed, armor, evasion, healing, regeneration, lifesteal, thorns and XP collection. Critical chance starts at 5%, with 175% critical damage. Above 100%, additional critical chance becomes mega-critical probability, capped at 200%. Fire, ice, splash and shock fruits add statuses; opposing fire/water effects produce steam, and shock chains from soaked targets. Inventory shows actual damage per weapon and effect.
 
-Choose **Training grounds** from the title. Try any of six heroes on any map/stage. Edit up to four weapons at levels 0–8 and five charms at levels 0–10, extend the caps to 10/12 with the appropriate treasure, select each weapon’s upgrade rarity, change treasure stacks, and manually spawn a stationary dummy, groups, elites, alphas or a map guardian. Inventory reopens Training controls. Incoming damage is disabled by default and can be enabled. Applying a build resets the arena; setting treasure alone preserves it. Training grants no rewards, discoveries or unlocks, and never replaces a saved Adventure. Training itself is not saved.
+Choose **Training grounds** from the title. Try any of the 11 playable characters on any map or stage. Edit up to four weapons at levels 0–8 and five charms at levels 0–10, extend the caps to 10/12 with the appropriate treasure, select each weapon’s upgrade rarity, change treasure stacks, and manually spawn a stationary dummy, groups, elites, alphas or a map guardian. Inventory reopens Training controls. Incoming damage is disabled by default and can be enabled. Applying a build resets the arena; setting treasure alone preserves it. Training grants no rewards, discoveries or unlocks, and never replaces a saved Adventure. Training itself is not saved.
 
 These are independently authored Zelda equivalents. PARITY.md identifies verified reference formulas and remaining differences; this release does not claim full PokéBonk parity.
 
@@ -62,6 +62,29 @@ These are independently authored Zelda equivalents. PARITY.md identifies verifie
 All eight realms now have layered pixel canopies, varied undergrowth, worn trails, trail markers, lanterns, and ground patches. Lake Hylia and the Great Sea have visible shorelines, reeds, ripple patterns, and causeways. The Depths use pale fungal trees and cyan growth; Twilight has its own palette and markings. Kokiri houses and ruins carry timber, shingle, masonry, moss, and window detail. Skyloft has an animated windmill. Hero sprites now use 112×112 pixel canvases and eight camera-relative views. Their distinct depictions follow Ocarina of Time Link and Sheik, Breath of the Wild ceremonial Zelda, Twilight Princess imp Midna, The Wind Waker Tetra, and Majora’s Mask Skull Kid. Costumes include the Hylian Shield crest, Sheikah eye, Fused Shadow carvings, pirate scarf/sash, and mask horns. Walk cycles move jointed limbs, hair, and cloth; attacks, casts and Ultimates retain their own poses. Little Frox now has its single central eye. These remain independently authored pixel adaptations, not official sprites or extracted animation.
 
 Ground textures use mip levels to reduce distant shimmer while sprite magnification remains nearest-neighbor. Trees and undergrowth use shared instanced billboard batches with root-anchored wind. Wind pauses with the simulation and stops under reduced motion or Low graphics. Low quality reduces undergrowth density and shadows; High retains full dressing. Scenery does not add collision barriers or change the existing terrain routes.
+
+## Adventure companions and unlocks
+
+Defeating a map guardian recruits the realm’s ally. The ally follows you into later maps and returns when you resume that campaign. Recruits take turns helping; they do not all attack at once. Recruit rewards also make the matching hero available for new runs. Sheik still unlocks for selection after three guardians; clearing Sky Keep is what recruits her into that Adventure. Training lets you test all heroes but does not unlock or recruit them.
+
+| Victory | Ally |
+| --- | --- |
+| Gohma at the Great Deku Tree | Saria |
+| Morpha at the Water Temple | Ruto |
+| King Bulblin at Hyrule Castle Courtyard | Nabooru |
+| Helmaroc King at Forsaken Fortress | Tetra |
+| Zant at Palace of Twilight | Impa |
+| Ghirahim at Sky Keep | Sheik |
+| Colgera at the Wind Temple | Darunia |
+| Majora’s Mask inside the Moon | Skull Kid |
+
+Link, Zelda, and Midna remain starting heroes. The three original progression unlocks remain. No bosses are playable. Companions are a single-player Adventure system.
+
+## Hero, enemy, and boss animation
+
+The roster’s signature moves and poses are based on specific official titles, including linked sources in [Franchise move references](FRANCHISE-MOVE-REFERENCES.md). Pixels are drawn for Zelabonk; official animation assets are not included. Link retains the paraglider and animated sword beam. The other characters can still slow descent as a shared control, without invented glider gear. Skull Kid hovers in place and floats as he moves, including when recruited; this is presentation only and does not lift the hitbox off the ground. Enemies and guardians keep their authored wind-ups, follow-through, and reaction frames.
+
+Each roster card describes its own starter and Ultimate. Different moves have their own anticipation, release, and recovery. Skull Kid summons a grinning Moon that falls onto an aimed area. Darunia keeps his hammer for normal attacks, then leaps, curls into a boulder, and damages nearby enemies only when he lands. Saria’s ocarina and Nabooru’s medallion remain noncombat scenes; their presentation does not imply damage or healing.
 
 ## Saves and settings
 
@@ -75,7 +98,7 @@ Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, cam
 |---|---|
 | WASD / arrows | Move relative to camera |
 | Mouse movement / mouse wheel | Look without holding a button / zoom |
-| Space | Jump; hold while descending to glide |
+| Space | Jump; hold while descending to slow your fall (Link opens the paraglider) |
 | Shift | Dash with brief protection |
 | Q / right-click | Aim mode / nearest-target lock |
 | R | Fully charged Ultimate |
@@ -86,7 +109,7 @@ Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, cam
 | 1, 2, 3 | Choose upgrade |
 | F / X / Z | Refresh / skip / toggle banish during upgrades |
 
-Touch has a movement stick, jump/glide, dash, aim, Ultimate and contextual Activate. Buttons keep native Space/Enter activation. Focus loss pauses gameplay. Nested inventory, map and settings dialogs preserve their parent's pause state.
+Touch has a movement stick, jump/slow descent, dash, aim, Ultimate and contextual Activate. Buttons keep native Space/Enter activation. Focus loss pauses gameplay. Nested inventory, map and settings dialogs preserve their parent's pause state.
 
 ## Optional local backend
 

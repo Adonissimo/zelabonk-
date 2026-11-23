@@ -52,6 +52,18 @@
   });
   // Midna channels the existing Fused Shadow slot into a close claw cleave.
   const SHADOW_CLAW=Object.freeze({damage:21,cooldown:1.05,count:2,radius:4.3,arc:1.9,speed:0,duration:.44,pierce:0,stats:Object.freeze(['dmg','cd','area','count','crit'])});
+  // Starter variants use existing save slots while keeping their original game identities.
+  const ROSTER_STARTERS=Object.freeze({
+    midna:Object.freeze({...SHADOW_CLAW,motion:'shadow',melee:true}),
+    tetra:Object.freeze({...SHADOW_CLAW,damage:22,cooldown:1.25,radius:4.25,arc:2.5,count:3,duration:.46,motion:'cutlass',melee:true,school:'physical'}),
+    sheik:Object.freeze({...SHADOW_CLAW,damage:15,cooldown:.83,radius:3.4,arc:2.3,count:3,duration:.35,motion:'kunai',melee:true,school:'physical'}),
+    skullkid:Object.freeze({...ATTACKS.nova,damage:23,cooldown:1.8,radius:2.25,castRange:12.5,motion:'fairy'}),
+    impa:Object.freeze({...SHADOW_CLAW,damage:24,cooldown:1.36,radius:4.6,arc:2.18,count:3,duration:.58,motion:'giantBlade',melee:true,school:'physical'}),
+    saria:Object.freeze({...ATTACKS.ember,damage:15,cooldown:1.07,radius:.31,speed:22,duration:1.12,castRange:20,motion:'slingshot',art:'slingshot',flight:'bolt',school:'physical'}),
+    darunia:Object.freeze({...SHADOW_CLAW,damage:29,cooldown:1.65,radius:4.65,arc:2.65,count:4,duration:.58,motion:'hammer',melee:true}),
+    ruto:Object.freeze({...ATTACKS.nova,damage:20,cooldown:1.74,radius:8.25,arc:1.48,castRange:8.75,motion:'rutoWave'}),
+    nabooru:Object.freeze({...SHADOW_CLAW,damage:28,cooldown:1.6,radius:4.6,arc:2.28,count:3,duration:.57,motion:'axe',melee:true})
+  });
   function upgradeGrowth(id,history=[],base=ATTACKS[id]){
     const result={damage:1,cooldown:1,count:0,area:1,speed:1,duration:1,pierce:0,bounce:0,critical:0,status:1};
     const keys=base?.stats;if(!keys)return result;
@@ -73,7 +85,8 @@
     burn:{name:'Burn',duration:3,color:'#f2a56b'},
     freeze:{name:'Freeze',duration:1.5,color:'#9ce2ef'},
     wet:{name:'Soaked',duration:5,color:'#8bc9f4'},
-    shock:{name:'Shock',duration:.65,color:'#f1db82'}
+    shock:{name:'Shock',duration:.65,color:'#f1db82'},
+    seal:{name:'Sealed',duration:2.2,color:'#fff0b4'}
   });
   const MULTIPLIERS=new Set(['hpScale','armorScale','moveSpeed','projectileSpeed','healing','eliteDamage','physical','magic','attackSpeed','duration','xpGain']);
   function stats(gear){
@@ -95,5 +108,5 @@
       const item=BY_ID.get(id);if(!item||!Number.isInteger(count)||count<1||count>item.max)throw new Error('Invalid saved equipment stack.');out[id]=count;
     }return out;
   }
-  return{GEAR,RARITIES,WEAPONS,ATTACKS,SHADOW_CLAW,UPGRADE_POWER,upgradeGrowth,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
+  return{GEAR,RARITIES,WEAPONS,ATTACKS,SHADOW_CLAW,ROSTER_STARTERS,UPGRADE_POWER,upgradeGrowth,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
 });

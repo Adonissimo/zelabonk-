@@ -1,6 +1,6 @@
 # Deploy Zelabonk with GitHub and Vercel (Windows)
 
-This ZIP contains the game source, including the landmark arenas, separate maps without portals, the hero combat updates, and the Adventure map-results screen. GitHub stores the source. Vercel serves the static browser game. The optional local backend is not deployed by these steps.
+This ZIP contains the game source, including the landmark arenas, separate maps without portals, the hero and enemy animation overhaul, the Adventure map-results screen, the unlockable Ocarina of Time allies, reference-based moves, and Adventure companions. GitHub stores the source. Vercel serves the static browser game. The optional local backend is not deployed by these steps.
 
 ## 1. Open or clone your existing GitHub repo
 
@@ -50,6 +50,12 @@ Review the staged list before committing. Save the short commit ID printed by th
 
 If you prefer a preview first, create a branch with `git switch -c zelabonk-update` before copying the files, then push it with `git push -u origin zelabonk-update` instead of pushing main. Check its Vercel Preview, then open a GitHub pull request into main. A preview URL may not show saves from your production domain.
 
-Test the production page before sharing it: start a Survival run and check that your map selection sticks; try Link, Zelda, and Midna in Training Grounds with a rival; confirm an Adventure map has no portals and its first guardian opens the map-results screen before the next map.
+If your repository already has the Hero Art and Ultimates release, the only new game files you need to replace are `app.js`, `core.js`, and `companions.js`. If your deployed version is older, use the full ZIP contents so that all required browser scripts reach the repo root. Keep the existing GitHub history.
+
+If your GitHub repo already has the Franchise Moves and Allies release, upload `app.js`, `art.js`, `core.js`, and `styles.css` to the repository root; otherwise use the whole ZIP.
+
+To test the cracks, open Training Grounds, spawn a dummy, and try Darunia’s hammer and body slam, then Skull Kid’s Moon Crash. The hammer leaves a small split, the slam a wider break, and the Moon the largest fracture. The cracks fade and do not change collision.
+
+Test the production page before sharing it: start a Survival run and check that your map selection sticks; try the updated hero portraits, Skull Kid’s hover, and a few Ultimates in Training Grounds; defeat Gohma in Adventure, confirm Saria joins and stays through Continue and reload, and confirm the maps still have no portals.
 
 Official references: [GitHub push workflow](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository) · [Vercel Git deployments](https://vercel.com/docs/git) · [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json).
