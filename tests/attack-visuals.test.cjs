@@ -63,20 +63,26 @@ test('sword waves and arrow tips track actual screen-space flight after an orbit
     }
   }
 });
-test('Midna strike keeps visible tinted hand sprites inside its melee arc before fading',()=>{
+test('Midna extends and retracts one anchored shadow hand inside her melee reach',()=>{
   const view=Object.create(WorldView.prototype);
   view.entities=new THREE.Group();view.effects=[];view.camera=cameraAt(8,12,14,16/9);
   const event={x:1,z:-2,y:1.2,facing:-Math.PI/3,arc:Math.PI*.59,radius:3.4,duration:.4};
   view.shadowStrikeEffect(event);
-  assert.equal(view.effects.length,3);
+  assert.equal(view.effects.length,1);
   for(const effect of view.effects){
     assert.equal(effect.mesh.material.map.name,'shadowHand:0:0');
     assert.ok(effect.mesh.material.opacity>0);
     assert.ok(Math.abs(effect.angle-event.facing)<event.arc/2);
+    const originalWidth=effect.mesh.scale.x;
     view.positionShadowStrike(effect,.42);
+    const maxWidth=effect.mesh.scale.x;
+    assert.ok(maxWidth>originalWidth*2);
+    assert.ok(effect.y>event.y);
     const dx=effect.mesh.position.x-event.x,dz=effect.mesh.position.z-event.z;
     assert.ok(Math.hypot(dx,dz)<event.radius);
     checkDirection(effect.mesh,new THREE.Vector3(Math.sin(effect.angle),0,Math.cos(effect.angle)),view.camera);
+    view.positionShadowStrike(effect,.84);
+    assert.ok(effect.mesh.scale.x<maxWidth);
     view.positionShadowStrike(effect,1);
     assert.equal(effect.mesh.material.opacity,0);
   }

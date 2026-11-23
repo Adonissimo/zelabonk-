@@ -114,9 +114,9 @@ test('Skull Kid crashes the Moon onto a fixed aim point after wind-up, never kic
   const g=arena('skullkid'),target=enemy(g,12,-7),near=enemy(g,13,-6),off=enemy(g,-9,6);
   g.lockedTarget=target.id;g.energy=100;assert.ok(g.ultimate());
   const event=g.drainEvents().find(e=>e.type==='ultimate');
-  assert.deepEqual([event.phaseStyle,event.x,event.z,event.release],['moonCrash',12,-7,.85]);
-  g.updatePlayer(.8);assert.equal(target.hp,1000);assert.equal(near.hp,1000);
-  g.updatePlayer(.06);assert.ok(target.hp<1000&&near.hp<1000);assert.equal(off.hp,1000);
+  assert.deepEqual([event.phaseStyle,event.x,event.z,event.release],['moonCrash',12,-7,1.64]);
+  g.updatePlayer(1.62);assert.equal(target.hp,1000);assert.equal(near.hp,1000);
+  g.updatePlayer(.02);assert.ok(target.hp<1000&&near.hp<1000);assert.equal(off.hp,1000);
   assert.equal(g.projectiles.length,0);
   const damage=g.damageBySource.ultimate;g.updatePlayer(.2);assert.equal(g.damageBySource.ultimate,damage);
 });
