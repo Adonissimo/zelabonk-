@@ -214,7 +214,7 @@ components:
 
 **Creative North Star: "The Hyrule Survivor Arcade"**
 
-ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Six playable heroes—Link, Zelda, Midna, Tetra, Sheik, and Skull Kid—appear as outlined pixel billboards in textured Three.js arenas. Eight connected maps contain 24 Adventure stages, local enemy species, eight guardians, and final Ganondorf. Survival retains its separate Phantom Ganon encounter, bringing the implemented boss depictions to ten.
+ZeldaBonk combines recognizable Legend of Zelda fan depictions with the inspected PokéBonk survivor presentation. Six playable heroes—Link, Zelda, Midna, Tetra, Sheik, and Skull Kid—appear as outlined pixel billboards in textured Three.js arenas. Eight distinct maps contain 24 Adventure stages, local enemy species, eight guardians, and final Ganondorf. Survival retains its separate Phantom Ganon encounter, bringing the implemented boss depictions to ten.
 
 Light porcelain panels and indigo text keep combat facts clear; dark navy actions and announcements remain visible over scenery. Gold marks primary actions and Ultimate charge. Lilita gives the interface an arcade voice, while heavy Nunito supports small labels. The established implementation extends this world into the roster, shop, journal, inventory, settings, and save dialogs. Explicit Zelda/PokéBonk direction and implemented renders are the visual authority; there is no separately approved comp or card.
 
@@ -305,7 +305,7 @@ Porcelain identity and timer panels pair with the circular minimap, following he
 
 ### Stage navigation
 
-Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps. Adventure cards retain three numbered enemy-level chips and show the separate final boss beneath them; later maps say Locked until their turn. The objective distinguishes the third wave, boss encounter, and cleared-map transition. Adventure advances automatically after each map boss; Survival travel uses gates through the bound Interact key or touch Activate action. Progression restrictions appear in instructions.
+Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps. Adventure cards retain three numbered enemy-level chips and show the separate final boss beneath them; later maps say Locked until their turn. The objective distinguishes the third wave, boss encounter, and cleared-map transition. Adventure pauses at per-map results after each guardian; Continue advances the story, and Main Menu preserves the result checkpoint. Survival uses a single map selected at the title screen. There are no in-run map portals. Progression restrictions appear in instructions.
 
 The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. They remain authored arena interpretations, not complete canonical Zelda maps.
 

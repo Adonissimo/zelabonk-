@@ -2,11 +2,11 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BonkTerrain=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const cache=new Map(),samples=new Map(),collisionCells=new Map(),TAU=Math.PI*2,LIMIT=64,GRID=2,CELL=8;
-  const GATES=[{x:-48,z:-48},{x:48,z:-48},{x:0,z:55}];
+  const SCENIC_TRAILS=Object.freeze([{x:-48,z:-48},{x:48,z:-48},{x:0,z:55}].map(Object.freeze));
   const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
   function random(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
-  function pathDistance(x,z,gate){const length=gate.x*gate.x+gate.z*gate.z,t=Math.max(0,Math.min(1,(x*gate.x+z*gate.z)/length));return Math.hypot(x-gate.x*t,z-gate.z*t);}
-  function clearRoute(x,z,radius=4){return Math.hypot(x,z)<10||Math.hypot(x,z+7)<6||GATES.some(g=>Math.hypot(x-g.x,z-g.z)<5||pathDistance(x,z,g)<radius);}
+  function pathDistance(x,z,trail){const length=trail.x*trail.x+trail.z*trail.z,t=Math.max(0,Math.min(1,(x*trail.x+z*trail.z)/length));return Math.hypot(x-trail.x*t,z-trail.z*t);}
+  function clearRoute(x,z,radius=4){return Math.hypot(x,z)<10||Math.hypot(x,z+7)<6||SCENIC_TRAILS.some(g=>Math.hypot(x-g.x,z-g.z)<5||pathDistance(x,z,g)<radius);}
   function layout(realm,stage){
     const key=realm+':'+stage;if(cache.has(key))return cache.get(key);
     const roll=random(58791+realm*7919+stage*1033),terraces=[],obstacles=[];
@@ -22,7 +22,7 @@
       patches.push(Object.freeze({x,z,radius:2+dress()*4}));
       for(let j=0;j<7;j++){
         const px=x+(dress()-.5)*7,pz=z+(dress()-.5)*7;
-        if(Math.hypot(px,pz)<3.4||Math.hypot(px,pz+7)<3||GATES.some(g=>pathDistance(px,pz,g)<2.5))continue;
+        if(Math.hypot(px,pz)<3.4||Math.hypot(px,pz+7)<3||SCENIC_TRAILS.some(g=>pathDistance(px,pz,g)<2.5))continue;
         details.push(Object.freeze({x:px,z:pz,kind:i%9===0&&j===0?'prop':'plant',variant,scale:.65+dress()*.8}));
       }
     }
@@ -30,8 +30,8 @@
   }
   function rawHeight(realm,stage,x,z){
     if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>LIMIT||Math.abs(z)>LIMIT)return 0;
-    const edge=1-smooth((Math.max(Math.abs(x),Math.abs(z))-56)/8),route=Math.min(1,Math.min(...GATES.map(g=>pathDistance(x,z,g)))/3);
-    const center=smooth((Math.hypot(x,z)-9)/5)*smooth((Math.hypot(x,z+7)-5)/4)*Math.min(...GATES.map(g=>smooth((Math.hypot(x-g.x,z-g.z)-3)/3)));
+    const edge=1-smooth((Math.max(Math.abs(x),Math.abs(z))-56)/8),route=Math.min(1,Math.min(...SCENIC_TRAILS.map(g=>pathDistance(x,z,g)))/3);
+    const center=smooth((Math.hypot(x,z)-9)/5)*smooth((Math.hypot(x,z+7)-5)/4)*Math.min(...SCENIC_TRAILS.map(g=>smooth((Math.hypot(x-g.x,z-g.z)-3)/3)));
     let ground=(Math.sin(x*.10+realm)*Math.cos(z*.12-stage)*.28)*edge*route*center;
     for(const terrace of layout(realm,stage).terraces){const dx=x-terrace.x,dz=z-terrace.z,d=Math.hypot(dx,dz);if(d>terrace.radius+3)continue;const angle=Math.atan2(dz,dx),difference=Math.abs(Math.atan2(Math.sin(angle-terrace.rampAngle),Math.cos(angle-terrace.rampAngle))),ramp=1-smooth((difference-.20)/.35);const width=.65+ramp*6;ground=Math.max(ground,terrace.height*(1-smooth((d-(terrace.radius-width))/width)));}
     return ground;
@@ -51,5 +51,5 @@
     layout(realm,stage);for(let pass=0;pass<2;pass++)for(const obstacle of collisionCells.get(realm+':'+stage).get(Math.floor(x/CELL)+':'+Math.floor(z/CELL))||[]){const dx=x-obstacle.x,dz=z-obstacle.z,separation=obstacle.radius+radius;if(dx*dx+dz*dz>=separation*separation)continue;const top=height(realm,stage,obstacle.x,obstacle.z)+obstacle.height;if(initial+jumpHeight>top+.12)continue;const d=Math.hypot(dx,dz),length=Math.max(.001,d),nx=d>.001?dx/length:1,nz=d>.001?dz/length:0;x=obstacle.x+nx*separation;z=obstacle.z+nz*separation;}
     return{x:Math.max(-LIMIT,Math.min(LIMIT,x)),z:Math.max(-LIMIT,Math.min(LIMIT,z)),ground:height(realm,stage,x,z)};
   }
-  return Object.freeze({height,layout,resolve,LIMIT,GRID});
+  return Object.freeze({height,layout,resolve,LIMIT,GRID,SCENIC_TRAILS});
 });

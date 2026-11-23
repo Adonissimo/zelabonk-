@@ -50,9 +50,11 @@
     orbit:{damage:9,cooldown:5.5,count:2,radius:3.2,speed:3.2,duration:4,pierce:99,stats:['dmg','count','area','dur','speed','cd']},
     boomerang:{damage:14,cooldown:1.7,count:1,radius:.8,speed:17,duration:1.3,pierce:99,stats:['dmg','cd','count','area','speed','crit']}
   });
-  function upgradeGrowth(id,history=[]){
+  // Midna channels the existing Fused Shadow slot into a close claw cleave.
+  const SHADOW_CLAW=Object.freeze({damage:21,cooldown:1.05,count:2,radius:4.3,arc:1.9,speed:0,duration:.44,pierce:0,stats:Object.freeze(['dmg','cd','area','count','crit'])});
+  function upgradeGrowth(id,history=[],base=ATTACKS[id]){
     const result={damage:1,cooldown:1,count:0,area:1,speed:1,duration:1,pierce:0,bounce:0,critical:0,status:1};
-    const keys=ATTACKS[id]?.stats;if(!keys)return result;
+    const keys=base?.stats;if(!keys)return result;
     for(let index=0;index<history.length;index++){
       const strength=UPGRADE_POWER[history[index]],count=strength>=1.6?3:2;result.damage+=.08;
       for(let offset=0;offset<Math.min(count,keys.length);offset++){
@@ -93,5 +95,5 @@
       const item=BY_ID.get(id);if(!item||!Number.isInteger(count)||count<1||count>item.max)throw new Error('Invalid saved equipment stack.');out[id]=count;
     }return out;
   }
-  return{GEAR,RARITIES,WEAPONS,ATTACKS,UPGRADE_POWER,upgradeGrowth,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
+  return{GEAR,RARITIES,WEAPONS,ATTACKS,SHADOW_CLAW,UPGRADE_POWER,upgradeGrowth,STATUS,stats,critical,validateGear,item:id=>BY_ID.get(id)};
 });

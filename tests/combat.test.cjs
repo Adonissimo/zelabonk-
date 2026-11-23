@@ -55,11 +55,11 @@ test('max-health equipment survives shrine blessings and save restore without mu
 });
 
 test('treasure rewards are bounded, collected once, and banked before travel',()=>{
-  const game=sandbox(),enemy=game.spawnEnemy('boar',10,0,true);game.hurtEnemy(enemy,1e6);assert.equal(game.loot.length,1);
+  const game=new Game('link',123,{mode:'adventure',flatTerrain:true}),enemy=game.spawnEnemy('boar',10,0,true);game.hurtEnemy(enemy,1e6);assert.equal(game.loot.length,1);
   const drop=game.loot[0];assert.ok(Combat.item(drop.gearId).rarity>=1);assert.equal(game.collectLoot(drop.id),true);
   const owned={...game.gear};assert.equal(game.collectLoot(drop.id),false);assert.deepEqual(game.gear,owned);
   for(let i=0;i<20;i++)game.dropGear(10,10);assert.equal(game.loot.length,12);
-  const count=Object.values(game.gear).reduce((a,b)=>a+b,0);game.travel(1);assert.equal(game.loot.length,0);
+  const count=Object.values(game.gear).reduce((a,b)=>a+b,0);game.activateShrine(game.realm);assert.equal(game.enterRealm(7),true);assert.equal(game.loot.length,0);
   assert.equal(Object.values(game.gear).reduce((a,b)=>a+b,0),count+12);
 });
 

@@ -23,7 +23,7 @@ test('Adventure map transitions move the whole party and survive a room restart'
   for(const member of restored.members.values()){assert.equal(member.player.x,0);assert.equal(member.player.z,0);}
   game.step(.02);assert.equal(game.realm,6);game.step(.02);assert.equal(game.realm,7);
   for(const member of game.members.values()){assert.equal(member.player.x,0);assert.equal(member.player.z,0);}
-  assert.equal(game.travel(0),false);
+  assert.equal(game.enterRealm(0),false);
 });
 
 test('weapon rarities and orbit timers remain actor-owned through choices and restart', () => {
@@ -134,14 +134,16 @@ test('one downed member does not end the party, and hazards can damage either ac
   assert.equal(hazard.members.get(b).player.hp, 75);
   assert.equal(hazard.members.get(a).player.hp, 100);
 });
-test('travel resets every actor and shrine gifts apply once to the whole party', () => {
-  const game = create();
+test('an Adventure map change resets every actor and shrine gifts apply once to the whole party', () => {
+  const game = new PartyGame(crypto.randomUUID(),[{id:a,hero:'link'},{id:b,hero:'zelda'}],{mode:'adventure'});
+  game.activateShrine(game.realm);
   game.members.get(b).player.x = 20;
-  assert.equal(game.travel(1), true);
+  assert.equal(game.enterRealm(7), true);
   for (const member of game.members.values()) assert.equal(member.player.x, 0);
-  game.withActor(a, () => game.activateShrine(1));
-  for (const member of game.members.values()) assert.equal(member.ranks.vitality, 1);
-  assert.equal(game.activateShrine(1), false);
+  const before = new Map([...game.members].map(([id, member]) => [id, member.ranks.vitality || 0]));
+  game.withActor(a, () => game.activateShrine(7));
+  for (const [id, member] of game.members) assert.equal(member.ranks.vitality, before.get(id) + 1);
+  assert.equal(game.activateShrine(7), false);
 });
 test('durable snapshots preserve RNG, builds, boss identity, projectiles and future simulation', () => {
   const game = create();
@@ -228,4 +230,26 @@ test('party membership bounds and per-room storage failures preserve independent
   manager.pump();
   assert.equal(manager.rooms.get('bad').game.time, 0);
   assert.equal(manager.rooms.get('good').game.time, 0.02);
+});
+
+test('both Adventurers enter the landmark and room restart retains the boss arena', () => {
+  const game = new PartyGame(
+    crypto.randomUUID(), [{ id: a, hero: 'link' }, { id: b, hero: 'zelda' }],
+    { mode: 'adventure', seed: 42 },
+  );
+  game.members.get(a).player.x = 50;
+  game.members.get(b).player.z = -50;
+  game.realmStages[game.realm] = 3;
+  game.stageKills[game.realm] = 24;
+  assert.equal(game.challengeGuardian(), true);
+  assert.equal(game.landmark.name, 'Great Deku Tree');
+  for (const { player } of game.members.values()) {
+    assert.ok(Math.abs(player.x) < game.arenaLimit);
+    assert.ok(Math.abs(player.z) < game.arenaLimit);
+    assert.equal(player.ground, 0);
+  }
+  const restored = PartyGame.restore(JSON.parse(JSON.stringify(game.serialize())));
+  assert.equal(restored.landmark.name, 'Great Deku Tree');
+  assert.equal(restored.boss.bossId, 'gohma');
+  assert.equal(restored.boss, restored.enemies.find(e => e.type === 'boss'));
 });

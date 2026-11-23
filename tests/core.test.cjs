@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {Game,REALMS,GATES,UPGRADES,ARENA_LIMIT}=require('../core.js');
+const {Game,REALMS,Terrain,UPGRADES,ARENA_LIMIT}=require('../core.js');
 const advance=(g,seconds,input={x:0,y:0})=>{for(let i=0;i<Math.round(seconds/.02);i++){g.step(.02,input);g.drainEvents();}};
 
 test('movement is normalized and stays inside the arena',()=>{
@@ -28,20 +28,41 @@ test('an enemy death awards one kill and one shard',()=>{
 test('leaving shards behind bounds their count while preserving XP',()=>{
   const g=new Game('link',22);for(let i=0;i<500;i++){const e=g.spawnEnemy('slime',i%25,Math.floor(i/25));g.hurtEnemy(e,1e6);g.enemies=[];}assert.equal(g.shards.length,350);assert.equal(g.shards.reduce((n,s)=>n+s.value,0),1000);
 });
-test('all eight maps form a symmetric connected network',()=>{
-  const seen=new Set([0]),queue=[0];while(queue.length){const i=queue.shift();assert.equal(REALMS[i].links.length,GATES.length);for(const j of REALMS[i].links){assert.ok(REALMS[j].links.includes(i));if(!seen.has(j)){seen.add(j);queue.push(j);}}}assert.equal(seen.size,REALMS.length);
+test('Survival starts on any selected map and persists that choice in a checkpoint',()=>{
+ for(const [realm] of REALMS.entries()){
+  const g=new Game('link',7,{mode:'survival',realm});
+  assert.equal(g.realm,realm);assert.deepEqual([...g.visited],[realm]);
+  assert.equal(Game.fromCheckpoint(g.checkpoint()).realm,realm);
+ }
+ assert.equal(new Game('link',7,{mode:'survival',realm:99}).realm,0);
+ assert.equal(new Game('link',7,{mode:'adventure',realm:0}).realm,6);
 });
-test('gates preserve the run, bank shards once, and enforce adjacency',()=>{
-  const g=new Game('link',7);g.time=77;g.player.hp=62;g.ranks.power=2;g.shards=[{id:1,x:12,z:0,value:4}];assert.equal(g.travel(2),false);assert.equal(g.travel(1),true);assert.equal(g.time,77);assert.equal(g.player.hp,62);assert.equal(g.rank('power'),2);assert.equal(g.xp,4);assert.equal(g.shards.length,0);assert.equal(g.travel(0),false);assert.ok(g.visited.has(1));
+test('scenic trail ends never provide travel interactions in any mode',()=>{
+ for(const mode of ['adventure','survival','training'])for(const [realm] of REALMS.entries()){
+  const g=new Game('link',7,{mode});g.realm=realm;
+  for(const trail of Terrain.SCENIC_TRAILS){
+   Object.assign(g.player,trail);
+   assert.equal(g.interaction,null);assert.equal(g.interact(),false);assert.equal(g.realm,realm);
+  }
+ }
 });
-test('a shrine applies exactly one blessing in each realm',()=>{
-  const g=new Game();g.player.z=-7;assert.equal(g.interact(),true);assert.equal(g.rank('magnet'),1);assert.equal(g.interact(),false);assert.equal(g.shrines.size,1);g.travelCooldown=0;g.travel(1);g.player.z=-7;g.player.hp=50;g.interact();assert.equal(g.player.maxHp,125);assert.equal(g.player.hp,85);
+test('only the next scripted Adventure transition preserves the run and banks shards once',()=>{
+ const g=new Game('link',7,{mode:'adventure'});g.time=77;g.ranks.power=2;
+ assert.equal(g.enterRealm(7),false);
+ g.activateShrine(g.realm);g.player.hp=62;g.shards=[{id:1,x:12,z:0,value:4}];
+ assert.equal(g.enterRealm(0),false);assert.equal(g.enterRealm(7),true);
+ assert.equal(g.time,77);assert.equal(g.player.hp,62);assert.equal(g.rank('power'),2);
+ assert.equal(g.xp,4);assert.equal(g.shards.length,0);assert.equal(g.enterRealm(0),false);assert.ok(g.visited.has(7));
+});
+test('a shrine applies exactly one blessing in the chosen Survival realm',()=>{
+ const g=new Game();g.player.z=-7;assert.equal(g.interact(),true);assert.equal(g.rank('magnet'),1);assert.equal(g.interact(),false);assert.equal(g.shrines.size,1);
+ const sea=new Game('link',7,{realm:1});sea.player.z=-7;sea.player.hp=50;sea.interact();assert.equal(sea.player.maxHp,125);assert.equal(sea.player.hp,85);
 });
 test('jump and glide consume stamina then land',()=>{
   const g=new Game();g.spawnTimer=100;assert.equal(g.jump(),true);assert.equal(g.jump(),false);advance(g,.6,{x:1,y:0,glide:true});assert.ok(g.player.y>0);assert.equal(g.player.gliding,true);assert.ok(g.player.stamina<1);advance(g,5,{x:1,y:0,glide:true});assert.equal(g.player.y,0);assert.equal(g.player.gliding,false);
 });
-test('the Warden spawns once at four minutes and follows gates with persistent HP',()=>{
-  const g=new Game();g.time=239.99;g.spawnTimer=100;g.step(.02);assert.ok(g.boss);assert.equal(g.bossSpawned,true);const boss=g.boss;g.hurtEnemy(boss,123);const hp=boss.hp;assert.equal(g.travel(1),true);assert.equal(g.boss,boss);assert.equal(g.boss.hp,hp);assert.ok(g.enemies.includes(boss));g.step(.02);assert.equal(g.enemies.filter(e=>e.type==='boss').length,1);
+test('Phantom Ganon spawns once at four minutes and stays in the chosen Survival arena',()=>{
+  const g=new Game('link',1,{mode:'survival',realm:1});g.time=239.99;g.spawnTimer=100;g.step(.02);assert.ok(g.boss);assert.equal(g.bossSpawned,true);const boss=g.boss;g.hurtEnemy(boss,123);const hp=boss.hp;assert.equal(g.enterRealm(0),false);assert.equal(g.realm,1);assert.equal(g.boss,boss);assert.equal(g.boss.hp,hp);assert.ok(g.enemies.includes(boss));g.step(.02);assert.equal(g.enemies.filter(e=>e.type==='boss').length,1);
 });
 test('victory and defeat are terminal and cannot award duplicate results',()=>{
   const g=new Game();g.time=240;g.step(.02);g.hurtEnemy(g.boss,1e9);assert.equal(g.state,'won');const t=g.time;g.hurtEnemy(g.boss,1e9);g.step(.02);assert.equal(g.time,t);assert.equal(g.kills,1);
@@ -65,5 +86,5 @@ test('refresh, skip, and banish consume only their finite run resources',()=>{
   const g=new Game('link',18);g.collect(15);const xp=g.xp,level=g.level;assert.equal(g.refreshChoices(),true);assert.equal(g.refreshes,1);const banned=g.choices[0].id;assert.equal(g.banishChoice(banned),true);for(let i=0;i<12;i++)assert.ok(!g.rollUpgrades().some(u=>u.id===banned));assert.equal(g.banishes,0);assert.equal(g.banishChoice(g.choices[0].id),false);assert.equal(g.xp,xp);assert.equal(g.level,level);assert.equal(g.skipUpgrade(),true);assert.equal(g.skips,1);assert.equal(g.state,'running');assert.equal(g.skipUpgrade(),false);
 });
 test('streak and charge persist across realms but reset on a new run',()=>{
-  const g=new Game();g.hurtEnemy(g.spawnEnemy('slime',2,0),100);assert.equal(g.streak,1);const energy=g.energy;g.travel(1);assert.equal(g.streak,1);assert.equal(g.energy,energy);g.spawnTimer=100;advance(g,4.1);assert.equal(g.streak,0);assert.equal(g.bestStreak,1);assert.equal(new Game().bestStreak,0);
+  const g=new Game('link',1,{mode:'adventure'});g.hurtEnemy(g.spawnEnemy('slime',2,0),100);assert.equal(g.streak,1);const energy=g.energy;g.activateShrine(g.realm);g.enterRealm(7);assert.equal(g.streak,1);assert.equal(g.energy,energy);g.spawnTimer=100;advance(g,4.1);assert.equal(g.streak,0);assert.equal(g.bestStreak,1);assert.equal(new Game().bestStreak,0);
 });

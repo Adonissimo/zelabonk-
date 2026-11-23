@@ -223,6 +223,12 @@ class PartyGame extends Game {
     for (const member of this.members.values())
       Object.assign(member.player, { x: 0, z: 0, y: 0, ground: 0, vy: 0, invincible: 2 });
   }
+  placeAtLandmarkEntrance() {
+    for (const id of this.members.keys()) this.withActor(id, () => super.placeAtLandmarkEntrance());
+    let index = 0;
+    for (const member of this.members.values())
+      member.player.x = (index++ - (this.members.size - 1) / 2) * 1.4;
+  }
   enterRealm(destination) {
     const result = super.enterRealm(destination);
     if (result) this.resetPartyPositions();
@@ -322,6 +328,7 @@ class PartyGame extends Game {
       state: this.state,
       time: this.time,
       realm: this.realm,
+      landmark: this.landmark,
       stage: this.stage,
       level: this.level,
       xp: this.xp,
@@ -361,6 +368,9 @@ class PartyGame extends Game {
         x: projectile.x,
         y: projectile.y,
         z: projectile.z,
+        vx: projectile.vx,
+        vy: projectile.vy,
+        vz: projectile.vz,
         age: projectile.age,
       })),
       shards: this.shards,
