@@ -268,7 +268,7 @@
     setAction(action, duration) {
       const priority={idle:0,walk:0,jump:1,glide:1,dash:2,attack:3,cast:3,ultimate:4,hurt:5,death:6,victory:6};
       if(this.player.actionTime>0&&(priority[this.player.action]||0)>(priority[action]||0))return false;
-      this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;return true;
+      this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;this.player.actionImpact=null;return true;
     }
     activateShrine(realm=this.realm) {
       if(this.shrines.has(realm))return false;
@@ -597,15 +597,17 @@
       const moon=hero.canonMove==='moonCrash',slam=hero.canonMove==='goronSlam';
       const bound=this.arenaLimit-1,aimedPoint=moon?(target&&target.id!=null?target:{x:p.x+Math.sin(facing)*8,z:p.z+Math.cos(facing)*8}):p;
       const center=moon?{x:clamp(aimedPoint.x,-bound,bound),z:clamp(aimedPoint.z,-bound,bound)}:p;
-      this.attackPose('ultimate',hero.canonMove,hero.sceneOnly?1.35:moon?1.38:slam?1.11:1.05,dx,dz);
-      if(!hero.sceneOnly)p.invincible=Math.max(p.invincible,hero.ultimateShield||1.2);
-      const release=hero.sceneOnly||slam?null:({moonCrash:.85,seal:.333,harp:.333,waterBlade:.333,rutoSurge:.333}[hero.canonMove]||.445);
+      const release=hero.sceneOnly||slam?null:({moonCrash:1.64,seal:.333,harp:.333,waterBlade:.333,rutoSurge:.333}[hero.canonMove]||.445);
+      const slamTime=.78;
+      this.attackPose('ultimate',hero.canonMove,hero.sceneOnly?1.35:moon?release+.30:slam?1.11:1.05,dx,dz);
+      if(p.action==='ultimate')p.actionImpact=slam?slamTime:release;
+      if(!hero.sceneOnly)p.invincible=Math.max(p.invincible,moon?release+.20:hero.ultimateShield||1.2);
       this.emit('ultimate',{x:center.x,z:center.z,originX:p.x,originZ:p.z,radius,hero:this.hero,name:hero.ultimateName,color:hero.ultimateColor,
         ootAlly:!!hero.ootAlly,canonMove:hero.canonMove,phaseStyle:hero.canonMove,facing,arc:hero.ultimateArc||TAU,sceneOnly:!!hero.sceneOnly,release,
-        ...(slam?{windup:.78}:{})});
+        ...(slam?{windup:slamTime}:{})});
       if(!hero.sceneOnly){
         p.dash=0;
-        if(slam)p.canonSlam={age:0,duration:.78,startHeight:p.y,facing};
+        if(slam)p.canonSlam={age:0,duration:slamTime,startHeight:p.y,facing};
         else p.canonCue={release,facing,target:moon?center:target?.id!=null?{x:target.x,z:target.z}:null};
       }
       return true;

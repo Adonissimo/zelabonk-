@@ -14,9 +14,9 @@ test('Moon Crash leaves a moon-sized fissure at the locked target only on impact
   assert.equal(game.ultimate(),true);
   const cast=game.drainEvents().find(e=>e.type==='ultimate');
   assert.equal(cast.phaseStyle,'moonCrash');
-  step(game,40);
+  step(game,81);
   assert.equal(game.drainEvents().some(split),false);
-  step(game,3);
+  step(game,1);
   const impacts=game.drainEvents().filter(split);
   assert.equal(impacts.length,1);
   assert.deepEqual(impacts[0],{type:'groundImpact',style:'moonCrash',x:cast.x,z:cast.z,impactSize:HEROES.skullkid.ultimateRadius*1.5});
@@ -103,9 +103,9 @@ test('delayed cracks grow and fade, reduced motion reveals the full stationary c
   assert.equal(b.geometry.drawRange.count,b.vertexCount);
   assert.ok(b.material.opacity<.2);
   let released=0;
-  for(const t of [a.material,a.geometry])t.addEventListener('dispose',()=>released++);
+  for(const t of [a.material,a.geometry,a.crater.geometry])t.addEventListener('dispose',()=>released++);
   normal.disposeEffect(a);
-  assert.equal(released,2);
+  assert.equal(released,3);
 });
 
 test('low graphics keep a capped number of decals and clip them to the walkable landmark',()=>{
@@ -117,4 +117,25 @@ test('low graphics keep a capped number of decals and clip them to the walkable 
   assert.ok(v.effects.includes(moon));
   const xyz=moon.geometry.getAttribute('position');
   for(let i=0;i<xyz.count;i++)assert.ok(Math.abs(xyz.getX(i))<=22&&Math.abs(xyz.getZ(i))<=22);
+});
+
+test('the crater scales with impact but stays flat against the terrain; shadows are painted',()=>{
+  const v=view();
+  let lastRadius=0;
+  for(const impactSize of [1.85,5.2,10.65]){
+    const mark=v.groundCrack({x:29,z:-35,impactSize});
+    const crater=mark.crater,verts=crater.geometry.getAttribute('position'),colors=crater.geometry.getAttribute('color');
+    assert.ok(crater.radius>lastRadius);
+    lastRadius=crater.radius;
+    assert.equal(crater.mesh.material,mark.material,'crater and cracks fade together');
+    assert.equal(mark.material.isMeshBasicMaterial,true,'the color is painted, not generated from depth');
+    assert.equal(mark.material.depthWrite,false);
+    let redMin=Infinity,redMax=0;
+    for(let i=0;i<verts.count;i++){
+      assert.ok(Math.abs(verts.getY(i)-v.groundHeight(verts.getX(i),verts.getZ(i))-.043)<.00005);
+      redMin=Math.min(redMin,colors.getX(i));redMax=Math.max(redMax,colors.getX(i));
+    }
+    assert.ok(redMax>redMin*2,'paint separates the shadowed center and the lit edge');
+  }
+  assert.equal(v.impactHoles,undefined,'the renderer does not cut holes into the ground');
 });
