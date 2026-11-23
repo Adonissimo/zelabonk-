@@ -221,7 +221,7 @@ class PartyGame extends Game {
   }
   resetPartyPositions() {
     for (const member of this.members.values())
-      Object.assign(member.player, { x: 0, z: 0, y: 0, ground: 0, vy: 0, invincible: 2 });
+      Object.assign(member.player, { canonRoll: null, canonCue: null, x: 0, z: 0, y: 0, ground: 0, vy: 0, invincible: 2 });
   }
   placeAtLandmarkEntrance() {
     for (const id of this.members.keys()) this.withActor(id, () => super.placeAtLandmarkEntrance());
@@ -365,6 +365,9 @@ class PartyGame extends Game {
       projectiles: this.projectiles.map((projectile) => ({
         id: projectile.id,
         type: projectile.type,
+        art: projectile.art,
+        duration: projectile.duration,
+        radius: projectile.radius,
         x: projectile.x,
         y: projectile.y,
         z: projectile.z,

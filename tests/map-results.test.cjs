@@ -22,7 +22,7 @@ test('guardian victory pauses for map-only results, then continues with the same
   defeat(g);
   playTo(g,()=>g.state==='map-clear');
   const first=g.mapResult;
-  assert.deepEqual({...first,time:Math.floor(first.time),damageDealt:Math.round(first.damageDealt)},{realm:6,nextRealm:7,nextIsFinal:false,time:42,kills:55,damageDealt:518,damageTaken:9});
+  assert.deepEqual({...first,time:Math.floor(first.time),damageDealt:Math.round(first.damageDealt)},{realm:6,nextRealm:7,nextIsFinal:false,companion:'saria',time:42,kills:55,damageDealt:518,damageTaken:9});
   assert.equal(g.enterRealm(7),false);assert.ok(g.shrines.has(6));assert.equal(g.loot.length,0);
   for(let i=0;i<250;i++)g.step(.05);
   assert.deepEqual(g.mapResult,first);assert.equal(g.realm,6);
