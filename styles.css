@@ -136,3 +136,6 @@ select{padding:7px 27px 7px 10px;border:1px solid #b7b4c3;border-radius:7px;back
 .roster-card .hero-special-name{color:#334b40;font-weight:800;line-height:1.28}
 .roster-card .hero-special-detail{max-width:25ch;margin:4px 0 10px;color:#534d62;font-size:10px;line-height:1.35}
 .roster-card.locked .hero-special-detail{color:#5f596a}
+
+/* One brief Moon Crash pulse, kept below the HUD. */
+#moon-flash{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:0;background:radial-gradient(ellipse at var(--flare-x,50%) var(--flare-y,50%),#fff6e4 0%,#ffeac3b3 28%,#f9dfb739 70%,transparent 100%)}

@@ -81,9 +81,10 @@
     try{
       if(!audio){audio=new(window.AudioContext||window.webkitAudioContext)();masterGain=audio.createGain();masterGain.connect(audio.destination);}
       masterGain.gain.setValueAtTime(soundEnabled?storage.volume:0,audio.currentTime);if(audio.state==='suspended')audio.resume();
-      const tones={shadowStrike:[220,94,.13,.028,'triangle'],shoot:[540,300,.055,.018,'sine'],leaf:[760,430,.08,.015,'sine'],bomb:[150,100,.18,.03,'triangle'],boomerang:[500,800,.17,.02,'sine'],collect:[1000,1500,.05,.023,'sine'],hurt:[140,65,.18,.08,'triangle'],dash:[190,490,.15,.04,'sine'],jump:[250,480,.12,.025,'sine'],level:[540,1080,.5,.07,'sine'],choose:[660,990,.25,.05,'sine'],nova:[180,800,.4,.065,'triangle'],explosion:[130,40,.4,.06,'triangle'],shrine:[440,1320,.8,.06,'sine'],travel:[300,900,.6,.055,'sine'],boss:[130,50,1.1,.08,'triangle'],pop:[310,140,.07,.016,'sine'],warning:[220,180,.2,.025,'triangle'],slam:[100,35,.35,.08,'triangle'],evolve:[440,1760,.8,.065,'sine'],end:[320,160,.7,.06,'sine'],purchase:[660,880,.3,.045,'sine']};
+      const tones={shadowStrike:[220,94,.13,.028,'triangle'],shoot:[540,300,.055,.018,'sine'],leaf:[760,430,.08,.015,'sine'],bomb:[150,100,.18,.03,'triangle'],boomerang:[500,800,.17,.02,'sine'],collect:[1000,1500,.05,.023,'sine'],hurt:[140,65,.18,.08,'triangle'],dash:[190,490,.15,.04,'sine'],jump:[250,480,.12,.025,'sine'],level:[540,1080,.5,.07,'sine'],choose:[660,990,.25,.05,'sine'],nova:[180,800,.4,.065,'triangle'],explosion:[130,40,.4,.06,'triangle'],shrine:[440,1320,.8,.06,'sine'],travel:[300,900,.6,.055,'sine'],boss:[130,50,1.1,.08,'triangle'],pop:[310,140,.07,.016,'sine'],warning:[220,180,.2,.025,'triangle'],slam:[100,35,.35,.08,'triangle'],moonImpact:[125,32,.72,.095,'triangle'],evolve:[440,1760,.8,.065,'sine'],end:[320,160,.7,.06,'sine'],defeatProp:[465,155,.14,.029,'triangle'],purchase:[660,880,.3,.045,'sine']};
       const play=(note,start)=>{const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.type=note[4];oscillator.frequency.setValueAtTime(note[0],start);oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,note[1]),start+note[2]);gain.gain.setValueAtTime(note[3],start);gain.gain.exponentialRampToValueAtTime(.001,start+note[2]);oscillator.connect(gain);gain.connect(masterGain);oscillator.start(start);oscillator.stop(start+note[2]);};
       if(type==='guardian'||type==='victory'){[440,554,659,880].forEach((frequency,i)=>play([frequency,frequency*1.005,.25,.045,'sine'],audio.currentTime+i*.12));return;}
+      if(type==='moonImpact')play([715,122,.075,.043,'triangle'],audio.currentTime);
       if(tones[type])play(tones[type],audio.currentTime);
     }catch(_){/* Audio support is optional. */}
   }
@@ -137,6 +138,7 @@
     makeHero(id) {
       if (this.hero) {
         for(const mesh of this.glider?.userData.cloth||[]){mesh.geometry.dispose();mesh.material.dispose();}
+        this.navi?.userData.glow.material.dispose();
         this.scene.remove(this.hero);
       }
       if (this.heroShadow) this.scene.remove(this.heroShadow);
@@ -145,6 +147,48 @@
       this.heroSprite = RelicArt.sprite('hero', id, 2.66, 2.66); this.heroRig.add(this.heroSprite);
       this.heroShadow = new THREE.Group(); this.scene.add(this.heroShadow); this.shadow(this.heroShadow, .7, .22);
       this.glider=this.buildGlideRig(id);this.hero.add(this.glider);
+      this.navi=id==='link'?this.makeNavi():null;
+      if(this.navi)this.hero.add(this.navi);
+    }
+    makeNavi(){
+      if(!this.geometries.naviWing){
+        const outline=new THREE.Shape();
+        outline.moveTo(0,0);outline.lineTo(.10,.16);outline.lineTo(.27,.36);outline.lineTo(.44,.49);
+        outline.lineTo(.47,.46);outline.lineTo(.39,.27);outline.lineTo(.27,.13);outline.lineTo(.13,.035);outline.closePath();
+        this.geometries.naviWing=new THREE.ShapeGeometry(outline);
+      }
+      const fairy=new THREE.Group();
+      fairy.name='Navi';
+      const glow=new THREE.Sprite(new THREE.SpriteMaterial({
+        color:'#77e7ff',map:this.moonEffectTexture('flash'),transparent:true,depthWrite:false,opacity:.24,
+      }));
+      glow.name='navi-glow';glow.scale.setScalar(.92);glow.renderOrder=11;fairy.add(glow);
+      const bulb=this.mesh('sphere','#5eddf9',[.117,.117,.117],[0,0,0],fairy,{basic:true});
+      bulb.name='navi-blue-orb';bulb.renderOrder=12;
+      const spark=this.mesh('sphere','#dcfbff',[.073,.073,.073],[-.024,.023,.051],fairy,{basic:true});
+      spark.renderOrder=13;
+      const wings=[];
+      for(const sign of [-1,1])for(const lower of [false,true]){
+        const joint=new THREE.Group(),wing=new THREE.Mesh(this.geometries.naviWing,this.mat(lower?'#b0ecfa':'#dcfbff',{basic:true,opacity:lower?.67:.85,side:THREE.DoubleSide}));
+        wing.scale.set(sign*(lower?.45:.82),lower?-.40:.80,1);
+        joint.position.set(sign*.054,lower?-.045:.025,-.028);joint.add(wing);fairy.add(joint);
+        wing.name='navi-'+(lower?'small':'large')+'-wing';wings.push({joint,sign,lower});
+      }
+      fairy.userData={glow,wings};
+      return fairy;
+    }
+    naviPose(fairy,time,lossAge=null){
+      if(!fairy)return;
+      const still=reducedMotion,fallen=Number.isFinite(lossAge);
+      const drift=still?0:Math.sin(time*2.6),lowered=fallen?clamp(lossAge/1.46,0,1):0;
+      fairy.position.set(-.81+drift*.12,1.76+drift*.10-lowered*.82,.45+(still?0:.16*Math.cos(time*2.3)));
+      const {glow,wings}=fairy.userData;
+      // A faint two-second breath, never a hard on/off or screen flash.
+      glow.material.opacity=still?.22:.19+.10*(.5+.5*Math.sin(time*2.75));
+      for(const {joint,sign,lower} of wings){
+        const flap=still?0:Math.sin(time*(lower?44:37)+(lower?.85:0));
+        joint.rotation.set(.12+.09*flap,sign*(.24+.59*flap),sign*(.06+flap*(lower?.24:.19)));
+      }
     }
     glideCloth(parent,nx,nz,paint,sample){
       // Flat-shaded fabric panels stay crisp beside the directional pixel sprites.
@@ -703,23 +747,21 @@
     }
     shadowStrikeEffect(event) {
       if(this.effects.length>115)return;
-      const duration=event.duration||.4,reach=event.radius,spread=event.arc||Math.PI*.55;
-      const count=storage.graphics==='low'||reducedMotion?1:3;
-      for(let i=0;i<count;i++){
-        const angle=event.facing+(count===1?0:(i-1)*spread*.36),size=i===1||count===1?1:.65;
-        const mesh=this.projectileModel('shadowHand',reach,reach*.68,true);
-        mesh.renderOrder=7;
-        const effect={mesh,material:mesh.material,kind:'shadowStrike',time:duration,duration,reach,angle,size,x:event.x,y:event.y??this.groundHeight(event.x,event.z)+.95,z:event.z};
-        this.positionShadowStrike(effect,0);
-        this.effects.push(effect);
-      }
+      const duration=event.duration||.4,reach=event.radius??event.reach??2;
+      const mesh=this.projectileModel('shadowHand',reach,reach*.68,true);
+      mesh.renderOrder=7;
+      const effect={mesh,material:mesh.material,kind:'shadowStrike',time:duration,duration,reach,angle:event.facing,
+        x:event.x,y:(event.y??this.groundHeight(event.x,event.z)+.95)+this.heroHoverLift('midna',this.elapsed||0)*.7,z:event.z};
+      this.positionShadowStrike(effect,0);this.effects.push(effect);
     }
     positionShadowStrike(effect,t) {
-      const {mesh,reach,angle,size,x,y,z}=effect;
-      const dx=Math.sin(angle),dz=Math.cos(angle),extension=reducedMotion?.55:.34+Math.sin(Math.min(1,t*1.5)*Math.PI/2)*.20;
-      mesh.position.set(x+dx*reach*extension,y+(reducedMotion?0:Math.sin(t*Math.PI)*.20),z+dz*reach*extension);
-      this.aimBillboard(mesh,dx,0,dz,reach*size,reach*.68*size);
-      mesh.material.opacity=(size===1?1:.68)*(1-clamp((t-.5)*2,0,1));
+      const {mesh,reach,angle,x,y,z}=effect,dx=Math.sin(angle),dz=Math.cos(angle);
+      // The hand extends and retracts from the same wrist point; it's never a detached shot.
+      const stretch=reducedMotion?.86:.28+.72*Math.sin(Math.PI*clamp(t,0,1))**.85;
+      const length=reach*stretch,center=length*.49;
+      mesh.position.set(x+dx*center,y+(reducedMotion?0:Math.sin(t*Math.PI)*.15),z+dz*center);
+      this.aimBillboard(mesh,dx,0,dz,length,reach*(.42+.12*stretch));
+      mesh.material.opacity=1-clamp((t-.69)/.31,0,1);
     }
     allyPulse(event){
       const style=event.kind;
@@ -788,12 +830,17 @@
       const grounded={...event,y:player&&style!=='moonCrash'?(player.ground??this.groundHeight(player.x,player.z))+(player.y||0):event.y};
       if(style==='goronSlam'&&staged)return; // The core notifies the view on actual landing, not at a guessed time.
       if(staged&&event.release>0&&!scene){
+        if(style==='moonCrash'){
+          this.ultimateStage(grounded,'windup',event.release,undefined,at);
+          return; // The simulation's groundImpact event owns contact, damage, and the blast.
+        }
         (this.ultimateCues??=[]).push({at:at+event.release,event});
-        if(style==='moonCrash'||style==='seal'||style==='fused')this.ultimateStage(grounded,'windup',event.release);
+        if(style==='seal'||style==='fused')this.ultimateStage(grounded,'windup',event.release);
         return;
       }
-      const duration={spin:.48,seal:.82,harp:.83,fused:.65,waterBlade:.57,goronSlam:.76,rutoSurge:.83,waterGun:.28,moonCrash:.84,ocarinaSong:1.33,spiritSage:1.33}[style];
+      const duration={spin:.48,seal:.82,harp:.83,fused:.65,waterBlade:.57,goronSlam:.76,rutoSurge:.83,waterGun:.28,moonCrash:1.34,ocarinaSong:1.33,spiritSage:1.33}[style];
       if(duration)this.ultimateStage(grounded,scene?'scene':'release',duration,player);
+      if(style==='ocarinaSong'&&staged&&scene)this.ultimateStage({...grounded,visualDelay:duration},'healing',duration+2.25,player);
     }
     // Low-poly surfaces are shared by cast instead of allocating new geometry every frame.
     ultimateStrip(key,arc,width,depth,profile){
@@ -810,25 +857,185 @@
       }
       return key;
     }
-    ultimateStage(event,phase,duration,player){
-      if(this.effects.filter(effect=>effect.kind==='ultimateSignature').length>=6)return;
+    moonFallProgress(t){
+      const u=clamp((t-.12)/.88,0,1);
+      return u*(.58+.42*u);
+    }
+    moonFallPosition(x,y,z,t,camera=this.camera){
+      const anchor=new THREE.Vector3(x,y,z);
+      const fall=reducedMotion?clamp((t-.12)/.88,0,1):this.moonFallProgress(t);
+      if(!camera?.isPerspectiveCamera||fall>=1)return anchor;
+      const ground=anchor.clone().project(camera);
+      if(ground.z>=1||ground.z<=-1)return anchor.add(new THREE.Vector3((1-fall)*2,(1-fall)*26,0));
+      // Camera only maps the launch once. Looking around later does not drag the Moon.
+      const side=ground.x<0?1:-1;
+      const launch=ground.clone();launch.x+=side*.22;launch.y=1.28;
+      launch.unproject(camera);
+      const lift=Math.max(0,y+19-launch.y);
+      ground.x+=side*.22*(1-fall)**2;
+      ground.y=1.28+(ground.y-1.28)*fall;
+      ground.unproject(camera);
+      ground.y+=lift*(1-fall)**2;
+      return ground;
+    }
+    moonSurface(){
+      if(this.moonSurfaceCache)return this.moonSurfaceCache;
+      const width=192,height=96,pixels=new Uint8Array(width*height*4);
+      const art=RelicArt.canvas?.('moon','crash');
+      const face=art?.getContext('2d').getImageData(0,0,art.width,art.height).data;
+      const craters=Array.from({length:24},(_,i)=>{
+        const y=Math.sin(i*14.97)*.94,a=i*2.39996,r=Math.sqrt(1-y*y);
+        const radius=.11+(i%5)*.031;
+        return {x:Math.cos(a)*r,y,z:Math.sin(a)*r,inside:radius**2,outside:(radius+.033)**2};
+      });
+      for(let v=0;v<height;v++)for(let u=0;u<width;u++){
+        const theta=Math.PI*(1-(v+.5)/height),phi=2*Math.PI*(u+.5)/width;
+        const x=-Math.cos(phi)*Math.sin(theta),y=Math.cos(theta),z=Math.sin(phi)*Math.sin(theta);
+        let value=124+13*Math.sin(x*10+y*6-z*14)+9*Math.sin(x*25+y*13+z*17)+((u*13+v*31+u*v)%19)-9;
+        for(const c of craters){
+          const dx=x-c.x,dy=y-c.y,dz=z-c.z,d=dx*dx+dy*dy+dz*dz;
+          if(d<c.inside)value-=23;
+          else if(d<c.outside)value+=dx+dy<0?17:5;
+        }
+        const at=(u+v*width)*4;
+        const artX=Math.floor(art?.width*(.50+x*.47)),artY=Math.floor(art?.height*(.50-y*.47));
+        const source=face&&z>0&&artX>=0&&artY>=0&&artX<art.width&&artY<art.height?(artX+artY*art.width)*4:-1;
+        const mix=source<0?0:face[source+3]/255*clamp((z-.24)/.25,0,1);
+        const slate=[value,value-5,value-11];
+        for(let i=0;i<3;i++)pixels[at+i]=Math.round(clamp(slate[i]*(1-mix)+(mix?face[source+i]*mix:0),0,255));
+        pixels[at+3]=255;
+      }
+      const map=new THREE.DataTexture(pixels,width,height);map.name='moon:cratered-world-surface';
+      map.colorSpace=THREE.SRGBColorSpace;map.magFilter=map.minFilter=THREE.NearestFilter;map.needsUpdate=true;
+      return this.moonSurfaceCache={map,geometry:new THREE.SphereGeometry(.5,40,24)};
+    }
+    makeTurningMoon(name,materials){
+      const {map,geometry}=this.moonSurface();
+      const material=new THREE.MeshLambertMaterial({map,transparent:true,depthWrite:false,color:'#f4efe0'});
+      const globe=new THREE.Mesh(geometry,material),pivot=new THREE.Group();
+      globe.name='cratered-moon-globe';globe.position.y=.5;globe.rotation.order='YXZ';globe.renderOrder=4;
+      pivot.name=name;pivot.material=material;pivot.add(globe);
+      pivot.userData.globe=globe;materials.push(material);
+      return pivot;
+    }
+    turnMoon(globe,yaw,t){
+      const dive=this.moonFallProgress(t),roll=reducedMotion?.04:.18*Math.sin(t*Math.PI*1.55);
+      // A positive X rotation points the face (+Z on the texture) down toward the impact.
+      globe.rotation.set(.17+1.19*dive,yaw-.43+.97*dive,roll,'YXZ');
+    }
+    moonFlashOpacity(age){
+      if(age<0||age>=.20)return 0;
+      const peak=reducedMotion?.08:.34;
+      return peak*clamp(age/.026,0,1)*((.20-age)/.174)**1.65;
+    }
+    makeMoonShadow(){
+      const sectors=24,rings=[0,.60,.79,.92,1],alphas=[.88,.86,.69,.32,0],xy=[],rgba=[],indices=[];
+      for(let ring=0;ring<rings.length;ring++)for(let n=0;n<sectors;n++){
+        const a=n*Math.PI*2/sectors;
+        xy.push(Math.cos(a)*rings[ring],Math.sin(a)*rings[ring]);
+        rgba.push(.028,.014,.041,alphas[ring]);
+        if(ring===0)continue;
+        const i=ring*sectors+n,j=ring*sectors+((n+1)%sectors),k=i-sectors,l=j-sectors;
+        indices.push(k,l,i,l,j,i);
+      }
+      const geometry=new THREE.BufferGeometry();
+      geometry.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(xy.length/2*3),3));
+      geometry.setAttribute('color',new THREE.Float32BufferAttribute(rgba,4));geometry.setIndex(indices);
+      const material=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2});
+      const shadow=new THREE.Mesh(geometry,material);
+      shadow.name='moon-approach-shadow';shadow.frustumCulled=false;shadow.renderOrder=2;shadow.userData.outline=xy;
+      return shadow;
+    }
+    positionMoonShadow(shadow,x,z,radius,t){
+      const proximity=this.moonFallProgress(t),size=radius*(.22+.82*proximity);
+      const xy=shadow.userData.outline,pts=shadow.geometry.getAttribute('position');
+      for(let i=0;i<pts.count;i++){
+        const wx=x+xy[i*2]*size,wz=z+xy[i*2+1]*size;
+        pts.setXYZ(i,wx,this.groundHeight(wx,wz)+.062,wz);
+      }
+      pts.needsUpdate=true;
+      shadow.material.opacity=(.40+.53*proximity)*clamp(t/.065,0,1);
+      shadow.userData.radius=size;
+    }
+    moonCameraFocus(player){
+      if(reducedMotion)return {x:player.x,z:player.z};
+      const cue=this.effects.find(e=>e.style==='moonCrash'&&e.phase==='windup'&&e.mesh.visible);
+      const blast=this.effects.find(e=>e.style==='moonCrash'&&e.phase==='release'&&e.mesh.visible);
+      const focus=cue??blast;
+      if(!focus)return {x:player.x,z:player.z};
+      const w=.72*(cue?1:clamp(blast.time/blast.duration,0,1));
+      return {x:player.x+(focus.x-player.x)*w,z:player.z+(focus.z-player.z)*w};
+    }
+    moonEffectTexture(kind){
+      const textures=this.moonEffectTextures??={};
+      if(textures[kind])return textures[kind];
+      const size=32,data=new Uint8Array(size*size*4);
+      const lobes=[[0,.09,.75],[-.33,.24,.41],[.36,.10,.43],[.21,-.34,.39],[-.22,-.25,.46]];
+      for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+        const u=(x+.5)*2/size-1,v=(y+.5)*2/size-1;
+        const flash=kind==='flash';
+        const density=flash?clamp(1-Math.hypot(u,v),0,1)**1.7
+          :clamp(Math.max(...lobes.map(([dx,dy,r])=>1-Math.hypot(u-dx,v-dy)/r))*2.5,0,1);
+        const grain=((x*19+y*31+(x*y)%11)%13)/13;
+        const pixel=(x+y*size)*4,value=flash?255:Math.round(181+density*56+grain*14);
+        data[pixel]=data[pixel+1]=data[pixel+2]=value;
+        data[pixel+3]=Math.round(255*density*(flash?1:.83+.17*grain));
+      }
+      const texture=new THREE.DataTexture(data,size,size);
+      texture.magFilter=kind==='flash'?THREE.LinearFilter:THREE.NearestFilter;
+      texture.minFilter=texture.magFilter;texture.needsUpdate=true;
+      return textures[kind]=texture;
+    }
+    moonImpact(event){
+      const fall=this.effects.find(e=>e.style==='moonCrash'&&e.phase==='windup'&&e.mesh.visible);
+      for(const e of this.effects.filter(e=>e.style==='moonCrash'&&e.phase==='windup')){
+        e.time=0;e.mesh.visible=false;
+      }
+      const impact={...event,phaseStyle:'moonCrash',moonYaw:fall?.moonYaw};
+      this.ultimateStage(impact,'aftermath',4.7); // Lingers independently of the brief impact burst.
+      this.ultimateEffect(impact);
+    }
+    ultimateStage(event,phase,duration,player,startTime){
+      if(event.phaseStyle!=='moonCrash'&&this.effects.filter(effect=>effect.kind==='ultimateSignature'&&effect.time>0).length>=6)return;
       const {x,z,facing=0,phaseStyle:style}=event,ground=this.groundHeight(x,z);
-      const mesh=new THREE.Group(),materials=[],parts=[];
+      const mesh=new THREE.Group(),materials=[],parts=[],ownedGeometry=[];
       const mode=(reducedMotion||storage.graphics==='low'),count=n=>mode?Math.ceil(n/2):n;
       const add=(name,type,color,alpha=.94)=>{
         const material=new THREE.MeshBasicMaterial({color,opacity:0,transparent:true,side:THREE.DoubleSide,depthWrite:false});
         const m=new THREE.Mesh(this.geometries[type],material);
         m.name=name;mesh.add(m);materials.push(material);parts.push({m,alpha});return m;
       };
+      const puff=(name,mapKind,color,alpha,order=3)=>{
+        const material=new THREE.SpriteMaterial({map:this.moonEffectTexture(mapKind),color,opacity:0,transparent:true,depthWrite:false});
+        const m=new THREE.Sprite(material);m.name=name;m.renderOrder=order;mesh.add(m);
+        materials.push(material);parts.push({m,alpha});return m;
+      };
       const curve=(name,key,color,arc,width,depth,profile,alpha)=>add(name,this.ultimateStrip(key,arc,width,depth,profile),color,alpha);
       const taper=u=>Math.sin(Math.PI*u);
-      if(phase==='windup'){
+      if(phase==='healing'&&style==='ocarinaSong'){
+        add('saria-healing-area','torus','#b9ef8b',.64);
+        add('saria-healing-inner-ring','torus','#e6f6b1',.42);
+        for(let i=0;i<count(6);i++){
+          add('saria-healing-cross-wide','box','#b8ee9c',.92);
+          add('saria-healing-cross-tall','box','#e8ffbf',.92);
+        }
+        for(let i=0;i<count(12);i++)add('saria-healing-mote','diamond',i%2?'#dbffad':'#8bdb88',.78);
+      }else if(phase==='aftermath'&&style==='moonCrash'){
+        for(let i=0;i<count(12);i++){
+          puff('moon-residual-smoke','smoke',['#756773','#88777d','#a28b87'][i%3],.45,3);
+        }
+      }else if(phase==='windup'){
         if(style==='moonCrash'){
-          const moon=RelicArt.sprite('moon','crash',1,1);
-          moon.name='descending-grinning-moon';moon.material=moon.material.clone();moon.material.transparent=true;moon.material.depthWrite=false;
-          mesh.add(moon);parts.push({m:moon,alpha:1});materials.push(moon.material);
-          add('moon-landing-marker','torus','#ce9ad8',.64);
-          for(let i=0;i<count(6);i++)add('downward-moon-trail','diamond',i%2?'#c095cd':'#f0c4c0',.62);
+          const moon=this.makeTurningMoon('descending-grinning-moon',materials);
+          mesh.add(moon);parts.push({m:moon,alpha:1});
+          const shadow=this.makeMoonShadow();mesh.add(shadow);parts.push({m:shadow,alpha:1});
+          materials.push(shadow.material);ownedGeometry.push(shadow.geometry);
+          add('moon-landing-marker','torus','#ce9ad8',.44);
+          const tailCount=count(12);
+          for(let i=0;i<tailCount;i++){
+            const smoke=puff('moon-descent-smoke','smoke',['#605461','#8a777d','#b09796'][i%3],.71,3);
+            smoke.userData.tail=i/Math.max(1,tailCount-1);
+          }
         }else for(let i=0;i<count(style==='seal'?6:10);i++)add(style==='seal'?'gathering-light':'gathering-twilight',style==='seal'?'diamond':'box',style==='seal'?'#ffeda0':(i%3?'#46324f':'#78dbca'));
       }else switch(style){
         case 'spin':
@@ -864,7 +1071,14 @@
         case 'moonCrash':
           add('moon-impact-outer-shockwave','torus','#d7a3df',.8);
           add('moon-impact-inner-shockwave','torus','#eec4ab',.9);
-          for(let i=0;i<count(13);i++)add('lunar-impact-debris','lowSphere',i%2?'#78627b':'#b78a8f',.87);break;
+          const contact=this.makeTurningMoon('moon-impact-contact',materials);
+          mesh.add(contact);parts.push({m:contact,alpha:1});
+          add('moon-impact-fireball','lowSphere','#ed8854',.92);
+          add('moon-impact-hot-core','lowSphere','#f1bd87',.72);
+          puff('moon-impact-faint-flash','flash','#ffdcb2',.27,5);
+          for(let i=0;i<count(18);i++)puff('moon-impact-smoke','smoke',['#544852','#79606a','#a0827b'][i%3],.73,3);
+          for(let i=0;i<count(16);i++)add('lunar-impact-debris','diamond',i%3?'#78627b':'#ffb05c',.97);
+          break;
         case 'ocarinaSong':
           for(let i=0;i<3;i++)curve('ocarina-sound-ripple','ocarina-ripple','#a7d99c',3,.064,.11,u=>[taper(u),.10*Math.sin(u*Math.PI)],.70);
           for(let i=0;i<count(5);i++){
@@ -879,14 +1093,15 @@
         default:return;
       }
       mesh.name='ultimate:'+style+':'+phase;
-      const effect={mesh,materials,parts,player,kind:'ultimateSignature',style,phase,x,z,y:event.y??ground,facing,radius:event.radius||0,time:duration,duration};
+      const moonYaw=event.moonYaw??(this.camera?Math.atan2(this.camera.position.x-x,this.camera.position.z-z):facing);
+      const effect={mesh,materials,parts,ownedGeometry,player,kind:'ultimateSignature',style,phase,x,z,y:event.y??ground,facing,moonYaw,radius:event.radius||0,time:duration,duration,startTime,visualDelay:event.visualDelay||0};
       this.entities.add(mesh);this.positionUltimateStage(effect,0);this.effects.push(effect);
     }
     positionUltimateStage(e,t){
       const {parts,style,phase,radius}=e;
-      const follow=phase==='scene'&&e.player,x=follow?follow.x:e.x,z=follow?follow.z:e.z;
+      const follow=(phase==='scene'||phase==='healing')&&e.player,x=follow?follow.x:e.x,z=follow?follow.z:e.z;
       const y=follow?(follow.ground??this.groundHeight(x,z))+(follow.y||0):e.y;
-      const facing=phase==='scene'&&this.camera?Math.atan2(this.camera.position.x-x,this.camera.position.z-z):e.facing;
+      const facing=(phase==='scene'||phase==='healing')&&this.camera?Math.atan2(this.camera.position.x-x,this.camera.position.z-z):e.facing;
       // Reduced motion holds readable shapes, with a single fade instead of repeated pulses.
       const m=reducedMotion?.60:t,fade=t<.12?.34+.66*t/.12:1-Math.pow(clamp((t-.12)/.88,0,1),1.6);
       const sin=Math.sin(facing),cos=Math.cos(facing),tau=2*Math.PI;
@@ -898,18 +1113,76 @@
       for(let i=0;i<parts.length;i++){
         const {m:p,alpha}=parts[i],k=i/Math.max(1,parts.length-1);
         p.material.opacity=alpha*fade;
+        if(phase==='healing'){
+          // A visual area blooms after the final note; no stats or hit boxes change.
+          const seconds=t*e.duration-e.visualDelay,life=clamp(seconds/(e.duration-e.visualDelay),0,1);
+          p.visible=seconds>0&&life<1;
+          const spread=reducedMotion?1:1-(1-life)**3;
+          const alphaFade=clamp(seconds/.20,0,1)*(1-life)**.65;
+          if(i<2){
+            const r=(i===0?5.2:3.9)*(.25+.75*spread);
+            put(p,r,r,.045,0,.12+i*.08,0,0,0,-Math.PI/2,true);
+            p.material.opacity=alpha*alphaFade;
+          }else{
+            const cross=p.name.includes('cross'),n=cross?Math.floor((i-2)/2):i;
+            const tall=p.name==='saria-healing-cross-tall',ang=n*2.39996;
+            const reach=(cross?1.25+(n%5)*.69:2.1+(n%6)*.49)*(.40+spread*.60);
+            const up=.34+(n%4)*.38+(reducedMotion?.67:life*(.8+(n%3)*.25));
+            const h=cross?(tall?.31:.082):.16,w=cross?(tall?.089:.32):.10;
+            put(p,w,h,.062,Math.sin(ang)*reach,up,Math.cos(ang)*reach,0,!cross&&n%2?.35:0,0,true);
+            p.material.opacity=alpha*alphaFade*(reducedMotion?1:.73+.27*Math.cos(life*5+n)**2);
+          }
+          continue;
+        }
+        if(phase==='aftermath'){
+          const seconds=t*e.duration,delay=.28+(i%5)*.12;
+          const drift=reducedMotion?.26:1-Math.exp(-Math.max(0,seconds-delay)*.51);
+          const angle=i*2.399963+(i%2?-.25:.40),outer=i%3!==0;
+          const offset=radius*((outer?.20:.05)+(i%4)*.034+drift*(outer?.26:.14));
+          const breeze=radius*.17*drift;
+          const size=radius*(.26+(i%4)*.025+drift*.24);
+          const lift=radius*(.11+(i%5)*.025+drift*(outer?.13:.32));
+          put(p,size,size*(outer?.67:.88),1,Math.sin(angle)*offset+breeze,lift,Math.cos(angle)*offset,0,0,0,true);
+          p.material.rotation=reducedMotion?0:(i%2?1:-1)*(.12+drift*.36);
+          const fadeIn=clamp((seconds-delay)/.62,0,1),fadeOut=clamp((1-t)/(.45+(i%4)*.05),0,1);
+          p.material.opacity=alpha*fadeIn*fadeOut*(reducedMotion?.68:1);
+          p.visible=p.material.opacity>.001;
+          continue;
+        }
         if(phase==='windup'){
           if(style==='moonCrash'){
-            const d=clamp(radius*1.5,7,12),height=reducedMotion?1.8:(1-m*m)*12;
+            const d=clamp(radius*1.5,7,12),ground=this.groundHeight(x,z),base=ground+.05;
             if(i===0){
-              put(p,d,d,1,0,height+.04);
-              p.material.opacity=.32+.68*clamp(t/.25,0,1);
+              const size=d*(reducedMotion?1:.85+.15*this.moonFallProgress(t));
+              if(t>=.12&&!e.pathCamera&&this.camera?.isPerspectiveCamera){
+                e.pathCamera=this.camera.clone();e.pathCamera.updateMatrixWorld();
+              }
+              p.scale.setScalar(size);
+              p.position.copy(this.moonFallPosition(x,base,z,t,e.pathCamera??this.camera));
+              this.turnMoon(p.userData.globe,e.moonYaw,t);
+              p.visible=t>.12; // Natural camera clipping reveals the sphere as it enters.
+              p.material.opacity=1;
             }else if(i===1){
+              this.positionMoonShadow(p,x,z,radius||5,t);
+            }else if(i===2){
               const r=radius||5;
               put(p,r,r,.13,0,.14,0,0,0,-Math.PI/2,true);
             }else{
-              const a=i*2.4,r=d*(.33+(i%3)*.062);
-              put(p,.15,.4+m*1.5,.15,Math.sin(a)*r,height+d*(.48+(i%3)*.23),Math.cos(a)*r,a);
+              const age=p.userData.tail,lag=.01+age*.15,local=t-lag;
+              p.visible=local>.15;
+              const camera=e.pathCamera??this.camera;
+              const tail=this.moonFallPosition(x,base,z,Math.max(0,local),camera),matrix=camera?.matrixWorld.elements;
+              const puffSize=d*(.37+age*.36);
+              p.scale.set(puffSize,puffSize*(.82+age*.22),1);
+              p.position.copy(tail);
+              if(matrix){
+                const right=(i%2?1:-1)*d*(.28+age*.13)*(reducedMotion?1:.8+.2*Math.sin(t*3+i));
+                const lift=d*(.33+age*.32);
+                p.position.addScaledVector(new THREE.Vector3(matrix[0],matrix[1],matrix[2]),right);
+                p.position.addScaledVector(new THREE.Vector3(matrix[4],matrix[5],matrix[6]),lift);
+              }
+              p.material.rotation=reducedMotion?0:(i%2?1:-1)*(.3+age*.45);
+              p.material.opacity=alpha*clamp((local-.15)/.10,0,1)*(1-age*.62)*(reducedMotion?.65:1);
             }
           }else{
             const a=k*tau+(style==='seal'?m*1.4:3*m),r=(style==='seal'?1.60:2.15)*(1-m*.70);
@@ -995,13 +1268,42 @@
             put(p,.10,.10,.28,side,1.02+(i%3-1)*.17,front,side,.19);break;
           }
           case 'moonCrash': {
-            const r=radius*(.30+.70*Math.sin(m*Math.PI*.5));
+            const a=i*2.39996,blast=reducedMotion?.48:1-(1-m)**3;
             if(i<2){
-              const r1=r*(i?.72:1);
-              put(p,r1,r1,.22,0,.11+i*.20,0,0,0,-Math.PI/2,true);
+              const r=radius*(.16+blast*.9)*(i?.72:1);
+              put(p,r,r,.23,0,.16+i*.22,0,0,0,-Math.PI/2,true);
+              p.material.opacity=alpha*(1-t)**1.8;
+            }else if(p.name==='moon-impact-contact'){
+              const d=clamp(radius*1.5,7,12);
+              const squash=reducedMotion?0:Math.min(m,.14);
+              p.position.set(x,this.groundHeight(x,z)+.05,z);
+              p.scale.set(d*(1+squash*.45),d*(1-squash*2),d*(1+squash*.45));
+              this.turnMoon(p.userData.globe,e.moonYaw,1);
+              p.visible=t<.14;
+              p.material.opacity=alpha*clamp(1-t/.14,0,1);
+            }else if(i<5){
+              const s=radius*((i===3?.19:.13)+blast*(i===3?.48:.3));
+              put(p,s,s*(i===3?.83:.68),s,0,s*.38,0,0,0,0,true);
+              p.material.opacity=alpha*(1-clamp(t/(i===3?.47:.30),0,1))**1.2*(reducedMotion?.62:1);
+            }else if(p.name==='moon-impact-faint-flash'){
+              const time=t*e.duration,start=.028,length=.24;
+              const pulse=clamp((time-start)/.045,0,1)*clamp((start+length-time)/.18,0,1);
+              const s=radius*(reducedMotion?.84:.68+.28*clamp(time/.22,0,1));
+              put(p,s,s,1,0,.64,0,0,0,0,true);
+              p.material.opacity=alpha*pulse*(reducedMotion?.42:1);
+              p.visible=pulse>0;
+            }else if(p.name==='moon-impact-smoke'){
+              const n=i-6,outer=n%3!==0;
+              const r=radius*(.09+blast*(outer?.46+(n%4)*.07:.17));
+              const s=(outer?2.0:2.5)+(n%4)*.24+m*(outer?2.6:3.2);
+              const lift=outer?.48+m*(1.4+(n%3)*.2):.62+m*(3.2+(n%4)*.49);
+              put(p,s,s*.87,1,Math.sin(a)*r,lift,Math.cos(a)*r,a,0,0,true);
+              p.material.rotation=reducedMotion?0:(n%2?1:-1)*(.18+(.36+n%5*.12)*m);
+              p.material.opacity=alpha*clamp(.17+t*8,0,1)*(1-t)**.9*(reducedMotion?.71:1);
             }else{
-              const a=i*2.39996,r1=r*(.59+(i%4)*.09),s=.28+(i%3)*.08+m*.25;
-              put(p,s,s*.79,s*.85,Math.sin(a)*r1,.16+Math.sin(Math.PI*m)*(1.2+(i%4)*.31),Math.cos(a)*r1,a,m,0,true);
+              const r=radius*(.1+m*(.62+(i%4)*.1)),s=.18+(i%4)*.13;
+              put(p,s,s*(1.8-.8*m),s,Math.sin(a)*r,.30+(1.45+(i%5)*.43)*4*m*(1-m),Math.cos(a)*r,a,m*6,0,true);
+              p.material.opacity=alpha*(1-t);
             }
             break;
           }
@@ -1032,9 +1334,335 @@
         }
       }
     }
+    makeDefeatProp(hero) {
+      // Locally centered; polearms lie lengthwise along Z. Every piece shares the
+      // view's primitives, but owns its finish so the whole prop can be faded out.
+      const group=new THREE.Group();
+      group.name='defeat-prop:'+hero;
+      const palette=new Map();
+      function part(geometry,color,x,y,z,sx,sy,sz,rx=0,ry=0,rz=0){
+        if(!palette.has(color))palette.set(color,new THREE.MeshLambertMaterial({color,flatShading:true,transparent:true}));
+        const object=new THREE.Mesh(this.geometries[geometry],palette.get(color));
+        object.position.set(x,y,z);object.rotation.set(rx,ry,rz);object.scale.set(geometry==='cylinder'?sx*.5:sx,sy,geometry==='cylinder'?sz*.5:sz);
+        group.add(object);return object;
+      }
+      const model=part.bind(this);
+      const box=(...a)=>model('box',...a);
+      const bar=(color,x1,z1,x2,z2,w,h,y=0)=>{
+        box(color,(x1+x2)/2,y,(z1+z2)/2,w,h,Math.hypot(x2-x1,z2-z1),0,Math.atan2(x2-x1,z2-z1));
+      };
+      const poly=(color,x,y,z,w,h,d)=>model('diamond',color,x,y,z,w,h,d);
+      const disk=(color,x,y,z,w,h,d)=>model('cylinder',color,x,y,z,w,h,d);
+      const band=(color,x,y,z,r)=>model('torus',color,x,y,z,r,r,r,Math.PI/2);
+      if(hero==='link'){
+        box('#59487b',0,0,-.64,.16,.13,.42);
+        box('#ba944f',0,0,-.91,.17,.14,.12);
+        box('#5e587d',0,0,-.42,.57,.16,.16);
+        bar('#9d8cb2',-.29,-.40,-.42,-.65,.10,.10,.01);
+        bar('#9d8cb2',.29,-.40,.42,-.65,.10,.10,.01);
+        box('#9aabba',0,0,.18,.22,.095,1.06);
+        box('#dbe7d9',0,.053,.20,.10,.026,.98);
+        poly('#bfced0',0,0,.76,.11,.049,.23);
+      }else if(hero==='zelda'){
+        const outline=[[-.15,-.85],[.22,-.67],[.43,-.36],[.52,0],[.43,.36],[.22,.67],[-.15,.85]];
+        for(let i=1;i<outline.length;i++){
+          const [a,b]=outline[i-1],[c,d]=outline[i];
+          bar(i%2?'#c98d46':'#e8b763',a,b,c,d,.13,.11);
+          bar('#f0d18a',a,b,c,d,.046,.022,.069);
+        }
+        bar('#d4c8aa',-.15,-.85,-.15,.85,.022,.035);
+        box('#9b6742',.49,0,0,.15,.135,.25);
+        for(const z of [-.86,.86])poly('#f1e4ae',-.15,0,z,.105,.08,.12);
+      }else if(hero==='midna'){
+        const stone=poly('#383047',0,0,0,.52,.18,.68);stone.rotation.y=.30;
+        poly('#514362',-.21,.07,-.08,.23,.13,.41);
+        poly('#71c1ad',.16,.19,.13,.23,.027,.26);
+        poly('#acd8c5',.16,.218,.13,.10,.021,.12);
+        bar('#654e76',-.35,.24,.08,-.31,.068,.043,.12);
+        bar('#7fb0a6',-.40,-.10,-.24,-.33,.056,.044,.11);
+      }else if(hero==='tetra'){
+        bar('#425a7c',0,-.39,.02,.21,.18,.12);
+        bar('#a9b9bf',.02,.16,.10,.50,.21,.09);
+        bar('#e8dec4',.05,.24,.12,.48,.07,.035,.065);
+        poly('#b7c8c6',.16,0,.60,.12,.052,.23);
+        box('#513f3a',-.02,0,-.59,.135,.12,.40);
+        box('#d3a867',0,0,-.40,.33,.14,.11);
+        bar('#bf8d4e',-.17,-.40,-.17,-.65,.065,.08);
+        bar('#b7844c',-.17,-.65,-.065,-.77,.075,.08);
+      }else if(hero==='sheik'){
+        poly('#a5bac3',0,0,.30,.205,.068,.56);
+        poly('#e0e7d4',0,.04,.33,.079,.035,.38);
+        bar('#544659',0,-.23,0,-.72,.14,.12);
+        for(const z of [-.30,-.44,-.58])box('#9c5453',0,.065,z,.153,.034,.051);
+        band('#a0a49d',0,0,-.79,.11);
+      }else if(hero==='skullkid'){
+        const horn=[[-.30,-.56],[-.43,-.19],[-.32,.16],[-.10,.39],[.22,.61],[.40,.65]];
+        for(let i=1;i<horn.length;i++){
+          const [a,b]=horn[i-1],[c,d]=horn[i];
+          bar(i%2?'#a88342':'#cba451',a,b,c,d,.105+i*.046,.15+i*.018);
+          bar('#e3bc60',a,b,c,d,.032+i*.019,.045,.077+i*.009);
+        }
+        model('cylinder','#86613b',.39,0,.65,.39,.10,.39,Math.PI/2,0,-.43);
+        model('cylinder','#584638',.43,0,.71,.24,.035,.24,Math.PI/2,0,-.43);
+        poly('#e0c46a',-.29,.03,-.60,.11,.09,.13);
+      }else if(hero==='saria'){
+        model('lowSphere','#c69863',0,0,.03,.40,.19,.54);
+        model('sphere','#e4bf82',-.03,.08,.12,.35,.13,.39);
+        bar('#bb8656',.14,.00,.36,-.39,.25,.17,.01);
+        box('#e3bc81',.36,.05,-.37,.19,.12,.16,0,.36);
+        for(const [x,z] of [[-.16,-.06],[0,-.065],[-.13,.13],[.045,.14],[-.08,.30]]){
+          disk('#685142',x,.205,z,.065,.028,.065);
+        }
+      }else if(hero==='darunia'){
+        box('#3e3333',0,0,-.40,.22,.19,1.07);
+        box('#756253',0,.10,-.31,.095,.033,.81);
+        box('#ad8757',0,0,-.93,.24,.22,.13);
+        model('cylinder','#33323c',0,0,.35,.78,1.02,.78,0,0,Math.PI/2);
+        for(const x of [-.45,.45]){
+          model('cylinder','#8e7662',x,0,.35,.81,.09,.81,0,0,Math.PI/2);
+          model('cylinder','#a9a5a5',x*1.17,0,.35,.70,.08,.70,0,0,Math.PI/2);
+          model('cylinder','#cfc4b6',x*1.25,0,.35,.53,.035,.53,0,0,Math.PI/2);
+        }
+      }else if(hero==='impa'){
+        box('#654a3d',0,0,-.74,.14,.13,.56);
+        for(const z of [-.97,-.83,-.69,-.55])box('#af875d',0,.065,z,.16,.045,.054);
+        disk('#b89b60',0,0,-.42,.51,.10,.52);
+        box('#73899b',0,0,.14,.34,.13,1.09);
+        box('#b7c8c9',0,.072,.16,.27,.035,1.04);
+        bar('#e6e5d2',-.14,-.38,-.14,.61,.049,.032,.078);
+        poly('#a7bac1',0,0,.70,.17,.071,.22);
+        band('#ecd29b',0,.066,-.42,.15);
+      }else if(hero==='ruto'){
+        poly('#407d9d',0,0,0,.48,.12,.69);
+        poly('#76c5c3',-.02,.105,.05,.35,.048,.49);
+        poly('#b0e6d9',-.04,.152,.13,.20,.017,.30);
+        for(const bias of [-1,1]){
+          bar('#438c9c',0,-.32,bias*.24,-.09,.048,.027,.133);
+          bar('#61a9b0',0,-.06,bias*.20,.19,.044,.025,.147);
+        }
+      }else if(hero==='nabooru'){
+        disk('#9d623e',0,0,0,1.07,.15,1.07);
+        disk('#ddab61',0,.08,0,.91,.06,.91);
+        band('#ecc981',0,.12,0,.45);
+        for(const n of [0,1,2]){
+          const a=n*2.094395,x=Math.sin(a)*.17,z=Math.cos(a)*.17;
+          const symbol=poly('#9b6045',x,.14,z,.09,.015,.23);symbol.rotation.y=a;
+        }
+        poly('#e9c978',0,.16,0,.10,.03,.12);
+      }
+      group.userData.materials=[...palette.values()];
+      return group;
+    }
+    defeatBodyPosition(scene,t){
+      const {spec,originX,originZ,facing,fallHeight}=scene;
+      const [side,forward,turn,recoil]=spec.body,land=spec.contact;
+      const u=clamp(t/land,0,1),rise=u*u*(3-2*u);
+      const skid=clamp((t-land)/.22,0,1),slide=(1-(1-skid)**3);
+      const scale=reducedMotion?.57:1;
+      const lateral=scale*(side*(rise+.14*slide)+recoil*Math.sin(Math.PI*u)*.24);
+      const advance=scale*(forward*(rise+.18*slide)-recoil*Math.sin(Math.PI*u)*.38);
+      const x=clamp(originX+Math.cos(facing)*lateral+Math.sin(facing)*advance,-scene.limit,scene.limit);
+      const z=clamp(originZ-Math.sin(facing)*lateral+Math.cos(facing)*advance,-scene.limit,scene.limit);
+      const hang=spec.style==='twilight'||spec.style==='fairies'?.31:.12;
+      const drop=clamp((u-hang)/(1-hang),0,1);
+      const height=fallHeight*(1-drop**2.15);
+      const press=clamp(1-Math.abs(t-land-.025)/.085,0,1);
+      return {x,z,ground:this.groundHeight(x,z),height,press,face:facing+turn*rise*scale};
+    }
+    defeatGearPose(e,t){
+      const {gear,spec,facing,originX,originZ,bounds}=e;
+      const [release,land,side,front,spin,hop]=spec.prop,at=Math.max(release,spec.contact*spec.beats[0]);
+      const travel=clamp((t-at)/(land-at),0,1);
+      const bounce=clamp((t-land)/.17,0,1),skid=1-(1-bounce)**2;
+      const limit=e.limit,dropScale=reducedMotion?.77:1,drift=(travel+.15*skid)*dropScale;
+      const slip=gear.userData.offset??0;
+      const lateral=.21+side*drift+slip,forward=.16+front*drift;
+      const x=clamp(originX+Math.cos(facing)*lateral+Math.sin(facing)*forward,-limit,limit);
+      const z=clamp(originZ-Math.sin(facing)*lateral+Math.cos(facing)*forward,-limit,limit);
+      const spinScale=reducedMotion?.31:1;
+      gear.rotation.set(spinScale*(.24*(1-travel)+spin*Math.sin(Math.PI*travel)),facing+travel*spinScale*spin+skid*.25,
+        spinScale*(.42*(1-travel)+.22*Math.sin(Math.PI*bounce)));
+      gear.position.set(x,0,z);
+      gear.updateMatrixWorld(true);
+      bounds.setFromObject(gear);
+      const fall=(1-travel**2.45)*(e.fallHeight+1.12);
+      const spring=hop*Math.sin(Math.PI*bounce)*(reducedMotion?.38:1);
+      gear.position.y=this.groundHeight(x,z)-bounds.min.y+.014+fall+spring;
+      gear.visible=t>=at;
+      for(const material of gear.userData.materials)material.opacity=.98*clamp((1-t)/.13,0,1);
+      const spark=e.gearRipple,beat=clamp((t-land)/.106,0,1);
+      spark.position.set(x,this.groundHeight(x,z)+.044,z);
+      spark.scale.set(.15+beat*.41,.15+beat*.41,.085);
+      spark.rotation.x=-Math.PI/2;
+      spark.material.opacity=(t>=land?1:0)*(1-beat)*(reducedMotion?.34:.75);
+    }
+    defeatFootAnchor(hero,direction,frame){
+      if(!RelicArt.canvas)return 0;
+      const canvas=RelicArt.canvas('hero',hero,direction,frame,'death');
+      const cache=this.defeatAnchors??=new WeakMap();
+      if(cache.has(canvas))return cache.get(canvas);
+      const {width:w,height:h}=canvas,{data}=canvas.getContext('2d').getImageData(0,0,w,h);
+      const seen=new Uint8Array(w*h),q=new Int32Array(w*h);
+      let size=0,lowest=h-1;
+      // Use the largest connected region, so a loose spark never becomes the contact point.
+      for(let i=0;i<w*h;i++){
+        if(seen[i]||data[i*4+3]<128)continue;
+        let first=0,last=1,bottom=0;q[0]=i;seen[i]=1;
+        while(first<last){
+          const j=q[first++],row=Math.floor(j/w),col=j%w;
+          bottom=Math.max(bottom,row);
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+            const x=col+dx,y=row+dy,k=y*w+x;
+            if(x<0||x>=w||y<0||y>=h||seen[k]||data[k*4+3]<128)continue;
+            seen[k]=1;q[last++]=k;
+          }
+        }
+        if(last>size){size=last;lowest=bottom;}
+      }
+      const value=size?clamp((h-1-lowest)/h,0,.77):0;
+      cache.set(canvas,value);return value;
+    }
+    heroDefeatSpec(hero){
+      const plan={
+        link:['sparks','#f4cc89','#91b77f','diamond',.54],
+        zelda:['seal','#fff1b8','#d7a661','diamond',.61],
+        midna:['twilight','#8263a0','#9ed2c2','box',.68],
+        tetra:['spray','#abd9e4','#ec9a7e','lowSphere',.53],
+        sheik:['veil','#dfecdf','#91a0bf','box',.49],
+        skullkid:['fairies','#fff1aa','#d7a3ec','diamond',.65],
+        impa:['steel','#ddf2ff','#d3a879','diamond',.51],
+        saria:['leaves','#b4e487','#fff0a6','diamond',.56],
+        darunia:['stone','#c39855','#f2c585','lowSphere',.55],
+        ruto:['ripple','#a3e2df','#5faeca','lowSphere',.58],
+        nabooru:['spirit','#f0b56f','#c97c8a','diamond',.59],
+      }[hero];
+      if(!plan)return null;
+      const [style,a,b,geometry,contact]=plan;
+      // Body: lateral step, forward step, turn, recoil. Gear: release, contact, side, travel, spin, bounce.
+      const stories={
+        link:[[.27,-.64,-.17,.45],[.13,.35,-.82,.77,4.8,.18],2.08,[.12,.29,.53,.79]],
+        zelda:[[-.17,.24,.12,.12],[.16,.35,.71,.51,2.8,.07],2.26,[.14,.35,.59,.83]],
+        midna:[[-.56,-.69,-.30,.35],[.16,.41,.86,-.87,5.9,.17],2.24,[.18,.40,.68,.83]],
+        tetra:[[.55,1.06,.37,.51],[.09,.27,.82,1.18,6.3,.24],1.96,[.09,.31,.52,.74]],
+        sheik:[[-.64,-.45,-.51,.43],[.10,.27,-.73,1.02,7.0,.11],1.88,[.08,.31,.60,.83]],
+        skullkid:[[.68,-.78,.44,.39],[.11,.39,-.66,1.05,5.2,.29],2.22,[.10,.33,.57,.78]],
+        impa:[[-.22,.60,-.24,.26],[.16,.31,-.59,1.12,2.65,.075],2.05,[.12,.32,.48,.84]],
+        saria:[[-.35,.44,-.13,.31],[.10,.34,.62,.64,4.1,.15],2.13,[.10,.25,.51,.80]],
+        darunia:[[.07,-.52,.17,.24],[.12,.27,.83,.98,2.6,.065],2.24,[.19,.36,.63,.85]],
+        ruto:[[.64,.78,.29,.24],[.16,.35,-.78,.80,5.6,.19],2.23,[.15,.37,.56,.80]],
+        nabooru:[[-.48,.57,-.23,.24],[.12,.32,.88,.55,6.8,.24],2.14,[.13,.34,.52,.84]],
+      };
+      const [body,prop,time,beats]=stories[hero];
+      return {style,colors:[a,b],geometry,contact,time,body,prop,beats};
+    }
+    defeatPoseFrame(hero,age,between=false){
+      const spec=this.heroDefeatSpec(hero);
+      if(!spec)return RelicArt.animationFrame('death',age);
+      const t=clamp(age/spec.time,0,1),land=spec.contact;
+      const knots=[0,...spec.beats.map(b=>b*land),land,land+(1-land)*.30,land+(1-land)*.74];
+      let key=0;
+      while(key+1<knots.length&&t+1e-7>=knots[key+1])key++;
+      if(!between||key===7)return key;
+      return key+((t-knots[key])/(knots[key+1]-knots[key])>=.5?.5:0);
+    }
+    heroDefeatFx(hero,player,limit=64){
+      const spec=this.heroDefeatSpec(hero);
+      if(this.heroDefeat||!spec)return;
+      const root=new THREE.Group(),parts=[],materials=[];
+      root.name='defeat:'+hero;
+      const add=(kind,shape,slot)=>{
+        const material=new THREE.MeshBasicMaterial({color:spec.colors[slot],transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide});
+        const mesh=new THREE.Mesh(this.geometries[shape],material);mesh.name='defeat-'+kind;
+        root.add(mesh);parts.push({mesh,kind});materials.push(material);
+      };
+      for(let i=0;i<(reducedMotion||storage.graphics==='low'?6:12);i++)add('mote',spec.geometry,i%2);
+      add('ground-ring','torus',0);add('ground-ring','torus',1);
+      if(['seal','spirit','fairies','veil'].includes(spec.style)){
+        for(let i=0;i<(spec.style==='spirit'?1:spec.style==='fairies'?2:3);i++)
+          add(spec.style,spec.style==='veil'?'box':'diamond',i%2);
+      }
+      const gear=this.makeDefeatProp(hero);
+      root.add(gear);materials.push(...gear.userData.materials);
+      add('contact-shade','disc',0);
+      add('gear-ripple','torus',1);
+      const gearRipple=parts.pop().mesh;
+      const shade=parts.at(-1).mesh;shade.material.color.set('#141b20');
+      const e={kind:'heroDefeat',mesh:root,parts,materials,time:spec.time,duration:spec.time,spec,gear,gearRipple,
+        originX:player.x,originZ:player.z,fallHeight:(player.y||0)+this.heroHoverLift(hero,this.elapsed||0),
+        facing:player.facing||0,bounds:new THREE.Box3(),limit};
+      const touch=this.defeatBodyPosition(e,spec.contact);e.x=touch.x;e.z=touch.z;
+      this.heroDefeat=e;this.entities.add(root);this.effects.push(e);this.positionHeroDefeat(e,0);return e;
+    }
+    positionHeroDefeat(e,t){
+      const {style,contact}=e.spec,{x,z,facing}=e,slow=reducedMotion;
+      const metal=style==='steel'||style==='sparks',water=style==='ripple'||style==='spray',
+        stone=style==='stone',mist=style==='veil'||style==='twilight',leaf=style==='leaves';
+      this.defeatGearPose(e,t);
+      let rings=0,extra=0;
+      for(let i=0;i<e.parts.length;i++){
+        const {mesh:p,kind}=e.parts[i];
+        if(kind==='contact-shade'){
+          const body=this.defeatBodyPosition(e,t);
+          const spread=clamp(t/contact,0,1);
+          p.position.set(body.x,body.ground+.052,body.z);
+          p.scale.set(.50+spread*.31,.31+spread*.20,1);
+          p.rotation.set(-Math.PI/2,0,body.face);
+          p.material.opacity=.28*clamp(t/.15,0,1)*(.55+spread*.45)*clamp((1-t)/.08,0,1);
+        }else if(kind==='ground-ring'){
+          const n=rings++,local=clamp((t-contact-.05*n)/.34,0,1);
+          const r=(slow?.65:.15+local*.85)*(stone?2.4:water?2.1:1.27)*(n?.81:1);
+          p.scale.set(r,r,.078);p.rotation.x=-Math.PI/2;
+          p.position.set(x,this.groundHeight(x,z)+.065+n*.045,z);
+          p.material.opacity=(t>=contact+.05*n?1:0)*(1-local)*clamp((1-t)/.11,0,1)*(slow?.24:water||stone?.61:.42);
+        } else if(kind!=='mote'){
+          const n=extra++,open=slow?.48:clamp((t-.12)/.62,0,1);
+          const alpha=clamp(t/.15,0,1)*clamp((1-t)/.30,0,1);
+          if(kind==='fairies'){
+            const a=n*Math.PI+open*2.8,r=.48+open*(1.19+n*.25);
+            p.position.set(x+Math.sin(a)*r,this.groundHeight(x,z)+1+open*(1+n*.5),z+Math.cos(a)*r);
+            p.scale.setScalar(.14);p.rotation.y=open*5;p.material.opacity=alpha;
+          }else if(kind==='veil'){
+            p.position.set(x+(n-1)*.44+open*.76,this.groundHeight(x,z)+.52+n*.18+open*.58,z-.5+open*.38);
+            p.scale.set(.48+open*.2,.03,.08);p.rotation.z=.21+n*.12+open*.26;p.material.opacity=.38*alpha;
+          }else{
+            const d=n===0?0:n===1?-.36:.36;
+            p.position.set(x+Math.cos(facing)*d,this.groundHeight(x,z)+1.30+open*.72+(n===0?.30:0),z-Math.sin(facing)*d);
+            p.scale.set(kind==='spirit'?.40:.21,kind==='spirit'?.40:.21,.07);
+            p.rotation.y=facing+open;p.material.opacity=alpha*.73;
+          }
+        }else{
+          const start=(metal||water||stone?contact-.02:.19)+(i%5)*.030;
+          const q=clamp((t-start)/(.57-(i%3)*.049),0,1),u=slow?.5:q;
+          const a=facing+(metal?(i%2?1:-1)*(.30+i*.14):i*2.39996)+(mist?u:0);
+          const r=.24+(i%4)*.13+u*(stone?1.39:metal||water?1.12:.72);
+          const xx=x+Math.sin(a)*r,zz=z+Math.cos(a)*r;
+          const up=(metal||water||stone)?Math.sin(Math.PI*u)*(water?.83:stone?.51:.42):.60+u*(leaf?1.24:.88)+(i%3)*.22;
+          const s=(.078+(i%4)*.025)*(1-q*.36);
+          p.position.set(xx,this.groundHeight(xx,zz)+.12+up,zz);
+          p.scale.set(s*(mist?1.55:1),s*(leaf?.57:metal?1.8:1),s*.86);p.rotation.set(a*.8,u*3+i*.42,a*.73);
+          p.material.opacity=(1-q)**.8*clamp(q/.12,0,1)*clamp((1-t)/.13,0,1)*(slow?.55:.86);
+        }
+      }
+    }
+    heroPoseFrame(action,age,remaining,kind=null,impact=null){
+      const frames=RelicArt.ANIMATIONS?.[action]?.[0];
+      if(reducedMotion&&action==='glide')return 0;
+      const total=age+(remaining||0);
+      if(!frames||!['attack','cast','ultimate','dash','hurt'].includes(action)||!(total>1e-6))
+        return RelicArt.animationFrame(action,age);
+      if(action==='ultimate'&&Number.isFinite(impact)&&impact>0&&impact<total){
+        const key={spin:3,seal:3,fused:4,waterGun:4,harp:3,moonCrash:6,waterBlade:3,goronSlam:6,rutoSurge:3}[kind]??3;
+        // Step onto the authored contact pose at the simulation's actual release/landing time.
+        const frame=age+1e-6<impact?Math.floor(age/impact*key):
+          key+Math.floor(clamp((age-impact)/(total-impact),0,1)*(frames-key));
+        return clamp(frame,0,frames-1);
+      }
+      return clamp(Math.floor(age/total*frames),0,frames-1);
+    }
     heroHoverLift(id,time,groundedEnd=false){
-      if(id!=='skullkid'||groundedEnd)return 0;
-      return .74+(reducedMotion?0:Math.sin((time||0)*2.4)*.11);
+      if(groundedEnd||(id!=='skullkid'&&id!=='midna'))return 0;
+      const midna=id==='midna';
+      return (midna?.56:.74)+(reducedMotion?0:Math.sin((time||0)*(midna?2:2.4))*(midna?.085:.11));
     }
     companionModel(entry){
       const root=new THREE.Group();
@@ -1052,11 +1680,58 @@
       const hover=this.heroHoverLift(entry.hero,game.time);
       root.userData.sprite.position.y=hover;
       root.userData.pip.position.y=2.01+hover;
-      root.userData.sprite.material=RelicArt.material('hero',entry.hero,direction,RelicArt.animationFrame(action,entry.actionAge||0),false,action,entry.attackKind??null);
+      root.userData.sprite.material=RelicArt.material('hero',entry.hero,direction,this.heroPoseFrame(action,entry.actionAge||0,entry.actionTime,entry.attackKind),false,action,entry.attackKind??null);
     }
     syncMap(map,items,create,update) {
       const active=new Set();for(const item of items){active.add(item.id);let mesh=map.get(item.id);if(!mesh){mesh=create(item);map.set(item.id,mesh);}update(mesh,item);}
       for(const [id,mesh] of map)if(!active.has(id)){this.entities.remove(mesh);mesh.userData.ownedMaterial?.dispose();map.delete(id);}
+    }
+    paintedImpactCrater(x,z,size,limit,lip,interior,next,material){
+      // A ground-hugging decal: dark facets and a one-sided highlight imply depth.
+      const radius=.30+size*.33, sides=size>=8?40:size>=4?28:20;
+      const positions=[],colors=[],indices=[],rings=[];
+      const phase=next()*Math.PI*2;
+      const dark=interior.clone().multiplyScalar(.47),shade=interior.clone().lerp(lip,.17);
+      const edges=Array.from({length:sides},(_,i)=>({
+        a:phase+(i+(next()-.5)*.44)*Math.PI*2/sides,
+        width:.84+next()*.29,value:.86+next()*.24,
+      }));
+      // Closely spaced rings keep the decal against uneven outdoor terrain.
+      const bands=[[0,.49],[.57,.38],[.73,.22],[.86,.08],[.94,.10],[1.01,.78],[1.10,.37]];
+      function tone(a,j){
+        const light=Math.max(0,Math.cos(a+2.15));
+        if(j<3)return dark.clone().lerp(shade,bands[j][1]);
+        const facing=1-light;
+        return j===3?dark.clone().lerp(shade,.36*facing)
+          :j===4?interior.clone().lerp(lip,.17*facing)
+          :interior.clone().lerp(lip,bands[j][1]*(.22+.78*light));
+      }
+      const sampleBand=(r,j,k,t)=>{
+        const ids=[];
+        for(const {a,width,value} of edges){
+          const reach=radius*r*width,wx=clamp(x+Math.cos(a)*reach,-limit,limit),wz=clamp(z+Math.sin(a)*reach,-limit,limit);
+          const paint=tone(a,j).lerp(tone(a,k),t).multiplyScalar(1+(value-1)*Math.min(1,r));
+          ids.push(positions.length/3);
+          positions.push(wx,this.groundHeight(wx,wz)+.043,wz);colors.push(paint.r,paint.g,paint.b);
+        }
+        rings.push(ids);
+      };
+      sampleBand(0,0,0,0);
+      for(let j=1;j<bands.length;j++){
+        const r0=bands[j-1][0],r1=bands[j][0],steps=Math.ceil((r1-r0)*radius/.33);
+        for(let k=1;k<=steps;k++)sampleBand(r0+(r1-r0)*k/steps,j-1,j,k/steps);
+      }
+      for(let j=0;j<rings.length-1;j++)for(let i=0;i<sides;i++){
+        const k=(i+1)%sides,a=rings[j][i],b=rings[j][k],c=rings[j+1][i],d=rings[j+1][k];
+        indices.push(a,b,c,b,d,c);
+      }
+      const geometry=new THREE.BufferGeometry();
+      geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+      geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+      geometry.setIndex(indices);
+      const mesh=new THREE.Mesh(geometry,material);
+      mesh.name='shaded-impact-crater';mesh.renderOrder=1;
+      return {mesh,geometry,radius};
     }
     groundCrack({x,z,impactSize,style},delay=0){
       if(![x,z,impactSize].every(Number.isFinite)||impactSize<=0)return;
@@ -1070,10 +1745,11 @@
         this.entities.remove(smallest.mesh);this.disposeEffect(smallest);
         this.effects.splice(this.effects.indexOf(smallest),1);
       }
-      // Uneven splinters follow the ground triangle heights and stay below airborne effects.
+      // Cracks are painted on the floor, with a dark core and offset bevel colors.
       const large=size>=4,lunar=style==='moonCrash'||style==='moonfall';
       const rim=new THREE.Color(lunar?'#9a849b':style==='goronSlam'||style==='hammer'?'#c58f63':'#a8a089');
-      const split=new THREE.Color(lunar?'#251e2c':'#271f1c');
+      const split=new THREE.Color(lunar?'#211928':'#241a17');
+      const shade=split.clone().lerp(rim,.28),edge=split.clone().lerp(rim,.77);
       const positions=[],colors=[],segments=[],reach=size*.82;
       let seed=(Math.round(x*507)^Math.round(z*811)^Math.round(size*500))>>>0;
       const next=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
@@ -1093,12 +1769,14 @@
         }
       };
       const spokes=large?(size>=8?9:7):5,offset=next()*Math.PI*2;
+      const mouth=.30+size*.33;
       for(let i=0;i<spokes;i++){
         const angle=offset+(i+(next()-.5)*.5)*Math.PI*2/spokes;
-        const length=reach*(i===0?1:.60+next()*.40),width=(.048+size*.028)*(.65+next()*.5);
-        let a={x:0,z:0};
+        const length=reach*(i===0?1:.67+next()*.33),width=(.060+size*.037)*(.62+next()*.58);
+        const inner=mouth*(.87+next()*.08);
+        let a={x:Math.cos(angle)*inner,z:Math.sin(angle)*inner};
         for(let j=1;j<=4;j++){
-          const t=j/4,wobble=(next()-.5)*(.38+j*.025),r=length*t;
+          const t=j/4,wobble=(next()-.5)*(.38+j*.025),r=inner+(Math.max(inner+.07,length)-inner)*t;
           const b={x:Math.cos(angle+wobble)*r,z:Math.sin(angle+wobble)*r};
           const w=width*(1-t*.9);
           line(a,b,width*(1-(j-1)/4*.9),w);
@@ -1118,14 +1796,21 @@
           vertex(p,nx*w1*u,nz*w1*u,paint);vertex(p,nx*w1*v,nz*w1*v,paint);vertex(q,nx*w2*u,nz*w2*u,paint);
           vertex(q,nx*w2*u,nz*w2*u,paint);vertex(p,nx*w1*v,nz*w1*v,paint);vertex(q,nx*w2*v,nz*w2*v,paint);
         };
-        band(-.96,-.59,rim);band(-.59,.81,split);
+        const litSide=nx*.55+nz*.83>0;
+        band(-1.45,-.84,litSide?rim:shade);
+        band(-.84,-.56,litSide?edge:shade);
+        band(-.56,.54,split);
+        band(.54,.82,litSide?shade:edge);
+        band(.82,1.35,litSide?shade:rim);
       }
       const geometry=new THREE.BufferGeometry();
       geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
       geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
       const material=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2});
-      const mesh=new THREE.Mesh(geometry,material);mesh.name='terrain-impact-cracks';mesh.renderOrder=1;this.entities.add(mesh);
-      const duration=1.26+size*.28,effect={mesh,geometry,material,kind:'groundCrack',time:duration+delay,duration,size,vertexCount:positions.length/3};
+      const crack=new THREE.Mesh(geometry,material);crack.name='shaded-impact-cracks';crack.renderOrder=2;
+      const crater=this.paintedImpactCrater(x,z,size,limit,rim,split,next,material);
+      const mesh=new THREE.Group();mesh.name='painted-impact-scar';mesh.add(crater.mesh,crack);this.entities.add(mesh);
+      const duration=1.54+size*.33,effect={mesh,geometry,material,crater,kind:'groundCrack',time:duration+delay,duration,size,vertexCount:positions.length/3};
       this.positionGroundCrack(effect);this.effects.push(effect);
       return effect;
     }
@@ -1133,7 +1818,7 @@
       const age=e.duration-e.time;
       e.mesh.visible=age>=-1e-6;
       const progress=reducedMotion?1:clamp(.36+age/(.12+e.size*.016),.36,1);
-      e.geometry.setDrawRange(0,Math.floor(e.vertexCount/12*progress)*12);
+      e.geometry.setDrawRange(0,Math.floor(e.vertexCount/30*progress)*30);
       e.material.opacity=.96*clamp(e.time/.62,0,1);
     }
     ringEffect(x,z,color,radius,duration=.5) {
@@ -1151,18 +1836,20 @@
       const texture=new THREE.CanvasTexture(canvas),material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false});const mesh=new THREE.Sprite(material);mesh.position.set(x,this.groundHeight(x,z)+2,z);mesh.scale.set(2.3,.77,1);this.entities.add(mesh);this.effects.push({mesh,time:.65,duration:.65,kind:'text',texture,material});
     }
     disposeEffect(e){
-      e.texture?.dispose();e.material?.dispose();e.geometry?.dispose();
+      e.texture?.dispose();e.material?.dispose();e.geometry?.dispose();e.crater?.geometry.dispose();
       for(const material of e.materials||[])material.dispose();
+      for(const geometry of e.ownedGeometry||[])geometry.dispose();
     }
     clearDynamic() {
-      for(const mesh of this.projectiles.values())mesh.userData.ownedMaterial?.dispose();this.clearGroup(this.entities);for(const map of [this.enemies,this.companions,this.projectiles,this.shards,this.hazards,this.loot])map.clear();this.orbits=[];this.lockRing=null;for(const e of this.effects)this.disposeEffect(e);this.terminalAge=0;this.effects=[];this.ultimateCues=[];
+      for(const mesh of this.projectiles.values())mesh.userData.ownedMaterial?.dispose();this.clearGroup(this.entities);for(const map of [this.enemies,this.companions,this.projectiles,this.shards,this.hazards,this.loot])map.clear();this.orbits=[];this.lockRing=null;for(const e of this.effects)this.disposeEffect(e);this.terminalAge=0;this.heroDefeat=null;this.effects=[];this.ultimateCues=[];
     }
     resize() { this.renderer.setSize(innerWidth,innerHeight);this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix(); }
     titlePose(time) {
-      this.hero.position.set(0,0,0);this.hero.rotation.y=-.35;this.heroRig.position.y=this.heroHoverLift(this.heroId,time)+(this.heroId!=='skullkid'&&!reducedMotion?Math.sin(time*1.7)*.025:0);this.heroSprite.material=RelicArt.material('hero',this.heroId,0,RelicArt.animationFrame('idle',time),false,'idle');this.heroSprite.material.opacity=1;this.updateGlideRig(this.glider,false,time,reducedMotion);
+      this.hero.position.set(0,0,0);this.hero.rotation.y=-.35;this.heroSprite.center.y=0;this.heroSprite.scale.set(2.66,2.66,1);this.heroRig.position.y=this.heroHoverLift(this.heroId,time)+(!['skullkid','midna'].includes(this.heroId)&&!reducedMotion?Math.sin(time*1.7)*.025:0);this.heroSprite.material=RelicArt.material('hero',this.heroId,0,RelicArt.animationFrame('idle',time),false,'idle');this.heroSprite.material.opacity=1;this.updateGlideRig(this.glider,false,time,reducedMotion);
       const mobile=innerWidth<700;
       const target=new THREE.Vector3(mobile?-3.3:-5.9,0,mobile?1.6:5.6);this.camera.position.set(16,17,19);this.camera.lookAt(target);
       this.hero.scale.setScalar(mobile?1.7:1.7);
+      if(this.navi){this.naviPose(this.navi,time);this.navi.rotation.y=Math.atan2(16,19)-this.hero.rotation.y;}
     }
     render(game,dt,time) {
       const terminal=game&&['won','lost'].includes(game.state);
@@ -1179,29 +1866,49 @@
         if(this.ultimateCues.length){
           this.ultimateCues=this.ultimateCues.filter(cue=>{
             if(cue.at>time)return true;
-            const p=game.player,targeted=cue.event.phaseStyle==='moonCrash';
-            this.ultimateEffect(targeted?cue.event:{...cue.event,x:p.x,z:p.z},undefined,targeted?undefined:p);return false;
+            const p=game.player;
+            this.ultimateEffect({...cue.event,x:p.x,z:p.z},undefined,p);return false;
           });
         }
-        const p=game.player;this.hero.scale.setScalar(1);this.hero.position.set(p.x,p.y+(p.ground||0),p.z);
+        const p=game.player,lost=game.state==='lost',deathAge=this.terminalAge||0;
+        if(lost&&!endingShown)this.heroDefeatFx(game.hero,p,game.arenaLimit-.4);
+        const dead=this.heroDefeat,deathProgress=dead?clamp(deathAge/dead.duration,0,1):0;
+        const landed=lost&&dead?this.defeatBodyPosition(dead,deathProgress):null;
+        const fall=landed?landed.height:p.y,ground=landed?landed.ground:(p.ground||0);
+        this.hero.scale.setScalar(1);this.hero.position.set(landed?.x??p.x,fall+ground,landed?.z??p.z);
         const moving=Math.hypot(p.x-this.lastPlayer.x,p.z-this.lastPlayer.z)>.001;this.lastPlayer={x:p.x,z:p.z};
         const walking=moving&&p.y===0&&game.state==='running';
         let action=terminal?(game.state==='won'?'victory':'death'):p.gliding&&['glide','jump','walk','idle'].includes(p.action)?'glide':p.action||(walking?'walk':'idle');
         if(action==='glide'&&game.hero!=='link'&&game.hero!=='midna')action='jump';
         const age=terminal?(this.terminalAge||0):p.actionAge;
-        const aimed=(action==='attack'||action==='cast'||action==='ultimate')&&p.actionTime>0&&Number.isFinite(p.attackFacing),facing=aimed?p.attackFacing:p.facing;
+        const aimed=(action==='attack'||action==='cast'||action==='ultimate')&&p.actionTime>0&&Number.isFinite(p.attackFacing),facing=landed?landed.face:aimed?p.attackFacing:p.facing;
         const angle=facing-this.hero.rotation.y;this.hero.rotation.y+=Math.atan2(Math.sin(angle),Math.cos(angle))*Math.min(1,dt*13);
-        const hover=this.heroHoverLift(game.hero,time,action==='death');
-        this.heroRig.position.y=hover+(walking&&game.hero!=='skullkid'&&!reducedMotion?Math.abs(Math.sin(time*14))*.035:0);
+        const hover=lost?0:this.heroHoverLift(game.hero,time);
+        this.heroRig.position.y=hover+(walking&&game.hero!=='skullkid'&&game.hero!=='midna'&&!reducedMotion?Math.abs(Math.sin(time*14))*.035:0);
         this.updateGlideRig(this.glider,!terminal&&!!p.gliding,time,reducedMotion);this.hero.visible=true;
-        this.heroShadow.position.set(p.x,p.ground||0,p.z);this.heroShadow.scale.setScalar(Math.max(.3,1-p.y*.08-hover*.11));
-        const zoom=innerWidth<600?1.12:1,range=this.distance*zoom;const camPos=new THREE.Vector3(p.x+Math.sin(this.yaw)*Math.cos(this.pitch)*range,Math.sin(this.pitch)*range+(p.ground||0),p.z+Math.cos(this.yaw)*Math.cos(this.pitch)*range);camPos.y=Math.max(camPos.y,this.groundHeight(camPos.x,camPos.z)+.85);this.camera.position.lerp(camPos,1-Math.exp(-6*dt));this.camera.position.y=Math.max(this.camera.position.y,this.groundHeight(this.camera.position.x,this.camera.position.z)+.85);this.cameraTarget.lerp(new THREE.Vector3(p.x,.4+(p.ground||0),p.z),1-Math.exp(-8*dt));
+        this.heroShadow.position.set(this.hero.position.x,ground,this.hero.position.z);
+        this.heroShadow.scale.setScalar(Math.max(.3,1-fall*.08-hover*.11));
+        const focus=landed??(lost?p:this.moonCameraFocus(p)),zoom=innerWidth<600?1.12:1;
+        const cameraBeat=lost&&!reducedMotion?1-(1-deathProgress)**2:0,range=this.distance*zoom*(1-.21*cameraBeat);
+        const yaw=this.yaw+cameraBeat*(dead?.spec.body[0]<0?-.16:.16),pitch=Math.max(.20,this.pitch-.10*cameraBeat);
+        const camPos=new THREE.Vector3(focus.x+Math.sin(yaw)*Math.cos(pitch)*range,Math.sin(pitch)*range+ground,focus.z+Math.cos(yaw)*Math.cos(pitch)*range);
+        camPos.y=Math.max(camPos.y,this.groundHeight(camPos.x,camPos.z)+.85);
+        this.camera.position.lerp(camPos,1-Math.exp(-6*dt));
+        this.camera.position.y=Math.max(this.camera.position.y,this.groundHeight(this.camera.position.x,this.camera.position.z)+.85);
+        this.cameraTarget.lerp(new THREE.Vector3(focus.x,.4+this.groundHeight(focus.x,focus.z),focus.z),1-Math.exp(-8*dt));
         if(!reducedMotion&&this.shake>0){this.camera.position.x+=(Math.random()-.5)*this.shake;this.camera.position.z+=(Math.random()-.5)*this.shake;this.shake*=Math.exp(-8*dt);}
         this.camera.lookAt(this.cameraTarget);this.camera.updateMatrixWorld();
-        const cameraHeading=Math.atan2(this.camera.position.x-p.x,this.camera.position.z-p.z),direction=BonkCamera.direction(facing,cameraHeading);
-        const poseAge=action==='ultimate'&&game.hero==='darunia'&&age<.92?Math.min(7/9-.0001,age*.90):age;
-        this.heroSprite.material=RelicArt.material('hero',this.heroId,direction,RelicArt.animationFrame(action,reducedMotion&&action==='glide'?0:poseAge),p.action==='hurt',action,(action==='attack'||action==='cast')?p.attackKind:null);
-        this.heroSprite.material.opacity=p.invincible>0&&p.dash<=0?.65+Math.abs(Math.sin(time*15))*.35:1;
+        const cameraHeading=Math.atan2(this.camera.position.x-this.hero.position.x,this.camera.position.z-this.hero.position.z);
+        const direction=BonkCamera.direction(facing,cameraHeading);
+        const frame=lost?this.defeatPoseFrame(game.hero,age,true):this.heroPoseFrame(action,age,p.actionTime,p.attackKind,p.actionImpact);
+        this.heroSprite.center.y=lost?this.defeatFootAnchor(game.hero,direction,frame):0;
+        this.heroSprite.scale.set(2.66,2.66,1); // Articulated cels, not whole-sprite squash.
+        if(this.navi){
+          this.naviPose(this.navi,time+(lost?deathAge:0),lost?deathAge:null);
+          this.navi.rotation.y=cameraHeading-this.hero.rotation.y;
+        }
+        this.heroSprite.material=RelicArt.material('hero',this.heroId,direction,frame,p.action==='hurt',action,(action==='attack'||action==='cast')?p.attackKind:null);
+        this.heroSprite.material.opacity=lost?1-.14*clamp((deathProgress-.87)/.13,0,1):(p.invincible>0&&p.dash<=0?.65+Math.abs(Math.sin(time*15))*.35:1);
         this.sun.position.set(p.x-17,35+(p.ground||0),p.z+12);this.sun.target.position.set(p.x,p.ground||0,p.z);
         this.syncMap(this.companions,game.companions||[],c=>this.companionModel(c),(m,c)=>this.companionPose(m,c,game));
         this.syncMap(this.enemies,game.enemies.filter(e=>!e.dead),e=>this.enemyModel(e),(m,e)=>this.enemyPose(m,e,game,time));
@@ -1243,13 +1950,21 @@
         else if(e.kind==='shadowStrike')this.positionShadowStrike(e,t);
         else if(e.kind==='companionShot')this.positionCompanionShot(e,t);
         else if(e.kind==='canonParticle')this.positionCanonParticle(e,t);
+        else if(e.kind==='heroDefeat'){
+          this.positionHeroDefeat(e,t);
+          if(t>=e.spec.prop[1]&&!e.gearLanded){e.gearLanded=true;sound(e.spec.style==='stone'?'slam':'defeatProp');}
+        }
         else if(e.kind==='groundCrack')this.positionGroundCrack(e);
-        else if(e.kind==='ultimateSignature')this.positionUltimateStage(e,t);
+        else if(e.kind==='ultimateSignature'){
+          const phaseTime=Number.isFinite(e.startTime)?clamp((time-e.startTime)/e.duration,0,1):t;
+          if(Number.isFinite(e.startTime)&&e.mesh.visible)e.time=e.startTime+e.duration+.08-time;
+          this.positionUltimateStage(e,phaseTime);
+        }
       }
       this.effects=this.effects.filter(e=>{if(e.time>0)return true;this.entities.remove(e.mesh);this.disposeEffect(e);return false;});
       this.windClock.value=time;this.windStrength.value=reducedMotion||storage.graphics==='low'?0:1;if(this.windmill)this.windmill.rotation.z=reducedMotion?0:time*.25;this.updateBillboards();
       this.renderer.render(this.scene,this.camera);
-      if(game){const projected=new THREE.Vector3(game.player.x,game.player.y+(game.player.ground||0)-.25,game.player.z);projected.project(this.camera);$('player-health').style.left=((projected.x*.5+.5)*innerWidth)+'px';$('player-health').style.top=((-projected.y*.5+.5)*innerHeight)+'px';}
+      if(game){$('player-health').hidden=game.state==='lost';const projected=new THREE.Vector3(game.player.x,game.player.y+(game.player.ground||0)-.25,game.player.z);projected.project(this.camera);$('player-health').style.left=((projected.x*.5+.5)*innerWidth)+'px';$('player-health').style.top=((-projected.y*.5+.5)*innerHeight)+'px';}
     }
   }
 
@@ -1585,7 +2300,15 @@
       }
       if(event.type==='bossPhase'){toast(event.name+' · Phase '+event.stage);view.ringEffect(event.x,event.z,BOSSES[event.id].color,4,.65);}
       if(event.type==='level')upgradeReadyAt=Math.max(upgradeReadyAt,titleTime+.12);
-      if(event.type==='groundImpact'){view.groundCrack(event);sound('slam');continue;}
+      if(event.type==='groundImpact'){
+        view.groundCrack(event);
+        if(event.style==='moonCrash'){
+          view.moonImpact({...event,radius:HEROES.skullkid.ultimateRadius});
+          view.moonFlash={at:titleTime,x:event.x,z:event.z};
+          view.shake=reducedMotion?0:.72;sound('moonImpact');
+        }else sound('slam');
+        continue;
+      }
       if(event.impactSize&&(event.type==='slam'||event.type==='explosion'))view.groundCrack(event);
       if(event.type==='goronImpact'){
         view.groundCrack({...event,style:'goronSlam'});
@@ -1595,12 +2318,16 @@
         view.ultimateEffect(event,game.time,game.player);toast(event.name+'!');
         sound(event.sceneOnly?'shrine':event.phaseStyle==='waterGun'?'shoot':event.phaseStyle==='goronSlam'?'jump':event.phaseStyle==='moonCrash'?'warning':'nova');continue;
       }
-      if(event.type==='end'){prepareOutcome(game);endReadyAt=titleTime+1.2;sound(event.won?'victory':'end');}
+      if(event.type==='end'){prepareOutcome(game);endReadyAt=titleTime+(event.won?1.2:view.heroDefeatSpec(game.hero)?.time??2.35);sound(event.won?'victory':'end');}
       else sound(event.type);
     }
     if(game.state==='upgrade'&&titleTime>=upgradeReadyAt&&!currentDialog())showUpgrade();
     if(game.state==='map-clear'&&!mapActionBusy)showMapClear();
-    if(['won','lost'].includes(game.state)&&!endingShown){if(!endReadyAt){prepareOutcome(game);endReadyAt=titleTime+1.2;}if(titleTime>=endReadyAt&&!lastOutcome?.pending)showEnd();}
+    if(['won','lost'].includes(game.state)&&!endingShown){
+      const loss=game.state==='lost',wait=loss?(view.heroDefeatSpec(game.hero)?.time??2.35):1.2;
+      if(!endReadyAt){prepareOutcome(game);endReadyAt=titleTime+wait;}
+      if(titleTime>=endReadyAt&&(!loss||(view.terminalAge||0)>=wait)&&!lastOutcome?.pending)showEnd();
+    }
   }
   function held(action,alternate){return keys.has(storage.bindings[action])||(!Object.values(storage.bindings).includes(alternate)&&keys.has(alternate));}
   function frame(ms){
@@ -1612,6 +2339,16 @@
       handleEvents();hudTime+=elapsed;if(hudTime>.08){updateHud();saveCheckpoint();hudTime=0;}const flash=Number($('damage-flash').style.opacity)||0;if(flash>0)$('damage-flash').style.opacity=Math.max(0,flash-elapsed*2.7);
     }
     view.render(game,dt,titleTime);
+    const burst=view.moonFlash,overlay=$('moon-flash');
+    if(overlay){
+      const age=burst?titleTime-burst.at:Infinity;
+      if(game&&burst&&age<.20){
+        const hit=new THREE.Vector3(burst.x,view.groundHeight(burst.x,burst.z)+.7,burst.z).project(view.camera);
+        overlay.style.setProperty('--flare-x',clamp((hit.x*.5+.5)*100,0,100)+'%');
+        overlay.style.setProperty('--flare-y',clamp((.5-hit.y*.5)*100,0,100)+'%');
+        overlay.style.opacity=view.moonFlashOpacity(age);
+      }else if(burst){overlay.style.opacity=0;view.moonFlash=null;}
+    }
   }
   function applyPreferences(){mouseEdgeX=null;soundEnabled=storage.sound;reducedMotion=systemMotion.matches||storage.motion==='reduced';updateSoundButton();view?.applySettings();updateControlHints();}
   const keyName=code=>code==='ShiftLeft'||code==='ShiftRight'?'Shift':code.replace(/^(Key|Digit|Arrow)/,'');
