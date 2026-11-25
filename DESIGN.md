@@ -307,7 +307,7 @@ Porcelain identity and timer panels pair with the circular minimap, following he
 
 Eight rounded map cards replace the earlier circular-node diagram. Each card shows a map icon, location name, status, and three numbered stage chips. Current-map outline, active-stage color, completed-stage color, and text provide separate cues. Menu cards preview maps. Adventure cards retain three numbered enemy-level chips and show the separate final boss beneath them; later maps say Locked until their turn. The objective distinguishes the third wave, boss encounter, and cleared-map transition. Adventure pauses at per-map results after each guardian; Continue advances the story, and Main Menu preserves the result checkpoint. Survival uses a single map selected at the title screen. There are no in-run map portals. Progression restrictions appear in instructions.
 
-The maps are Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. They remain authored arena interpretations, not complete canonical Zelda maps.
+The maps are Kokiri Forest, Zora’s Fountain, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. They remain authored arena interpretations, not complete canonical Zelda maps.
 
 ### Settings and key binding
 

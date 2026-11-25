@@ -1,61 +1,42 @@
-# Deploy Zelabonk with GitHub and Vercel (Windows)
+# Deploy ZeldaBonk: Enemy and Boss Animations
 
-This ZIP contains the game source, including the landmark arenas, separate maps without portals, the hero and enemy animation overhaul, the Adventure map-results screen, the unlockable Ocarina of Time allies, reference-based moves, and Adventure companions. GitHub stores the source. Vercel serves the static browser game. The optional local backend is not deployed by these steps.
+## On Windows: GitHub in the browser
 
-## 1. Open or clone your existing GitHub repo
+1. Extract `Zelabonk-Enemy-Animations.zip`, then open its `Zelabonk` folder.
+2. Open [Adonissimo/zelabonk-](https://github.com/Adonissimo/zelabonk-) and select `main`. At the repository root, choose **Add file → Upload files**.
+3. If your repo has **Minimap Zoom**, upload only `app.js` and `art.js`. If you have **Wider Realms and Minimap**, upload `app.js`, `art.js`, `index.html`, and `styles.css`. If your repo has **Ruto Swimming** or **Water Movement**, upload `app.js`, `art.js`, `core.js`, `index.html`, `kokiri-deku-tree.js`, `kokiri-pixel-floor.js`, `minimap.js`, `profile.js`, `styles.css`, and `terrain.js`. If you have **Lord Jabu-Jabu**, **Zora’s Fountain and Ally Proportions**, or **Great Deku Tree 3D**, also upload `companions.js`. If older or unsure, compare your repo and upload the extracted project contents, not the ZIP or the outer folder. Preserve independent edits.
+4. Commit message: `Improve mob and boss animations`. Create branch `update/enemy-animations`, propose the changes, and open a pull request into `main`. Check that `index.html` and `vercel.json` are still at the repo root.
 
-If you already have a local clone, open **PowerShell in that repo**. Otherwise:
+## On Vercel
 
-```powershell
-git clone https://github.com/Adonissimo/zelabonk-.git
-cd zelabonk-
-```
+Keep the existing project if it already tracks this GitHub repository. Open the branch **Preview** for a playtest. After merging, check **Deployments** for the **Production** deployment on `main` to be **Ready** before testing the live site. Preview and Production have separate browser saves.
 
-Check the remote and working tree before copying anything:
+For a new project, import the repo at its root. The included `vercel.json` uses the **Other** preset, skips install/build, and uses `.` as output. The static game needs no environment variables. The optional multiplayer backend is separate.
 
-```powershell
-git remote -v
-git status -sb
-git switch main
-git pull --ff-only origin main
-git log -5 --oneline
-```
+## Enemy animation smoke test
 
-The remote should be `Adonissimo/zelabonk-`. If `git status` shows local changes, save or commit them before proceeding. If `git pull --ff-only` refuses to run, stop rather than forcing a push. This ZIP was based on `b800ee2`; if your repo has commits after that, compare the files before replacing them so you keep your newer work.
+In Training Grounds, spawn a few different enemies and a boss. Watch their movement, attack tell, strike and hit recoil. Defeat Keese to see it fold its wings and fall; ChuChu flattens into a puddle. Gohma tucks her legs and collapses; Morpha splashes apart, and Colgera fractures into icy pieces. Reduced Motion uses shorter, quieter defeats. See the [sprite preview](ENEMY-MOTION-PREVIEW.png). Hitboxes, attack timing, stats and rewards were not changed.
 
-## 2. Copy, test, then push
+## Earlier quick smoke tests
 
-1. Extract the ZIP somewhere **outside** the clone. Open the extracted `Zelabonk` folder.
-2. Copy the **contents** of that folder (including `.vercelignore`) into the clone. Keep the clone’s existing hidden `.git` folder. Confirm `index.html` and `vercel.json` are at the repo root, not one level down. Do not commit the ZIP, `node_modules`, `.env`, or `.local-data`.
-3. To try it locally, run `npm start` from the repo and open [http://127.0.0.1:4173](http://127.0.0.1:4173). You do not need to install packages to run the browser game. Stop the local server with Ctrl+C.
+0. Resize the title window to laptop height and portrait phone sizes. Confirm the world fills the viewport, no gold title-menu scrollbar appears, and the last Training Grounds button stays reachable, including when Continue adventure is available. Journal and settings still scroll internally when needed.
+1. In Training Grounds, choose **Zora’s Fountain** and play as **Ruto**. Walk off the dry causeway into a pool. Her arms stay by her sides; a wave rolls through her body and both fins kick together. Stop to tread water. Dry ground, attacks, and jumps keep their usual animation. Water speed and wake are unchanged. Pan the camera to her side to see the silhouette best. See the [animated sprite preview](RUTO-MERMAID-PREVIEW.gif) and [offline scene comparison](RUTO-SWIMMING-PREVIEW.png).
+2. On desktop, left-click the middle of the arena. The cursor should disappear and mouse look should keep turning at the edge. Press **Esc**: the cursor returns and gameplay pauses. Resume and click again. If capture is blocked or you prefer a visible cursor, use **Settings → Mouse look → Free cursor**. Touch still swipes to look.
+3. Start Adventure in **Kokiri Forest** or use **Training Grounds** to try another realm. All eight outdoor realms are now 184 units wide instead of 128, with an outer trail network. Follow a path beyond the old boundary. The physical wall still stops you. The bridge and lookout paths remain walkable. Reach the Great Deku Tree’s mouth after level 1-3 and check that it still opens onto the original boss route.
+4. Watch **Local map** during a run. It stays north-up, follows your position on the map, and has distinct pixel icons for player, allies, landmark, shrine and boss. Clear a wave to reveal the next objective marker. After Kokiri 1-3, it guides you up the Deku Trail, then switches to the root tunnel and marks Gohma when the fight starts. Press **M** (or tap **Zoom map**) for a larger map; repeat to shrink it. Gameplay and mouse lock continue, and all markers and the north-up view remain. The full realm overview is still under **Pause → Realm map**. See the [offline minimap preview](MINIMAP-PREVIEW.png).
 
-```powershell
-node --test "tests/*.test.cjs"
-git status --short
-git diff --stat
-git add -A
-git diff --cached --name-status
-git commit -m "Add landmark guardians and improve hero combat"
-git push origin main
-git rev-parse --short HEAD
-```
+## Earlier features to check
 
-Review the staged list before committing. Save the short commit ID printed by the last command.
+1. Start solo Adventure as Link. Follow the fork through the stump homes, then walk west across the creek bridge without jumping. It should raise Link smoothly above the water and back down. Pan around a stump house: the roof rings, door, and windows should stay fixed to the house, with bark on the back. Try walking into a stump wall; the original collision still applies. The stage shrine is also a solid pixel-textured model. Check the painted bark-and-moss wall around the map. Walk, dash, jump, and glide into it; Link should stop at its inside edge. Move the mouse to look and scroll to zoom. In Free cursor mode, hold the cursor at a side edge for a continuous turn. On touch, swipe the arena. Turn around halfway and press W: Link should walk into the new view. Trees remain grounded and foreground scenery fades or cuts away if it would cover Link.
+2. In a crowded wave, look for the sword crescent leaving Link’s weapon side and for enemy recoil. A danger outline should stay visible under smoke and damage numbers.
+3. Before finishing level 1-3, follow the bent pale trail uphill to the northwest grove. The Great Deku Tree now has sculpted brow ridges, a long nose, a wooden moustache, a broad canopy, and grounded roots. The face stays on the trail side as you orbit it. Before the last round ends, the mouth is sealed and reaching it does not begin combat. After level 1-3 and any upgrade choices, follow that trail to the open mouth. The camera moves into the root tunnel. Follow its lanterns and walk under the new root arch into Gohma’s arena. No warp or realm portal was added. Try dodging the marked slam, then hit the exposed eye. Normal hits still get through the guard at reduced damage.
+4. Beat Gohma with sound enabled. Watch Saria walk in and play her short ocarina phrase. After the scene, the results confirm both her place in this run and the saved roster unlock. Continue and confirm she follows in **Zora’s Fountain**. Follow the causeway to the cliff waterfalls and pan around Lord Jabu-Jabu. His gold-and-sapphire crown, raised blue eyes, painted snout ribbon, lips, and fins should stay attached to the model as you orbit. He rests on the existing plinth and is scenery, not an entrance or fight. See the [offline front and side preview](JABU-JABU-PREVIEW.png). The Water Temple guardian is still Morpha and defeating it still unlocks Ruto. If you already unlocked Saria, her scene still recruits her for the current run; playing as Saria never spawns a clone.
+5. Compare Saria, Impa, and Darunia in Training Grounds, where everyone is playable. Darunia stands well above Link’s height and is much wider; Saria is small. If you reach Darunia as a recruit in Adventure, he keeps that same size when following. Health, collision and combat work as before. See the [ally lineup preview](ALLY-PROPORTIONS-PREVIEW.png).
 
-## 3. Check production on Vercel
+To run locally on a computer with Node: `npm start`, then open `http://127.0.0.1:4173`. No install is needed for the static game. Automated checks from the extracted project: `node --test tests/*.test.cjs backend/tests/party.test.cjs`.
 
-**Already linked?** Keep your current Vercel project. In its **Git** or **Environments** settings, confirm the GitHub repo is `Adonissimo/zelabonk-` and your production branch is `main`. A push to that linked production branch will trigger a deployment. In **Deployments**, wait for the deployment with your commit ID to show **Ready**, then open the production domain. This repo's README lists [zelabonk.vercel.app](https://zelabonk.vercel.app).
+[GitHub browser uploads](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository) · [Vercel for GitHub](https://vercel.com/docs/git/vercel-for-github)
 
-**Not linked yet?** In Vercel, choose **Add New… → Project**, import `Adonissimo/zelabonk-`, and select the repository root. The included `vercel.json` selects **Other**, skips build/install, and serves output from the repo root (`.`). No environment variables are required for the static game. Click **Deploy**, then confirm the production branch and domain.
+Map reference: [Kokiri Forest Map by rsfiscina01](https://sketchfab.com/3d-models/kokiri-forest-map-320957f554c143fd9950fa97b2324c2f). Used visually only. This release contains original pixel art and scene geometry, not the uploaded GLB or its textures. The Great Deku Tree exterior was redrawn from three supplied images, which are not bundled. See the [offline preview of the 3D structures](KOKIRI-STRUCTURES-PREVIEW.png).
 
-If you prefer a preview first, create a branch with `git switch -c zelabonk-update` before copying the files, then push it with `git push -u origin zelabonk-update` instead of pushing main. Check its Vercel Preview, then open a GitHub pull request into main. A preview URL may not show saves from your production domain.
-
-If you already have Grounded Hero Defeats, Hero Defeat Animations, or Playable Hero Animations, replace `art.js` and `app.js` for the articulated falls, falling gear, and Navi. If you are on Pirates and Sages, replace `art.js`, `app.js`, and `core.js`, or use the full ZIP. For older versions, use the whole ZIP or compare first to preserve any edits you made. See [HERO-ANIMATIONS.md](HERO-ANIMATIONS.md) for each hero's defeat sequence.
-
-Try Link, Zelda and Midna in Training Grounds. Walk, turn the camera and try each hero’s starter attack. Midna should float above her shadow and extend one shadow hand without any change to her melee damage or range. Try Saria’s Ultimate: once the ocarina scene ends, a ring and green healing particles should follow her. The particles are visual only and do not restore HP.
-
-To test the cracks, open Training Grounds, spawn a dummy, and try Darunia’s hammer and body slam, then Skull Kid’s Moon Crash. A small shadow shows first at the landing point. As the Moon glides in from above the screen, the shadow widens and darkens. The cratered Moon trails smoke, rolls, and tips face-first into the shadow. Pan the camera mid-fall to see its sides instead of the Moon turning to face you. A billowing smoke burst, a short flash with an impact crack, and debris follow the impact. Reduced Motion softens the flash. A smaller smoke cloud stays over the crater for several seconds after the blast and then dissipates. The hammer leaves a small impact mark, the slam a wider one, and the Moon the largest. Dark centers and chipped highlights add visual depth without lifting or cutting the terrain. The decals fade and do not change collision.
-
-Test the production page before sharing it: start a Survival run and check that your map selection sticks; try the updated hero portraits, Skull Kid’s hover, and a few Ultimates in Training Grounds; defeat Gohma in Adventure, confirm Saria joins and stays through Continue and reload, and confirm the maps still have no portals.
-
-Official references: [GitHub push workflow](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository) · [Vercel Git deployments](https://vercel.com/docs/git) · [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json).
+Lord Jabu-Jabu’s exterior was modeled and painted anew from the supplied image. The reference image is not distributed in the ZIP.

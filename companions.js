@@ -41,6 +41,10 @@
     const bound=game.arenaLimit-.55;
     const x=clamp(p.x-frontX*depth+frontZ*side,-bound,bound);
     const z=clamp(p.z-frontZ*depth-frontX*side,-bound,bound);
+    if(game.kokiriStory&&game.landmarkActive){
+      const placed=game.resolveLandmarkMove(p.x,p.z,x,z,.38);
+      return {x:placed.x,z:placed.z,y:placed.ground};
+    }
     return {x,z,y:game.groundAt(x,z)};
   }
 
@@ -77,10 +81,18 @@
       if(d>13){
         Object.assign(ally,target);
       }else if(d>.22){
-        const speed=Math.min(d,dt*(5.8+Math.max(0,d-1.65)*1.9));
-        ally.x+=dx/d*speed;ally.z+=dz/d*speed;
-        ally.y=game.groundAt(ally.x,ally.z);
-        if(ally.actionTime<=0)ally.facing=Math.atan2(dx,dz);
+        const wet=game.waterMotion(ally.hero,ally.x,ally.z,ally.y);
+        const speed=Math.min(d,dt*(5.8+Math.max(0,d-1.65)*1.9)*(wet?.speed??1));
+        const wantedX=ally.x+dx/d*speed,wantedZ=ally.z+dz/d*speed;
+        if(game.kokiriStory&&game.landmarkActive){
+          const next=game.resolveLandmarkMove(ally.x,ally.z,wantedX,wantedZ,.38);
+          if(ally.actionTime<=0&&Math.hypot(next.x-ally.x,next.z-ally.z)>.001)ally.facing=Math.atan2(next.x-ally.x,next.z-ally.z);
+          Object.assign(ally,{x:next.x,z:next.z,y:next.ground});
+        }else{
+          ally.x=wantedX;ally.z=wantedZ;
+          ally.y=game.groundAt(ally.x,ally.z);
+          if(ally.actionTime<=0)ally.facing=Math.atan2(dx,dz);
+        }
       }
       if(ally.actionTime<=0){
         const action=d>.22?'walk':'idle';

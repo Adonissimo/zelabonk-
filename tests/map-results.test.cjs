@@ -6,13 +6,14 @@ const playTo=(g,predicate)=>{
   for(let i=0;i<220;i++){
     if(predicate())return;
     if(g.state==='upgrade')g.choose(g.choices[0].id);
-    else g.step(.05);
+    else g.step(.05,g.landmarkApproach?{x:0,y:1,cameraYaw:0}:undefined);
   }
   assert.fail('Expected state transition');
 };
 const defeat=(g)=>{
   g.realmStages[g.realm]=3;g.stageKills[g.realm]=24;
   assert.equal(g.challengeGuardian(),true);
+  playTo(g,()=>!!g.boss);
   g.hurtEnemy(g.boss,1e6);
 };
 test('guardian victory pauses for map-only results, then continues with the same run',()=>{
@@ -22,7 +23,7 @@ test('guardian victory pauses for map-only results, then continues with the same
   defeat(g);
   playTo(g,()=>g.state==='map-clear');
   const first=g.mapResult;
-  assert.deepEqual({...first,time:Math.floor(first.time),damageDealt:Math.round(first.damageDealt)},{realm:6,nextRealm:7,nextIsFinal:false,companion:'saria',time:42,kills:55,damageDealt:518,damageTaken:9});
+  assert.deepEqual({...first,time:Math.floor(first.time),damageDealt:Math.round(first.damageDealt)},{realm:6,nextRealm:7,nextIsFinal:false,companion:'saria',time:43,kills:55,damageDealt:518,damageTaken:9});
   assert.equal(g.enterRealm(7),false);assert.ok(g.shrines.has(6));assert.equal(g.loot.length,0);
   for(let i=0;i<250;i++)g.step(.05);
   assert.deepEqual(g.mapResult,first);assert.equal(g.realm,6);
@@ -36,7 +37,7 @@ test('guardian victory pauses for map-only results, then continues with the same
 test('in-progress victory upgrades and a completed map-results checkpoint both reload safely',()=>{
   const profile=new Profile(),g=new Game('link',102,{mode:'adventure',reviewMapClears:true});
   profile.beginRun(g);
-  defeat(g);assert.equal(g.state,'upgrade');assert.equal(profile.saveCheckpoint(g),true);
+  defeat(g);assert.equal(g.sariaRescue,true);assert.equal(g.state,'running');assert.equal(profile.saveCheckpoint(g),true);
   const afterFight=Profile.import(JSON.stringify(profile)).resume();
   assert.equal(afterFight.realm,6);assert.equal(afterFight.state,'upgrade');assert.equal(afterFight.landmark.name,'Great Deku Tree');
   playTo(afterFight,()=>afterFight.state==='map-clear');

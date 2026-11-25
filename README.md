@@ -1,6 +1,6 @@
 # ZeldaBonk
 
-An unofficial single-player Legend of Zelda survivor, using PokéBonk as its gameplay and presentation reference. Animated pixel actors inhabit eight distinct 3D maps. Adventure has 24 numbered levels and a final Ganondorf encounter. Survival has a four-minute Phantom Ganon challenge.
+An unofficial single-player Legend of Zelda survivor, using PokéBonk as its gameplay and presentation reference. Animated pixel actors inhabit eight distinct maps. Kokiri Forest and the Great Deku Tree use illustrated 2D pixel art on 3D terrain with a free orbit camera. Adventure has 24 numbered levels and a final Ganondorf encounter. Survival has a four-minute Phantom Ganon challenge.
 
 Repository: https://github.com/Adonissimo/zelabonk- . Production: https://zelabonk.vercel.app . A Git push and a live deployment are separate events; verify the current revision before treating it as deployed.
 
@@ -23,7 +23,7 @@ Safe checkpoints retain partial waves, pending upgrades, boss readiness and pend
 | Map and levels | Local enemies | Guardian | Guardian arena |
 |---|---|---|---|
 | Kokiri Forest 1-1, 1-2, 1-3 | Deku Baba, Deku Scrub, Skulltula | Gohma | Great Deku Tree |
-| Lake Hylia 2-1, 2-2, 2-3 | Octorok, Tektite, Lizalfos | Morpha | Water Temple |
+| Zora’s Fountain 2-1, 2-2, 2-3 | Octorok, Tektite, Lizalfos | Morpha | Water Temple |
 | Hyrule Field 3-1, 3-2, 3-3 | Chuchu, Keese, Bokoblin | King Bulblin | Hyrule Castle Courtyard |
 | Great Sea 4-1, 4-2, 4-3 | Blue ChuChu, Bokoblin, Seahat | Helmaroc King | Forsaken Fortress |
 | Twilight Realm 5-1, 5-2, 5-3 | Shadow Vermin, Shadow Kargarok, Shadow Beast | Zant | Palace of Twilight |
@@ -34,6 +34,10 @@ Safe checkpoints retain partial waves, pending upgrades, boss readiness and pend
 Kokiri Forest is the canonical name of the village location. Stage layouts, central progression shrines, crossover encounters and combat formulas are authored for this game, rather than exact reproductions of Zelda maps. Map changes preserve health, XP, equipment, charge and each map's unfinished level progress. Each regular map measures 128 by 128 playable units. Guardian arenas are smaller and flat, with a distinct look. Stage layouts vary while retaining the location’s terrain and landmarks.
 
 Use the title-screen Realm selector to choose any of the eight maps before starting Survival. In Adventure, it previews the campaign maps without skipping progression. That run stays on the chosen map, with an immediate shrine reward and a Phantom Ganon fight once the clock reaches four minutes.
+
+## Water movement
+
+Walk into Zora’s Fountain’s pools, Kokiri Forest’s creek and ponds, or the Great Sea shallows. A wading hero’s legs disappear under the surface and they leave pixel ripples and splashes. Water slows most heroes by about 12–22%, depending on depth. Midna and Skull Kid float above it without a penalty. Ruto accelerates by about 12–32% and leaves a wake. Recruited allies follow the same rules. Bridges, the Great Sea pier, and dry causeways are unaffected, as is gliding above the surface. Wading never drains health.
 
 ## Combat and progression
 
@@ -59,7 +63,7 @@ These are independently authored Zelda equivalents. PARITY.md identifies verifie
 
 ## Pixel art and map dressing
 
-All eight realms now have layered pixel canopies, varied undergrowth, worn trails, trail markers, lanterns, and ground patches. Lake Hylia and the Great Sea have visible shorelines, reeds, ripple patterns, and causeways. The Depths use pale fungal trees and cyan growth; Twilight has its own palette and markings. Kokiri houses and ruins carry timber, shingle, masonry, moss, and window detail. Skyloft has an animated windmill. Hero sprites now use 112×112 pixel canvases and eight camera-relative views. Their distinct depictions follow Ocarina of Time Link and Sheik, Breath of the Wild ceremonial Zelda, Twilight Princess imp Midna, The Wind Waker Tetra, and Majora’s Mask Skull Kid. Costumes include the Hylian Shield crest, Sheikah eye, Fused Shadow carvings, pirate scarf/sash, and mask horns. Walk cycles move jointed limbs, hair, and cloth; attacks, casts and Ultimates retain their own poses. Little Frox now has its single central eye. These remain independently authored pixel adaptations, not official sprites or extracted animation.
+All eight realms now have layered pixel canopies, varied undergrowth, worn trails, trail markers, lanterns, and ground patches. Zora’s Fountain has a shallow turquoise basin, a dry stone causeway, three cliffside falls, and a [pixel-textured 3D Lord Jabu-Jabu](JABU-JABU-PREVIEW.png) with sapphire eyes, a gilded crown, a painted snout ribbon and twin fins. The Great Sea keeps its shoreline, reeds, ripples, and causeway. The Depths use pale fungal trees and cyan growth; Twilight has its own palette and markings. Kokiri uses painted stump homes, paths, pools, and pixel walls. See the [2D Kokiri preview](KOKIRI-PIXEL-PREVIEW.png). Skyloft has an animated windmill. Hero sprites now use 112×112 pixel canvases and eight camera-relative views. Their distinct depictions follow Ocarina of Time Link and Sheik, Breath of the Wild ceremonial Zelda, Twilight Princess imp Midna, The Wind Waker Tetra, and Majora’s Mask Skull Kid. Costumes include the Hylian Shield crest, Sheikah eye, Fused Shadow carvings, pirate scarf/sash, and mask horns. Walk cycles move jointed limbs, hair, and cloth; attacks, casts and Ultimates retain their own poses. Little Frox now has its single central eye. These remain independently authored pixel adaptations, not official sprites or extracted animation.
 
 Ground textures use mip levels to reduce distant shimmer while sprite magnification remains nearest-neighbor. Trees and undergrowth use shared instanced billboard batches with root-anchored wind. Wind pauses with the simulation and stops under reduced motion or Low graphics. Low quality reduces undergrowth density and shadows; High retains full dressing. Scenery does not add collision barriers or change the existing terrain routes.
 
@@ -86,24 +90,28 @@ The roster’s signature moves and poses are based on specific official titles, 
 
 Each roster card describes its own starter and Ultimate. Different moves have their own anticipation, release, and recovery. Skull Kid summons a grinning Moon that falls onto an aimed area. Darunia keeps his hammer for normal attacks, then leaps, curls into a boulder, and damages nearby enemies only when he lands. Saria’s ocarina and Nabooru’s medallion remain noncombat scenes; their presentation does not imply damage or healing.
 
+## Local minimap
+
+The north-up **Local map** shows your position and camera heading, recruited allies, landmarks, shrines, nearby threats and the current objective. When you enter a boss chamber the map changes to the chamber’s smaller bounds. Press **M** for the separate campaign map. Outdoor bounds are wider; the original boss rooms and campaign route are unchanged.
+
 ## Saves and settings
 
 Safe checkpoints preserve map levels, learned weapon rarity history, and pending choices with their rarities. Older oversized builds retain their slot capacity; older weapon ranks receive Common history because rarity was not previously stored. Boss encounters restart from the preceding safe checkpoint. Pause and return to title to save safe progress. Starting a new run protects an existing checkpoint with a replacement choice.
 
-Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, camera sensitivity, inverted Y, field of view, camera distance, free or captured cursor, keyboard rebinding, export and import. Move the mouse to look without holding a button. Keep the cursor at either horizontal arena edge to turn continuously through any number of revolutions. Cursor capture also supports continuous turns. Vertical look ranges from near the horizon to nearly overhead, with terrain clearance. Touch uses an arena swipe. Duplicate key assignments are rejected; camera and keys have reset actions. Import validates data and backs up the current profile in browser storage before replacement. Profiles do not sync across devices; export before moving. Old basic records migrate automatically. If storage fails, play continues in memory and export remains available. Web Locks serialize profile mutations in browsers that support them. A stale run cannot overwrite another run's checkpoint.
+Settings includes Low/Balanced/High graphics, sound, volume, reduced motion, camera sensitivity, inverted Y, field of view, camera distance, free or captured cursor, keyboard rebinding, export and import. On desktop, click the arena to capture and hide the cursor while playing. Escape releases it and pauses; click the arena again after closing a menu. Free Cursor remains available in Settings and turns continuously at either horizontal arena edge. Vertical look ranges from near the horizon to nearly overhead, with terrain clearance. Touch uses an arena swipe. Duplicate key assignments are rejected; camera and keys have reset actions. Import validates data and backs up the current profile in browser storage before replacement. Profiles do not sync across devices; export before moving. Old basic records migrate automatically. If storage fails, play continues in memory and export remains available. Web Locks serialize profile mutations in browsers that support them. A stale run cannot overwrite another run's checkpoint.
 
 ## Controls
 
 | Input | Action |
 |---|---|
 | WASD / arrows | Move relative to camera |
-| Mouse movement / mouse wheel | Look without holding a button / zoom |
+| Left-click arena / mouse movement / mouse wheel | Capture and hide cursor / look / zoom |
 | Space | Jump; hold while descending to slow your fall (Link opens the paraglider) |
 | Shift | Dash with brief protection |
 | Q / right-click | Aim mode / nearest-target lock |
 | R | Fully charged Ultimate |
 | E | Level shrine or Survival shrine interaction |
-| M | Realm map and level status |
+| M | Enlarge or shrink the local minimap (realm overview is in Pause) |
 | I / Tab | Inventory |
 | Escape / P | Pause; Escape closes auxiliary dialogs |
 | 1, 2, 3 | Choose upgrade |
@@ -131,7 +139,8 @@ Deterministic tests cover the 24-level campaign, map enemy pools, progression, t
 - combat.js: Zelda treasure catalog, stat aggregation, critical rules and equipment validation.
 - profile.js: progression, purchases, migration, validation and once-per-run settlement.
 - art.js: original pixel art, animation frames, textures and material cache.
-- app.js: 3D rendering, effects, input, dialogs, sound and persistence.
+- kokiri-pixel-art.js and kokiri-pixel-floor.js: original Kokiri sprites and map painting.
+- app.js: world rendering, effects, input, dialogs, sound and persistence.
 - REFERENCE-ANALYSIS.md: reference evidence and scope limits.
 - PARITY.md: active feature coverage, evidence and missing systems.
 

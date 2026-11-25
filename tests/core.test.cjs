@@ -6,7 +6,7 @@ const advance=(g,seconds,input={x:0,y:0})=>{for(let i=0;i<Math.round(seconds/.02
 test('movement is normalized and stays inside the arena',()=>{
   const a=new Game('link',1),b=new Game('link',1);a.step(.05,{x:1,y:0});b.step(.05,{x:1,y:1});
   assert.ok(Math.abs(Math.hypot(a.player.x,a.player.z)-Math.hypot(b.player.x,b.player.z))<1e-10);
-  a.player.x=ARENA_LIMIT;a.player.z=-ARENA_LIMIT;a.step(.05,{x:1,y:0});assert.equal(a.player.x,ARENA_LIMIT);assert.equal(a.player.z,-ARENA_LIMIT);
+  a.player.x=ARENA_LIMIT;a.player.z=-ARENA_LIMIT;a.step(.05,{x:1,y:0});assert.equal(a.player.x,ARENA_LIMIT-a.player.radius);assert.equal(a.player.z,-ARENA_LIMIT+a.player.radius);
 });
 test('pause and upgrade states freeze all simulation clocks',()=>{
   const g=new Game('link',2);g.pause();advance(g,2);assert.equal(g.time,0);g.resume();g.collect(100);assert.equal(g.state,'upgrade');const xp=g.xp;advance(g,3);assert.equal(g.time,0);assert.equal(g.xp,xp);

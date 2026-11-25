@@ -12,12 +12,14 @@ function ready(g){
   assert.equal(g.state,'map-clear');
 }
 
-test('Gohma brings Saria immediately into the current run and onward to Lake Hylia',()=>{
+test('Gohma brings Saria immediately into the current run and onward to Zora’s Fountain',()=>{
   const g=adventure(),profile=new Profile();
   assert.deepEqual(g.companions,[]);
   assert.equal(profile.unlocked.includes('saria'),false);
   g.realmStages[g.realm]=3;g.stageKills[g.realm]=24;assert.equal(g.challengeGuardian(),true);
   assert.deepEqual(g.companions,[]);
+  for(let i=0;i<50&&!g.boss;i++)g.step(.05,{x:0,y:1,cameraYaw:0});
+  assert.equal(g.boss?.bossId,'gohma');
   g.hurtEnemy(g.boss,1e6);ready(g);
   const events=g.drainEvents();
   assert.deepEqual(events.filter(event=>event.type==='companionJoin').map(event=>event.hero),['saria']);

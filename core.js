@@ -6,7 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (Terrain, Combat, Companions) {
   'use strict';
   const TAU = Math.PI * 2;
-  const ARENA_LIMIT = 64;
+  const ARENA_LIMIT = Terrain.LIMIT;
   const HEROES = {
     link: {name:'Link',title:'Hero of Courage',hp:100,speed:6,weapon:'ember',starterName:'Master Sword',color:'#72cfc8',perk:'Sword cut · beam at full hearts',damage:1.2,origin:'Ocarina of Time / A Link Between Worlds',canonMove:'spin',ultimateDetail:'A close 360° sword sweep.',ultimateName:'Spin Attack',ultimateColor:'#efdc83',ultimateDamage:200,ultimateRadius:5.8},
     zelda: {name:'Zelda',title:'Princess of Hyrule',hp:85,speed:7,weapon:'leaf',starterName:'Light Arrows',color:'#c6b0e1',perk:'Draw and release Light Arrows',damage:1,origin:'Breath of the Wild',canonMove:'seal',ultimateDetail:'Golden light catches and seals foes around Zelda.',ultimateName:'Sealing Power',ultimateColor:'#fff0b4',ultimateDamage:150,ultimateRadius:12,ultimateStatus:'seal'},
@@ -30,7 +30,8 @@
   ];
   REALMS.push(
     {id:'kokiri',name:'Kokiri Forest',subtitle:'The village beneath the Great Deku Tree',color:'#83bc7d',sky:'#c8e3c1',ground:'#78a65b',fog:'#afcba7',accent:'#e7d38d',blessing:'Heart Container',benefit:'+25 maximum health. Restore 35 health.',gift:'vitality',boss:'gohma'},
-    {id:'lake',name:'Lake Hylia',subtitle:'Ancient water beneath the lakeside temple',color:'#82c9dc',sky:'#cde8ef',ground:'#92b4a1',fog:'#c2e0e4',accent:'#d8e7b0',blessing:'Iron Boots',benefit:'+25 maximum health. Restore 35 health.',gift:'vitality',boss:'morpha'}
+    // Keep "lake" and slot 7 for saved games and existing links to this arena.
+    {id:'lake',name:'Zora’s Fountain',subtitle:'A cliff-ringed spring watched by Lord Jabu-Jabu',color:'#83d6e0',sky:'#c6e3e9',ground:'#8aa99d',fog:'#abcfd5',accent:'#d4efe0',blessing:'Iron Boots',benefit:'+25 maximum health. Restore 35 health.',gift:'vitality',boss:'morpha'}
   );
   const ENEMIES={
     chuchu:{name:'Chuchu',type:'slime',origin:'Recurring Zelda enemy'},blue_chuchu:{name:'Blue ChuChu',type:'slime',origin:'The Wind Waker / Majora’s Mask'},
@@ -43,7 +44,7 @@
   const pools=[['chuchu','keese','bokoblin'],['blue_chuchu','bokoblin','seahat'],['shadow_vermin','shadow_kargarok','shadow_beast'],['chuchu','keese','remlit'],['little_frox','gloom_bokoblin','evermean'],['blue_chuchu','deku_baba','takkuri'],['deku_baba','deku_scrub','skulltula'],['octorok','tektite','lizalfos']];
   const origins=['Ocarina of Time / Breath of the Wild','The Wind Waker','Twilight Princess','Skyward Sword','Tears of the Kingdom','Majora’s Mask','Ocarina of Time','Ocarina of Time / Twilight Princess'];
   REALMS[0].boss='kingbulblin';
-  REALMS.forEach((realm,index)=>{realm.enemies=pools[index];realm.origin=origins[index];realm.landmark=['Hyrule Castle','Tower of the Gods','Mirror of Twilight','Statue of the Goddess','Lightroot','Clock Tower','Great Deku Tree','Water Temple'][index];realm.number=[3,4,5,6,7,8,1,2][index];});
+  REALMS.forEach((realm,index)=>{realm.enemies=pools[index];realm.origin=origins[index];realm.landmark=['Hyrule Castle','Tower of the Gods','Mirror of Twilight','Statue of the Goddess','Lightroot','Clock Tower','Great Deku Tree','Lord Jabu-Jabu'][index];realm.number=[3,4,5,6,7,8,1,2][index];});
   const ADVENTURE_ROUTE=Object.freeze(REALMS.map((_,index)=>index).sort((a,b)=>REALMS[a].number-REALMS[b].number));
   // Indexed by realm ID (not campaign order), keeping old saves and routes compatible.
   const GUARDIAN_LANDMARKS=Object.freeze([
@@ -54,9 +55,10 @@
     {name:'Wind Temple',subtitle:'From the Depths to the storm above',style:'wind',ground:'#617b85',wall:'#435866',accent:'#a5e3e7',sky:'#6e9eb0',limit:26,attack:'Cyclone Barrage'},
     {name:'Inside the Moon',subtitle:'The field beyond the Clock Tower',style:'moon',ground:'#8a9268',wall:'#5d5d69',accent:'#e7cf9d',sky:'#8387a6',limit:24,attack:'Moonfall'},
     {name:'Great Deku Tree',subtitle:'Deep inside the roots of Kokiri Forest',style:'roots',ground:'#6b6344',wall:'#463929',accent:'#d4a764',sky:'#443d28',limit:23,attack:'Falling Brood'},
-    {name:'Water Temple',subtitle:'The inner sanctum beneath Lake Hylia',style:'water',ground:'#527782',wall:'#325769',accent:'#8fd7d5',sky:'#37677c',limit:25,attack:'Tidal Cross'}
+    {name:'Water Temple',subtitle:'Morpha awaits in the watery sanctum',style:'water',ground:'#527782',wall:'#325769',accent:'#8fd7d5',sky:'#37677c',limit:25,attack:'Tidal Cross'}
   ].map(Object.freeze));
   const STAGE_TARGETS=Object.freeze([12,18,24]);
+  const KOKIRI=6, DEKU_ENTRY_Z=18, DEKU_ARENA_THRESHOLD=10.5, SARIA_RESCUE_TIME=3.6;
   const BOSSES = {
     kingbulblin:{name:'King Bulblin',origin:'Twilight Princess',hp:600,speed:1.3,radius:1.8,damage:19,color:'#aac684',height:4.8,patterns:['charge','slam','summon']},
     morpha:{name:'Morpha',origin:'Ocarina of Time',hp:560,speed:1.4,radius:1.9,damage:18,color:'#86d6ed',height:4.7,patterns:['slam','volley','teleport']},
@@ -127,6 +129,7 @@
       this.realm = this.mode==='survival'?(Number.isInteger(options.realm)&&REALMS[options.realm]?options.realm:0):6; this.visited = new Set([this.realm]); this.realmStages=REALMS.map(()=>1);this.stageKills=REALMS.map(()=>0); this.shrines = new Set(); this.shrineCharge = 0;this.adventureDelay=0;this.landmarkActive=false;
       this.reviewMapClears=this.mode==='adventure'&&options.reviewMapClears===true;
       this.awaitingMapClear=false;this.mapFinishedTime=null;this.mapStart={time:0,kills:0,damageDealt:0,damageTaken:0};
+      this.landmarkApproach=false;this.sariaRescue=false;
       this.energy = 25; this.streak = 0; this.streakTimer = 0; this.bestStreak = 0;
       this.aimMode = 'auto'; this.cameraYaw = Math.PI / 4; this.lockedTarget = null;
       this.refreshes = 2; this.skips = 2; this.banishes = 1; this.banished = new Set();
@@ -135,9 +138,26 @@
     get landmark(){return this.landmarkActive?GUARDIAN_LANDMARKS[this.realm]:null;}
     get companions(){return Companions.followers(this);}
     get arenaLimit(){return this.landmark?.limit??ARENA_LIMIT;}
+    get kokiriStory(){return this.realm===KOKIRI&&this.mode==='adventure'&&this.reviewMapClears&&!this.player.accountId;}
+    get dekuTrailReady(){return this.kokiriStory&&!this.landmarkActive&&!this.boss&&this.stage===3&&this.stageReady&&!this.shrines.has(KOKIRI);}
+    resolveLandmarkMove(fromX,fromZ,toX,toZ,radius=.52){
+      if(this.kokiriStory&&this.landmarkActive)return Terrain.resolveDekuEntrance(fromX,fromZ,toX,toZ,radius);
+      const bound=this.arenaLimit-radius;return{x:clamp(toX,-bound,bound),z:clamp(toZ,-bound,bound),ground:0};
+    }
     groundAt(x,z){return this.flatTerrain||this.landmarkActive?0:Terrain.height(this.realm,this.stage,x,z);}
+    waterAt(x,z,feet){
+      if(this.flatTerrain||this.landmarkActive)return null;
+      return Terrain.sampleWater(this.realm,this.stage,x,z,feet);
+    }
+    waterMotion(hero,x,z,feet){
+      if(hero==='midna'||hero==='skullkid')return null;
+      const wet=this.waterAt(x,z,feet);
+      if(!wet)return null;
+      const strength=Math.min(1,wet.depth/.55);
+      return {...wet,speed:hero==='ruto'?1.12+strength*.20:.88-strength*.105};
+    }
     placeAtLandmarkEntrance(){
-      Object.assign(this.player,{canonSlam:null,canonCue:null,x:0,z:9,y:0,ground:0,vy:0,gliding:false,dash:0,dx:0,dz:-1,facing:Math.PI,invincible:2});
+      Object.assign(this.player,{canonSlam:null,canonCue:null,x:0,z:this.landmarkApproach?DEKU_ENTRY_Z:9,y:0,ground:0,vy:0,gliding:false,dash:0,dx:0,dz:-1,facing:Math.PI,invincible:2});
     }
     get weaponSlots(){return this.mode==='training'?4:Math.max(3+(this.permanent.weaponSlot||0),this.legacySlots?.weapons||0);}
     get charmSlots(){return this.mode==='training'?5:Math.max(3+(this.permanent.charmSlots||0),this.legacySlots?.charms||0);}
@@ -270,11 +290,11 @@
       if(this.player.actionTime>0&&(priority[this.player.action]||0)>(priority[action]||0))return false;
       this.player.action=action;this.player.actionTime=duration;this.player.actionAge=0;this.player.actionImpact=null;return true;
     }
-    activateShrine(realm=this.realm) {
+    activateShrine(realm=this.realm, postponeCompanionNotice=false) {
       if(this.shrines.has(realm))return false;
       this.shrines.add(realm);this.realmStages[realm]=3;const gift=REALMS[realm].gift;this.ranks[gift]=this.rank(gift)+1;
       const companion=Companions.recruit(this,realm);
-      if(companion)this.emit('companionJoin',{hero:companion,realm});
+      if(companion&&!postponeCompanionNotice)this.emit('companionJoin',{hero:companion,realm});
       if(gift==='vitality'){const hp=this.player.hp;this.refreshStats();this.player.hp=hp;this.heal(35);}
       this.player.invincible=Math.max(this.player.invincible,1.5);
       this.emit('shrine',{realm,x:0,z:-7});this.emit('nova',{x:0,z:-7,radius:9,color:REALMS[realm].accent});
@@ -283,20 +303,23 @@
     }
     spawnBoss(id, final=false) {
       if(!BOSSES[id]||(this.boss&&!this.boss.dead))return null;
-      const spec=BOSSES[id],landmark=this.landmark;
-      const enemy=this.spawnEnemy('boss',landmark?0:clamp(this.player.x+10,-ARENA_LIMIT+4,ARENA_LIMIT-4),landmark?-8:clamp(this.player.z-10,-ARENA_LIMIT+4,ARENA_LIMIT-4));
+      const spec=BOSSES[id],landmark=this.landmark,edge=this.arenaLimit-4;
+      const enemy=this.spawnEnemy('boss',landmark?0:clamp(this.player.x+10,-edge,edge),landmark?-8:clamp(this.player.z-10,-edge,edge));
       const health=(spec.hp+(this.mode==='adventure'&&!final?this.shrines.size*110:0))*(this.difficulty==='hard'?1.35:1)*(this.mode==='training'?1:1.08);
       Object.assign(enemy,{bossId:id,name:spec.name,hp:health,maxHp:health,speed:spec.speed,radius:spec.radius,damage:spec.damage*(this.difficulty==='hard'?1.25:1),realm:this.realm,final,stage:1,attackTimer:1.6,windup:0,attackCycle:0,action:'spawn',actionAge:0,spawnTime:.8,chargeTimer:0});
+      if(this.kokiriStory&&landmark&&id==='gohma'&&!final){enemy.gohmaTrial=true;enemy.exposure=0;}
       this.boss=enemy;this.bossSpawned=true;this.player.invincible=Math.max(this.player.invincible,1.5);
       this.emit('boss',{id,name:spec.name,realm:this.realm,...(landmark?{landmark:landmark.name}:{})});return enemy;
     }
     challengeGuardian() {
-      if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.shrines.has(this.realm)||this.stage!==3||!this.stageReady||this.adventureDelay>0)return false;
+      if(this.mode!=='adventure'||this.state!=='running'||this.boss||this.landmarkApproach||this.shrines.has(this.realm)||this.stage!==3||!this.stageReady||this.adventureDelay>0)return false;
       // Bank the third wave before opening the separate boss encounter. Upgrades finish first.
       this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
       if(!this.bankBossRewards())return false;
       this.landmarkActive=true;
+      this.landmarkApproach=this.kokiriStory;
       this.placeAtLandmarkEntrance();
+      if(this.landmarkApproach){this.emit('landmarkEnter',{realm:this.realm,name:this.landmark.name});return true;}
       return !!this.spawnBoss(REALMS[this.realm].boss,false);
     }
     bankBossRewards(){
@@ -322,11 +345,31 @@
       this.mapStart={time:this.time,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken};
     }
     progressAdventure(dt){
+      if(this.landmarkApproach){
+        if(this.player.z<=DEKU_ARENA_THRESHOLD){
+          this.landmarkApproach=false;this.spawnBoss('gohma');
+        }
+        return true;
+      }
       if(!this.adventureTransition)return false;
       this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;
-      this.player.action='idle';this.player.actionTime=0;this.player.canonCue=null;this.player.canonSlam=null;this.player.invincible=2;
+      if(this.dekuTrailReady){
+        // Let the player walk from the village to the physical doorway before swapping maps.
+        // Stage kills/loot persist in a checkpoint, so a reload can restart this walk safely.
+        this.adventureDelay=Math.max(0,this.adventureDelay-dt);
+        const mouth=Terrain.DEKU_PORTAL;
+        if(this.adventureDelay===0&&this.player.y<.55&&Math.hypot(this.player.x-mouth.x,this.player.z-mouth.z)<=mouth.radius)
+          this.challengeGuardian();
+        return true;
+      }
+      this.player.action='idle';this.player.actionTime=0;this.player.canonCue=null;this.player.canonSlam=null;this.player.invincible=this.sariaRescue?0:2;
       this.adventureDelay=Math.max(0,this.adventureDelay-dt);
       if(this.adventureDelay>0)return true;
+      if(this.sariaRescue){
+        this.sariaRescue=false;
+        this.emit('companionJoin',{hero:'saria',realm:KOKIRI,scene:true});
+        this.checkLevel();if(this.state!=='running')return true;
+      }
       if(!this.shrines.has(this.realm)){this.challengeGuardian();return true;}
       if(this.awaitingMapClear){
         if(this.bankBossRewards()){this.state='map-clear';this.checkpointRevision++;this.emit('mapClear',{realm:this.realm});}
@@ -343,7 +386,7 @@
       const next=this.nextAdventureRealm??0;
       // Older free-roam saves keep every seal and stage, then resume at the first unfinished map.
       if(this.realm===next)return false;
-      this.landmarkActive=false;this.realm=next;this.visited.add(next);this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;this.adventureDelay=0;this.startMapCounters();
+      this.landmarkActive=false;this.landmarkApproach=false;this.realm=next;this.visited.add(next);this.enemies=[];this.projectiles=[];this.hazards=[];this.lockedTarget=null;this.adventureDelay=0;this.startMapCounters();
       Object.assign(this.player,{canonCue:null,canonSlam:null,x:0,z:0,y:0,ground:0,vy:0,invincible:2});this.checkpointRevision++;return true;
     }
     addHazard(x,z,radius,delay,damage=24,impactSize=0) {
@@ -414,6 +457,48 @@
       this.emit('enemyStrike',{x:enemy.x,z:enemy.z,enemyId:enemy.enemyId,bossId:enemy.bossId,
         kind,facing:enemy.facing||0,stage:enemy.stage,targetX:enemy.targetX,targetZ:enemy.targetZ});
     }
+    updateDekuGohma(enemy,p,dt){
+      // The marked attack finishes first; only then does the eye become an easy target.
+      // Guard damage is reduced, not blocked, so slow automatic builds can still clear.
+      if(enemy.exposure>0){
+        enemy.exposure=Math.max(0,enemy.exposure-dt);
+        if(!enemy.exposure){enemy.attackTimer=.7;this.enemyPose(enemy,'idle');}
+        return;
+      }
+      if(enemy.windup>0){
+        enemy.windup=Math.max(0,enemy.windup-dt);
+        if(enemy.windup>0)return;
+        const angle=Math.atan2(enemy.targetZ-enemy.z,enemy.targetX-enemy.x);
+        if(enemy.intent==='landmark'&&this.enemies.filter(e=>!e.dead&&e.type!=='boss').length<5)this.finishLandmarkAttack(enemy,angle);
+        const duration=2.6-.25*(enemy.stage-1);
+        enemy.exposure=duration;this.enemyPose(enemy,'attack',.43);this.enemyStrike(enemy,enemy.intent);
+        this.emit('gohmaExpose',{id:enemy.id,x:enemy.x,z:enemy.z,duration});
+        return;
+      }
+      if(!this.damageTargets().some(target=>target.z<=DEKU_ARENA_THRESHOLD+.4))return;
+      if((enemy.attackTimer-=dt)<=0){
+        const cycle=enemy.attackCycle++;
+        enemy.intent=cycle%2===0?'slam':'landmark';
+        enemy.windup=1.22-.1*(enemy.stage-1);
+        enemy.targetX=p.x;enemy.targetZ=Math.min(p.z,DEKU_ARENA_THRESHOLD);
+        this.enemyPose(enemy,'windup',enemy.windup);
+        const priorHazards=this.hazards.length;
+        if(enemy.intent==='landmark')this.markLandmarkAttack(enemy,{x:enemy.targetX,z:enemy.targetZ});
+        else{
+          this.addHazard(enemy.targetX,enemy.targetZ,3.45,enemy.windup,enemy.damage,3.8);
+          if(enemy.stage>1)for(const side of [-1,1])this.addHazard(clamp(enemy.targetX+side*5.4,-20,20),enemy.targetZ-2.3,1.65,enemy.windup,enemy.damage*.72);
+        }
+        // The hazard pass follows the AI pass. Start both clocks on the next tick.
+        for(let i=priorHazards;i<this.hazards.length;i++)this.hazards[i].skipInitialTick=true;
+        this.emit('warning',{x:enemy.x,z:enemy.z,kind:enemy.intent,label:enemy.intent==='slam'?'Root Slam':'Falling Brood'});
+        return;
+      }
+      this.enemyPose(enemy,'walk');const d=distance(enemy,p);
+      if(d>4.2){
+        enemy.x+=(p.x-enemy.x)/d*enemy.speed*dt;
+        enemy.z=Math.min(DEKU_ARENA_THRESHOLD-1,enemy.z+(p.z-enemy.z)/d*enemy.speed*dt);
+      }
+    }
     updateBoss(enemy,dt) {
       const spec=BOSSES[enemy.bossId]||BOSSES.phantom,p=this.targetFor(enemy), landmark=this.landmark, bound=this.arenaLimit-1;
       if(enemy.windup<=0&&!(enemy.chargeTimer>0))enemy.facing=Math.atan2(p.x-enemy.x,p.z-enemy.z);
@@ -421,6 +506,7 @@
       if(stage>enemy.stage){enemy.stage=stage;enemy.attackTimer=Math.min(enemy.attackTimer,.7);this.emit('bossPhase',{id:enemy.bossId,name:enemy.name,stage,x:enemy.x,z:enemy.z});}
       enemy.actionAge=(enemy.actionAge||0)+dt;
       if(enemy.spawnTime>0){enemy.spawnTime=Math.max(0,enemy.spawnTime-dt);this.enemyPose(enemy,'spawn',.8);if(enemy.spawnTime===0)this.enemyPose(enemy,'walk');return;}
+      if(enemy.gohmaTrial){this.updateDekuGohma(enemy,p,dt);return;}
       if(enemy.chargeTimer>0){enemy.chargeTimer-=dt;enemy.x=clamp(enemy.x+enemy.chargeX*dt,-bound,bound);enemy.z=clamp(enemy.z+enemy.chargeZ*dt,-bound,bound);this.enemyPose(enemy,'attack',enemy.actionDuration||.65);return;}
       if(enemy.windup>0){
         enemy.windup=Math.max(0,enemy.windup-dt);this.enemyPose(enemy,'windup',enemy.actionDuration||1);
@@ -502,7 +588,7 @@
     get canCheckpoint(){return this.mode!=='training'&&['running','paused','upgrade','map-clear'].includes(this.state)&&this.player.hp>0&&!this.boss;}
     checkpoint(){
       if(!this.canCheckpoint)return null;
-      return {version:2,...(this.reviewMapClears?{reviewMapClears:true,awaitingMapClear:this.awaitingMapClear,mapFinishedTime:this.mapFinishedTime,mapStart:{...this.mapStart}}:{}),adventureDelay:this.adventureDelay,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
+      return {version:2,...(this.reviewMapClears?{reviewMapClears:true,awaitingMapClear:this.awaitingMapClear,mapFinishedTime:this.mapFinishedTime,mapStart:{...this.mapStart}}:{}),adventureDelay:this.sariaRescue?0:this.adventureDelay,buildVersion:1,legacySlots:{...this.legacySlots},weaponUpgrades:Object.fromEntries(Object.keys(Combat.WEAPONS).filter(id=>this.rank(id)).map(id=>[id,[...(this.weaponUpgrades[id]||Array(this.rank(id)-1).fill(0))]])),choiceRarities:Object.fromEntries((this.state==='upgrade'?this.choices:[]).map(choice=>[choice.id,choice.rarity??0])),combatVersion:1,gear:{...this.gear},pendingLoot:this.loot.map(drop=>drop.gearId),damageBySource:{...this.damageBySource},criticalHits:this.criticalHits,megaCriticalHits:this.megaCriticalHits,reactions:this.reactions,runId:this.runId,hero:this.hero,mode:this.mode,difficulty:this.difficulty,state:this.state,choices:this.state==='upgrade'?this.choices.map(choice=>choice.id):[],permanent:{...this.permanent},realmStages:[...this.realmStages],stageKills:[...this.stageKills],realm:this.realm,time:this.time,level:this.level,xp:this.xp+this.shards.reduce((n,s)=>n+s.value,0)*this.stats.xpGain,ranks:{...this.ranks},healthFraction:this.player.hp/this.player.maxHp,energy:this.energy,kills:this.kills,damageDealt:this.damageDealt,damageTaken:this.damageTaken,shrines:[...this.shrines],visited:[...this.visited],refreshes:this.refreshes,skips:this.skips,banishes:this.banishes,banished:[...this.banished],revision:this.checkpointRevision};
     }
     static fromCheckpoint(raw){
       const validNumber=(value,min,max,integer=false)=>Number.isFinite(value)&&value>=min&&value<=max&&(!integer||Number.isInteger(value));
@@ -566,7 +652,7 @@
 
     emit(type, data = {}) {
       if(this.events.length>=300){
-        const important=['end','guardian','companionJoin','boss','travel','level','shrine','bossPhase','stage','stageClear','mapClear'];
+        const important=['end','guardian','companionJoin','boss','travel','level','shrine','bossPhase','stage','stageClear','mapClear','landmarkEnter','sariaRescue','gohmaExpose'];
         if(!important.includes(type))return;
         const discard=this.events.findIndex(event=>!important.includes(event.type));this.events.splice(discard<0?0:discard,1);
       }
@@ -581,14 +667,14 @@
     resume() { if (this.state === 'paused') this.state = 'running'; }
     dash() {
       const p = this.player;
-      if (this.state !== 'running' || p.dashCooldown > 0||p.canonSlam||p.canonCue) return false;
+      if (this.state !== 'running' || this.sariaRescue || p.dashCooldown > 0||p.canonSlam||p.canonCue) return false;
       this.setAction('dash',.25);p.dash = .22; p.invincible = Math.max(p.invincible, .38); p.dashCooldown = 3.1;
       this.emit('dash', { x: p.x, z: p.z }); return true;
     }
-    jump() { const p = this.player; if (this.state !== 'running' || p.y > .01 || p.canonSlam || p.canonCue) return false; p.vy = 9; p.y = .02; this.setAction('jump',.4);this.emit('jump'); return true; }
+    jump() { const p = this.player; if (this.state !== 'running' || this.sariaRescue || p.y > .01 || p.canonSlam || p.canonCue) return false; p.vy = 9; p.y = .02; this.setAction('jump',.4);this.emit('jump'); return true; }
     ultimate() {
       const hero=HEROES[this.hero],p=this.player,radius=hero.ultimateRadius;
-      if(this.state!=='running'||this.energy<100||(p.actionTime>0&&(p.action==='hurt'||p.action==='ultimate')))return false;
+      if(this.state!=='running'||this.landmarkApproach||this.sariaRescue||this.energy<100||(p.actionTime>0&&(p.action==='hurt'||p.action==='ultimate')))return false;
       this.energy=0;
       const aimRange=hero.ultimateAim||(hero.ultimateArc?radius:0);
       const target=aimRange?this.attackTarget(aimRange):null;
@@ -660,7 +746,7 @@
     enterRealm(destination) {
       // Only the ordered Adventure sequence can advance to another map.
       if(this.mode!=='adventure'||this.state!=='running'||this.boss||!this.shrines.has(this.realm)||this.awaitingMapClear||destination===this.realm||destination!==(this.nextAdventureRealm??0))return false;
-      this.bankLoot();this.landmarkActive=false;this.realm = destination; this.visited.add(destination);
+      this.bankLoot();this.landmarkActive=false;this.landmarkApproach=false;this.realm = destination; this.visited.add(destination);
       this.player.canonSlam=null;this.player.canonCue=null;this.player.x = 0; this.player.z = 0; this.player.y = 0;this.player.ground=0; this.player.vy = 0; this.player.invincible = 2;
       this.enemies = [];
       // Bank leftover shards once when moving to the next Adventure map.
@@ -710,18 +796,33 @@
     }
     hurtEnemy(e, damage, knock = 0, context={}) {
       if (e.dead || this.state !== 'running'||!Number.isFinite(damage)||damage<=0) return 0;
-      if(e.type==='boss'&&e.bossId==='gohma'&&e.windup>0)damage*=1.3;
+      if(e.gohmaTrial)damage*=e.exposure>0?1.6:.47;
+      else if(e.type==='boss'&&e.bossId==='gohma'&&e.windup>0)damage*=1.3;
       if(e.type==='boss')knock*=.12;
       const dealt = Math.min(e.hp, damage); e.hp -= damage; e.hitFlash = .1;e.hitReact=.23; this.damageDealt += dealt;
       const source=context.source||'other';this.damageBySource[source]=(this.damageBySource[source]||0)+dealt;
       if (knock) { const d = Math.max(.01, distance(e, this.player)); e.knockX += (e.x - this.player.x) / d * knock; e.knockZ += (e.z - this.player.z) / d * knock; }
-      this.emit('hit', { x: e.x, z: e.z, damage: Math.round(dealt), critical:context.critical||0, boss: e.type === 'boss' });
+      this.emit('hit', { id:e.id, x:e.x, z:e.z, y:this.groundAt(e.x,e.z)+1, damage:Math.round(dealt), critical:context.critical||0, boss:e.type==='boss',source,heavy:source==='ultimate'||knock>=5,facing:Math.atan2(e.x-this.player.x,e.z-this.player.z) });
       if (e.hp <= 0) {
         e.dead = true; this.kills++; this.streak++; this.streakTimer = 4; this.bestStreak = Math.max(this.bestStreak, this.streak); this.energy = Math.min(100, this.energy + (e.elite ? 12 : 3)*(1+this.permanent.magic*.08)); this.emit('pop', { id:e.id,x: e.x, z: e.z, enemyType: e.type, enemyId:e.enemyId,bossId:e.bossId,facing:e.facing,elite: e.elite });
         if(e.type==='boss'){
           this.enemies=this.enemies.filter(enemy=>!enemy.dead);
           if(this.mode==='training'){this.boss=null;this.bossSpawned=false;return dealt;}
-          if(this.mode==='adventure'&&!e.final){this.boss=null;this.bossSpawned=false;this.activateShrine(e.realm);this.heal(30);this.dropGear(e.x,e.z,2);this.adventureDelay=1.8;this.awaitingMapClear=this.reviewMapClears;this.mapFinishedTime=this.reviewMapClears?this.time:null;this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name,nextRealm:this.nextAdventureRealm??0});this.collect(18+this.shrines.size*9);return dealt;}
+          if(this.mode==='adventure'&&!e.final){
+            this.boss=null;this.bossSpawned=false;
+            const rescue=e.gohmaTrial&&this.hero!=='saria';
+            if(rescue){
+              this.sariaRescue=true;this.enemies=[];this.projectiles=[];this.hazards=[];
+              Object.assign(this.player,{y:0,vy:0,gliding:false,dash:0,ground:0,canonCue:null,canonSlam:null,action:'idle',actionTime:0,actionAge:0,invincible:SARIA_RESCUE_TIME+.2});
+            }
+            this.activateShrine(e.realm,rescue);this.heal(30);this.dropGear(e.x,e.z,2);
+            this.adventureDelay=rescue?SARIA_RESCUE_TIME:1.8;this.awaitingMapClear=this.reviewMapClears;this.mapFinishedTime=this.reviewMapClears?this.time:null;
+            this.emit('guardian',{id:e.bossId,realm:e.realm,name:e.name,nextRealm:this.nextAdventureRealm??0,scene:!!rescue});
+            const xp=18+this.shrines.size*9;
+            if(rescue){this.xp+=xp*this.stats.xpGain;this.emit('sariaRescue',{hero:'saria',realm:KOKIRI,duration:SARIA_RESCUE_TIME,x:e.x,z:e.z});}
+            else this.collect(xp);
+            return dealt;
+          }
           this.state='won';this.setAction('victory',1.2);this.emit('end',{won:true});return dealt;
         }
         if(this.mode==='adventure'&&!this.shrines.has(this.realm)&&!this.stageReady&&e.realm===this.realm&&e.mapStage===this.stage){
@@ -906,6 +1007,8 @@
         p.vy=0;p.gliding=false;
       }else{
         p.gliding = p.y > .1 && p.vy < 0 && !!input.glide && p.stamina > 0;
+        // A hero can glide over a basin, not across its submerged floor.
+        if(p.gliding&&this.waterAt(p.x,p.z,(p.ground||0)+p.y))p.gliding=false;
         if (p.y > 0) { p.vy -= (p.gliding ? 4 : 23) * dt; if (p.gliding) { p.vy = Math.max(p.vy, -.9); p.stamina = Math.max(0, p.stamina - dt * .38); } p.y += p.vy * dt; if (p.y <= 0) { p.y = 0; p.vy = 0; p.gliding = false; } }
         else p.stamina = Math.min(1, p.stamina + dt * .65);
       }
@@ -917,9 +1020,13 @@
       if (p.dash > 0) { dx = p.dx * 4.2; dz = p.dz * 4.2; p.dash = Math.max(0, p.dash - dt); }
       if(p.canonCue||slam){dx=0;dz=0;}
       if(slam)p.facing=slam.facing;
-      const speed = p.speed * (1 + this.rank('speed') * .1) * this.stats.moveSpeed * (p.gliding ? 1.3 : 1);
-      const limit=this.arenaLimit;
-      const moved=this.flatTerrain||this.landmarkActive?{x:clamp(p.x+dx*speed*dt,-limit,limit),z:clamp(p.z+dz*speed*dt,-limit,limit),ground:0}:Terrain.resolve(this.realm,this.stage,p.x,p.z,p.x+dx*speed*dt,p.z+dz*speed*dt,p.y,p.radius);
+      const wet=p.gliding||slam?null:this.waterMotion(this.hero,p.x,p.z,(p.ground||0)+p.y);
+      const speed = p.speed * (1 + this.rank('speed') * .1) * this.stats.moveSpeed * (p.gliding ? 1.3 : 1) * (wet?.speed??1);
+      const limit=this.arenaLimit-p.radius;
+      const toX=p.x+dx*speed*dt,toZ=p.z+dz*speed*dt;
+      const moved=this.kokiriStory&&this.landmarkActive?this.resolveLandmarkMove(p.x,p.z,toX,toZ,p.radius):
+        this.realm===KOKIRI&&this.flatTerrain&&!this.landmarkActive?Terrain.resolveKokiriBoundary(toX,toZ,p.radius):
+        this.flatTerrain||this.landmarkActive?{x:clamp(toX,-limit,limit),z:clamp(toZ,-limit,limit),ground:0}:Terrain.resolve(this.realm,this.stage,p.x,p.z,toX,toZ,p.y,p.radius);
       p.y=Math.max(0,p.y+(p.ground||0)-moved.ground);p.x=moved.x;p.z=moved.z;p.ground=moved.ground;
       if(slam&&slam.age+1e-6>=slam.duration){
         const hero=HEROES[this.hero];p.canonSlam=null;p.y=0;
@@ -935,7 +1042,7 @@
     }
     step(dt,input={x:0,y:0}){
       if(this.state!=='running'||!Number.isFinite(dt)||dt<=0)return;
-      dt=Math.min(dt,.05);this.time+=dt;this.updateActors(dt,input);
+      dt=Math.min(dt,.05);this.time+=dt;if(!this.sariaRescue)this.updateActors(dt,input);
       if(this.progressAdventure(dt))return;
       const p=this.player;
       this.spawnTimer -= dt;
@@ -951,7 +1058,8 @@
       for(const enemy of this.enemies){
         if(enemy.dead)continue;this.updateStatuses(enemy,dt);if(enemy.dead)continue;const oldX=enemy.x,oldZ=enemy.z;
         enemy.hitFlash=Math.max(0,enemy.hitFlash-dt);enemy.hitReact=Math.max(0,(enemy.hitReact||0)-dt);
-        if(enemy.dummy||enemy.statuses?.freeze||enemy.statuses?.shock||enemy.statuses?.seal){
+        const committedGohma=enemy.gohmaTrial&&(enemy.windup>0||enemy.exposure>0);
+        if(enemy.dummy||!committedGohma&&(enemy.statuses?.freeze||enemy.statuses?.shock||enemy.statuses?.seal)){
           if(enemy.dummy){this.enemyPose(enemy,'idle');enemy.actionAge=(enemy.actionAge||0)+dt;}continue;
         }
         const p=this.targetFor(enemy);let d=Math.max(.01,distance(p,enemy));const towardX=(p.x-enemy.x)/d,towardZ=(p.z-enemy.z)/d;
@@ -985,8 +1093,9 @@
           }
         }
         if(!this.flatTerrain&&!this.landmarkActive&&enemy.type!=='bat'&&!BOSSES[enemy.bossId]?.flying){const next=Terrain.resolve(this.realm,this.stage,oldX,oldZ,enemy.x,enemy.z,0,enemy.radius*.7);enemy.x=next.x;enemy.z=next.z;}
-        enemy.ground=this.groundAt(enemy.x,enemy.z);
         enemy.x+=enemy.knockX*dt;enemy.z+=enemy.knockZ*dt;enemy.knockX*=Math.exp(-10*dt);enemy.knockZ*=Math.exp(-10*dt);
+        if(this.kokiriStory&&this.landmarkActive){const next=this.resolveLandmarkMove(oldX,oldZ,enemy.x,enemy.z,enemy.radius);enemy.x=next.x;enemy.z=next.z;}
+        enemy.ground=this.groundAt(enemy.x,enemy.z);
         d=distance(p,enemy);
         if(enemy.type!=='boar'&&d<p.radius+enemy.radius&&(p.y<1.1||enemy.type==='bat'||enemy.type==='boss')){
           if((enemy.type==='bat'||enemy.type==='slime')&&!enemy.contactPoseTimer){
@@ -1010,14 +1119,16 @@
         }
         const key = cx + ',' + cz; if (!cells.has(key)) cells.set(key, []); cells.get(key).push(e);
       }
-      if(this.landmarkActive){
-        for(const enemy of this.enemies){
-          const bound=this.arenaLimit-enemy.radius;
-          enemy.x=clamp(enemy.x,-bound,bound);enemy.z=clamp(enemy.z,-bound,bound);
-        }
+      // Knockback and crowd separation cannot shove enemies beyond the new hard bounds.
+      for(const enemy of this.enemies){
+        const bound=this.arenaLimit-enemy.radius;
+        enemy.x=clamp(enemy.x,-bound,bound);enemy.z=clamp(enemy.z,-bound,bound);
+        enemy.ground=this.groundAt(enemy.x,enemy.z);
       }
       this.updateAllWeapons(dt);
+      if(this.sariaRescue)return;
       if(this.reviewMapClears)Companions.update(this,dt);
+      if(this.sariaRescue)return;
       for(const projectile of this.projectiles){
         const p=this.projectileOwner(projectile);
         const previous={x:projectile.x,z:projectile.z,y:projectile.y??this.groundAt(projectile.x,projectile.z)+1};
@@ -1043,7 +1154,7 @@
         for(const enemy of this.enemies){
           if(enemy.dead||projectile.hits.has(enemy.id))continue;
           if(hitAlong(previous,projectile,enemy,projectile.radius+enemy.radius,this.groundAt(enemy.x,enemy.z)+1,Math.max(1.4,enemy.radius))){
-            this.hitProjectile(enemy,projectile);projectile.hits.add(enemy.id);
+            this.hitProjectile(enemy,projectile);if(this.sariaRescue)return;projectile.hits.add(enemy.id);
             if(projectile.bounce>0){
               const next=this.enemies.filter(target=>!target.dead&&!projectile.hits.has(target.id)).sort((a,b)=>distance(a,projectile)-distance(b,projectile))[0];
               if(next){const d=Math.max(.01,distance(next,projectile));projectile.bounce--;projectile.targetId=next.id;projectile.vx=(next.x-projectile.x)/d;projectile.vz=(next.z-projectile.z)/d;projectile.vy=(this.groundAt(next.x,next.z)+1-projectile.y)/d;break;}
@@ -1053,7 +1164,7 @@
         }
       }
       this.projectiles=this.projectiles.filter(projectile=>projectile.life>0);
-      for (const h of this.hazards) { h.timer -= dt; h.life -= dt; if (h.timer <= 0 && !h.fired) { h.fired = true; this.emit('slam', { x: h.x, z: h.z, impactSize:h.impactSize }); for(const target of this.damageTargets())if (distance(target, h) < h.radius + target.radius && target.y < 1.1) this.hurtPlayer(h.damage||30,null,target); } }
+      for (const h of this.hazards) { if(h.skipInitialTick){h.skipInitialTick=false;continue;}h.timer -= dt; h.life -= dt; if (h.timer <= 0 && !h.fired) { h.fired = true; this.emit('slam', { x: h.x, z: h.z, impactSize:h.impactSize }); for(const target of this.damageTargets())if (distance(target, h) < h.radius + target.radius && target.y < 1.1) this.hurtPlayer(h.damage||30,null,target); } }
       this.hazards = this.hazards.filter(h => h.life > 0);
       for (const s of this.shards) {
         const p=this.pickupTarget(s);
@@ -1065,7 +1176,7 @@
       for(const drop of [...this.loot]){const target=this.pickupTarget(drop);if(distance(drop,target)<1.25)this.collectLootFor(drop,target);}
       this.enemies = this.enemies.filter(e => !e.dead);
       // Reposition distant enemies so the bounded arena stays active.
-      for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU; e.x = clamp(p.x + Math.cos(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); e.z = clamp(p.z + Math.sin(a) * 24,-ARENA_LIMIT+1,ARENA_LIMIT-1); }
+      for (const e of this.enemies) if (e.type !== 'boss' && distance(e, this.targetFor(e)) > 50) { const p=this.targetFor(e),a = this.random() * TAU,bound=this.arenaLimit-1; e.x = clamp(p.x + Math.cos(a) * 24,-bound,bound); e.z = clamp(p.z + Math.sin(a) * 24,-bound,bound); e.ground=this.groundAt(e.x,e.z); }
     }
   }
   return { Game, HEROES, REALMS, GUARDIAN_LANDMARKS, ADVENTURE_ROUTE, STAGE_TARGETS, UPGRADES, BOSSES, PERMANENT, ENEMIES, Terrain, Combat, COMPANION_BY_REALM:Companions.BY_REALM, ARENA_LIMIT, xpForLevel, seeded, clamp };

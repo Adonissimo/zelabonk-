@@ -17,7 +17,8 @@
       this.version=2;this.rupees=integer(raw.rupees);this.runs=integer(raw.runs);this.wins=integer(raw.wins);this.adventureWins=integer(raw.adventureWins);this.survivalWins=integer(raw.survivalWins);this.bestKills=integer(raw.bestKills);this.bestTime=integer(raw.bestTime,7200);this.totalKills=integer(raw.totalKills);
       this.sound=raw.sound===true;this.volume=typeof raw.volume==='number'&&Number.isFinite(raw.volume)?Math.max(0,Math.min(1,raw.volume)):.55;this.motion=raw.motion==='reduced'?'reduced':'system';
       this.graphics=['low','balanced','high'].includes(raw.graphics)?raw.graphics:'balanced';
-      this.sensitivity=Number.isFinite(raw.sensitivity)?Math.max(.2,Math.min(2,raw.sensitivity)):1;this.invertY=raw.invertY===true;this.mouseMode=raw.mouseMode==='locked'?'locked':'free';
+      this.sensitivity=Number.isFinite(raw.sensitivity)?Math.max(.2,Math.min(2,raw.sensitivity)):1;this.invertY=raw.invertY===true;// Older saves always serialized 'free' by default. Capture now unless Free was deliberately chosen in the new settings.
+      this.mouseModeChosen=raw.mouseModeChosen===true;this.mouseMode=this.mouseModeChosen&&raw.mouseMode==='free'?'free':'locked';
       this.cameraFov=Number.isFinite(raw.cameraFov)?Math.max(35,Math.min(80,raw.cameraFov)):50;this.cameraDistance=Number.isFinite(raw.cameraDistance)?Math.max(18,Math.min(52,raw.cameraDistance)):30;
       this.bindings={...DEFAULT_BINDINGS};if(raw.bindings&&Object.keys(DEFAULT_BINDINGS).every(key=>validBinding(raw.bindings[key]))&&new Set(Object.values(raw.bindings)).size===Object.keys(DEFAULT_BINDINGS).length)for(const key of Object.keys(DEFAULT_BINDINGS))this.bindings[key]=raw.bindings[key];
       this.upgrades={};for(const item of PERMANENT)this.upgrades[item.id]=integer(raw.upgrades?.[item.id],item.max);
@@ -77,7 +78,7 @@
       return{reward,unlocks:this.unlocked.filter(id=>!before.has(id)),duplicate:false};
     }
     toJSON(){
-      return{game:'ZeldaBonk',version:2,rupees:this.rupees,runs:this.runs,wins:this.wins,adventureWins:this.adventureWins,survivalWins:this.survivalWins,bestKills:this.bestKills,bestTime:this.bestTime,totalKills:this.totalKills,sound:this.sound,volume:this.volume,motion:this.motion,graphics:this.graphics,sensitivity:this.sensitivity,invertY:this.invertY,mouseMode:this.mouseMode,cameraFov:this.cameraFov,cameraDistance:this.cameraDistance,bindings:{...this.bindings},upgrades:{...this.upgrades},guardians:[...this.guardians],items:[...this.items],gear:[...this.gear],rewardedRuns:[...this.rewardedRuns],activeRunId:this.activeRunId,checkpoint:this.checkpoint};
+      return{game:'ZeldaBonk',version:2,rupees:this.rupees,runs:this.runs,wins:this.wins,adventureWins:this.adventureWins,survivalWins:this.survivalWins,bestKills:this.bestKills,bestTime:this.bestTime,totalKills:this.totalKills,sound:this.sound,volume:this.volume,motion:this.motion,graphics:this.graphics,sensitivity:this.sensitivity,invertY:this.invertY,mouseMode:this.mouseMode,mouseModeChosen:this.mouseModeChosen,cameraFov:this.cameraFov,cameraDistance:this.cameraDistance,bindings:{...this.bindings},upgrades:{...this.upgrades},guardians:[...this.guardians],items:[...this.items],gear:[...this.gear],rewardedRuns:[...this.rewardedRuns],activeRunId:this.activeRunId,checkpoint:this.checkpoint};
     }
     static migrate(old){const profile=new Profile(old);profile.rupees=integer(profile.wins*40+Math.floor(profile.bestKills/5));return profile;}
     static import(text){

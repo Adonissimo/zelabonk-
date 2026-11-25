@@ -13,10 +13,17 @@ The updated pixel costumes are used throughout the animation, not just on the id
 | Saria | Light steps with a small upward bounce | Raise the slingshot, pull the band, snap it forward and lower the hand | Bring the ocarina up, play through the rising notes and lower it; green particles appear afterward |
 | Darunia | Short, heavy steps and a rocking torso | Lift the hammer high, drive it forward and down, then pull it back | Brace, jump, curl and rotate, flatten the ball pose at contact, then straighten up |
 | Impa | Deliberate, grounded steps | Set both hands, draw the Giant Blade up, slash across, return to guard | Draw back, cut through the water at release, and finish with the blade extended |
-| Ruto | Swaying gait with the fins following her turn | Gather water between the hands, then push a wave forward | Broaden the charge, push the surge out, then draw her arms back |
+| Ruto | Swaying land gait; eight-frame mermaid glide or four-frame tread in water | Gather water between the hands, then push a wave forward | Broaden the charge, push the surge out, then draw her arms back |
 | Nabooru | Hip-led steps with moving sash, hair, and loose trousers | In Iron Knuckle armor, draw the axe back, swing it through, and recover | Lift her hands from her chest, open them to reveal the Spirit Sage medallion, then settle |
 
 Attack sprites finish their pose sequence without looping back to anticipation within the same action. Damage, range, unlocks and move effects are unchanged. Ultimates with a gameplay release use that existing release time to choose the release pose; the story scenes for Saria and Nabooru keep their existing timing. Saria’s green healing particles are visual, not an HP recovery effect.
+
+
+Ruto’s mermaid-style surface glide uses eight directional views. Her arms trail beside her torso while a wave travels through the hips, knees and paired fins. Her fins rise and dip together. She uses a shorter stationary tread when stopped. Both the playable hero and recruited ally stay anchored to the sampled world-space waterline. Swimming is a visual layer over the existing water speed and wake. Leaving water restores the walk pose, and jumps or attacks keep their own cels. [Offline scene comparison](RUTO-SWIMMING-PREVIEW.png) · [Animated sprite loop](RUTO-MERMAID-PREVIEW.gif).
+
+## In-world ally proportions
+
+The same bodies are drawn at the same sizes whether controlled by the player or following in Adventure. Saria and Tetra are smaller, Skull Kid still floats above the ground, Sheik and Ruto stand near Link’s height, Impa and Nabooru are taller, and Darunia is visibly tallest and broadest. These are game-art proportions, not official measurements. Standing and defeat foot anchors keep each sprite grounded where intended; the companion marker sits above the hair or fins. Nothing changes hitboxes, movement, combat, or unlocks. See [the front-facing lineup](ALLY-PROPORTIONS-PREVIEW.png).
 
 ## Defeat animations
 

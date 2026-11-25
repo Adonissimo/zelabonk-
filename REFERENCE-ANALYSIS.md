@@ -47,7 +47,7 @@ Reused the responsible simulation, rendering, and interface layers. The first pr
 
 ## Theme and limits
 
-The user's final theme instruction is actual Zelda. The build uses Kokiri Forest, Lake Hylia, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Kokiri Forest is the canonical name for the village location. The 24 level numbers and central progression shrines are this game's structure. Landmarks include the Great Deku Tree, lakeside temple ruins, Hyrule Castle skyline, red sailing boat, Tower of the Gods, twilight architecture, winged goddess statue, lightroot, gloom fissures, clock tower, and expressive moon.
+The user's final theme instruction is actual Zelda. The build uses Kokiri Forest, Zora’s Fountain, Hyrule Field, the Great Sea, the Twilight Realm, Skyloft, the Depths, and Termina Field. Kokiri Forest is the canonical name for the village location. The 24 level numbers and central progression shrines are this game's structure. Landmarks include the Great Deku Tree, Lord Jabu-Jabu’s spring altar, Hyrule Castle skyline, red sailing boat, Tower of the Gods, twilight architecture, winged goddess statue, lightroot, gloom fissures, clock tower, and expressive moon.
 
 Artwork is independently drawn in code. No assets were extracted from Nintendo or PokéBonk. This is an unofficial fan game, unaffiliated with Nintendo.
 

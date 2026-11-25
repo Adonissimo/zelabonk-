@@ -54,3 +54,30 @@ test('dive and lunge use distinct elevations and accents; reduced motion keeps a
   reduced.enemyStrikeEffect({x:0,z:0,bossId:'gohma',kind:'summon',facing:0});
   assert.equal(reduced.effects.length,1);
 });
+test('defeated flying mobs keep their starting lift, land, then fade over eight cels',()=>{
+  const v=makeView(false);
+  v.enemies=new Map([[6,{userData:{sprite:{position:{y:1.25}}}}]]);
+  v.defeatEffect({id:6,enemyType:'bat',enemyId:'keese',x:0,z:0,facing:0,elite:true});
+  const fx=v.effects[0];
+  assert.equal(fx.mesh.position.y,3.25);
+  assert.ok(fx.mesh.scale.y>2);
+  v.positionEnemyDefeat(fx,.42);
+  assert.ok(fx.mesh.position.y>2&&fx.mesh.position.y<3.25);
+  assert.equal(fx.material.opacity,1);
+  v.positionEnemyDefeat(fx,.74);
+  assert.equal(fx.mesh.position.y,2);
+  assert.ok(fx.material.opacity<1);
+  v.positionEnemyDefeat(fx,1);
+  assert.equal(fx.material.opacity,0);
+  v.disposeEffect(fx);
+});
+test('reduced motion keeps enemy defeats grounded, and bosses retain a defeat under effect load',()=>{
+  const v=makeView(true);
+  v.effects=Array.from({length:109},()=>({kind:'ring'}));
+  v.defeatEffect({enemyType:'boar',enemyId:'bokoblin',x:0,z:0});
+  assert.equal(v.effects.length,109);
+  v.defeatEffect({enemyType:'boss',bossId:'helmaroc',x:0,z:0});
+  const fx=v.effects[109];
+  assert.equal(fx.mesh.position.y,2);
+  assert.equal(fx.actorId,'helmaroc');
+});
