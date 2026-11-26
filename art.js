@@ -125,7 +125,7 @@
   const TIME_ALLIES={
     impa:{skin:'#e3ac82',shade:'#9f6152',cloth:'#358595',dark:'#284755',light:'#bfd6d6',accent:'#a9dfee',stride:7,hitch:2,height:87,width:29,gesture:'giantBlade'},
     saria:{skin:'#efc392',shade:'#b98057',cloth:'#668443',dark:'#273d29',light:'#c1d852',accent:'#dff38c',stride:5,hitch:3,height:68,width:20,gesture:'slingshot'},
-    darunia:{skin:'#d09a39',shade:'#8b592e',cloth:'#af8a54',dark:'#503429',light:'#f3c360',accent:'#f5d278',stride:4,hitch:2,height:77,width:48,gesture:'hammer'},
+    darunia:{skin:'#f6ad20',shade:'#b87420',cloth:'#873332',dark:'#54262c',light:'#ffce56',accent:'#ffe9b7',stride:4,hitch:2,height:83,width:50,gesture:'hammer'},
     ruto:{skin:'#78d6d1',shade:'#418e9b',cloth:'#3da7b5',dark:'#244a64',light:'#b9eae0',accent:'#8eeaf4',stride:5,hitch:2,height:80,width:19,gesture:'rutoWave'},
     nabooru:{skin:'#b87950',shade:'#75402e',cloth:'#963b47',dark:'#652b38',light:'#d7a3a5',accent:'#edba6d',stride:6,hitch:2,height:86,width:23,gesture:'axe'},
   };
@@ -164,7 +164,7 @@
   const ALLY_LOSS_TORSO={
     impa:[[0,77,0,51,0,16],[-3,76,-4,49,-6,13],[-6,79,-2,53,1,19],[-8,85,-3,59,6,25],[-11,90,-6,65,8,34],[-13,92,-5,70,7,44],[-13,92,-5,74,5,49],[-13,93,-5,76,4,53]],
     saria:[[0,83,0,62,0,35],[-3,81,-4,59,-6,32],[-5,83,-1,63,4,38],[-8,87,-4,69,3,43],[-13,91,-8,73,6,48],[-14,94,-8,78,11,54],[-14,96,-8,82,13,60],[-14,97,-8,83,13,62]],
-    darunia:[[0,80,0,57,0,26],[-2,78,-4,55,-7,22],[-5,82,-3,61,-5,29],[-3,85,-1,64,-2,35],[-1,89,3,70,9,38],[-2,91,6,74,12,43],[-2,92,5,76,11,47],[-2,93,4,77,10,48]],
+    darunia:[[0,78,0,53,0,20],[-2,76,-4,51,-7,17],[-5,80,-3,57,-5,24],[-3,84,-1,61,-2,30],[-1,87,3,66,9,35],[-2,89,6,70,12,39],[-2,90,5,73,11,43],[-2,91,4,74,10,45]],
     ruto:[[0,79,0,55,0,23],[-3,78,2,53,5,21],[-4,81,5,58,12,27],[-5,84,9,67,17,37],[-5,90,15,76,24,53],[-7,91,12,83,26,67],[-8,93,12,89,25,75],[-8,95,12,93,25,81]],
     nabooru:[[0,77,0,51,0,17],[2,77,4,49,9,12],[4,81,10,55,15,22],[-1,86,8,62,19,32],[-4,88,8,67,21,41],[-8,91,6,75,18,52],[-8,92,5,77,15,57],[-8,92,5,79,14,61]],
   };
@@ -236,16 +236,30 @@
       L(color,sx,sy,kx,ky,w);L(color,kx,ky,ex,ey,w);
       L(hint,sx,sy,kx,ky,Math.max(1,w-3));L(hint,kx,ky,ex,ey,Math.max(1,w-3));
     };
+    // Center Darunia's round limbs on their joints; fat pixel lines grow down and right.
+    const goronSegment=(sx,sy,ex,ey,width)=>{
+      const length=Math.max(1,Math.hypot(ex-sx,ey-sy)),nx=-(ey-sy)/length,ny=(ex-sx)/length;
+      for(const [color,inset,offset]of [['#a96720',0,0],['#eea323',2,-1],['#ffc64a',5,-2]]){
+        const radius=(width-inset)/2,x0=sx+offset,y0=sy+offset,x1=ex+offset,y1=ey+offset;
+        P(color,[[x0+nx*radius,y0+ny*radius],[x1+nx*radius,y1+ny*radius],
+          [x1-nx*radius,y1-ny*radius],[x0-nx*radius,y0-ny*radius]]);
+        O(color,x0,y0,radius,radius);O(color,x1,y1,radius,radius);
+      }
+    };
     const elbow=(sx,sy,x,y)=>[(sx*2+x)/3,(sy+y)*.5+3];
     const arm=(sign,sx,sy,x,y)=>{
       const x0=sign<0?shoulderX:opposite,y0=shoulder,key=sign<0?0:4;
       const [el,ey]=lossArm?[jointX(lossArm[key]),lossArm[key+1]]:elbow(sx,sy,x,y);
       const broad=id==='darunia'?15:id==='impa'?8:id==='saria'?5:6;
       const upper=id==='saria'?'#3a7150':a.skin;
-      L(id==='saria'?a.dark:a.shade,x0,y0,el,ey,broad);
-      L(upper,x0,y0,el,ey,Math.max(2,broad-3));
-      L(id==='saria'?'#263c2d':a.shade,el,ey,x,y,broad);
-      L(id==='saria'?'#50714b':a.skin,el,ey,x,y,Math.max(2,broad-3));
+      if(id==='darunia'){
+        goronSegment(x0,y0,el,ey,broad);goronSegment(el,ey,x,y,broad);
+      }else{
+        L(id==='saria'?a.dark:a.shade,x0,y0,el,ey,broad);
+        L(upper,x0,y0,el,ey,Math.max(2,broad-3));
+        L(id==='saria'?'#263c2d':a.shade,el,ey,x,y,broad);
+        L(id==='saria'?'#50714b':a.skin,el,ey,x,y,Math.max(2,broad-3));
+      }
       const fx=(el+2*x)/3,fy=(ey+2*y)/3;
       if(id==='impa'){
         L('#344451',x0+sign*2,y0+1,el,ey-2,10);
@@ -267,17 +281,23 @@
         L('#9c663c',x-2,y-2,x+2,y+1,3);
         L('#d2a35e',x-2,y-3,x+2,y,1);
       }else if(id==='darunia'){
-        const cuffX=(el+x*4)/5,cuffY=(ey+y*4)/5;
-        L('#e0aa4b',x0+sign*4,y0+4,el+sign*4,ey-2,3);
-        L('#ab7136',el+sign*1,ey-1,x-sign,cuffY-3,2);
-        L('#e3b259',el-sign,ey-2,x-sign*2,cuffY-5,2);
-        for(const j of [-2,0,2]){
-          L('#4e392a',cuffX-5,cuffY+j,cuffX+5,cuffY+j,2);
-          L('#8e6550',cuffX-4,cuffY+j-1,cuffX+4,cuffY+j-1);
+        const dx=x-el,dy=y-ey,length=Math.max(1,Math.hypot(dx,dy)),ux=dx/length,uy=dy/length;
+        const nx=-uy,ny=ux,cuffX=el+dx*.78,cuffY=ey+dy*.78;
+        L('#ffc84b',x0+sign*2,y0+2,el+sign*2,ey-3,4);
+        for(const t of [.26,.43]){
+          const sx=el+dx*t,sy=ey+dy*t;
+          L('#ffe9b7',sx+nx*6,sy+ny*6,sx-nx*6,sy-ny*6,2);
         }
-        O('#895729',x+sign*2,y+3,9,8);O('#c98e39',x+sign,y+1,8,6);
-        P('#e4ae50',[[x-5,y-2],[x-2,y-5],[x+4,y-4],[x+7,y],[x+2,y+3],[x-4,y+2]]);
-        L('#9a6434',x+sign*3,y+4,x+sign*5,y+1);L('#ac7438',x-sign*4,y+4,x-sign*2,y+5);
+        const cuff=(along,across)=>[cuffX+ux*along+nx*across,cuffY+uy*along+ny*across];
+        P('#57272a',[cuff(-5,-10),cuff(-5,10),cuff(4,11),cuff(5,-10)]);
+        P('#8f4034',[cuff(-4,-9),cuff(-4,9),cuff(2,9),cuff(3,-9)]);
+        L('#bc7150',...cuff(-4,-7),...cuff(-4,7),2);
+        L('#64292b',...cuff(1,-9),...cuff(1,9),2);
+        for(const off of[-5,4])P('#dcae8b',[cuff(-3,off-2),cuff(-3,off+2),cuff(0,off+2),cuff(0,off-2)]);
+        O('#a76220',x+sign*2,y+3,10,9);O('#ed9e21',x+sign,y+1,9,7);
+        P('#ffbf32',[[x-6,y-3],[x-2,y-6],[x+4,y-5],[x+8,y],[x+3,y+4],[x-5,y+3]]);
+        L('#ffd36c',x-4,y-3,x+2,y-4,2);
+        L('#bd7925',x+sign*3,y+5,x+sign*6,y+1,2);L('#bd7925',x-sign*5,y+4,x-sign*2,y+6);
       }else if(id==='saria'){
         L('#483b30',fx-2,fy-2,x-1,y-2,6);L('#765441',fx-2,fy-2,x-1,y-2,3);
         L('#ab835c',fx-2,fy-4,x-1,y-4);R('#d4ad76',x-1,y-3,2,2);
@@ -299,7 +319,7 @@
     let axL=shoulderX-8, axR=opposite+7, ayL=waist+1+gait, ayR=waist+1-gait;
     if(air){axL-=glide?7:2;axR+=glide?7:2;ayL=shoulder+6+beat*2;ayR=shoulder+4-beat*3;}
     if(cheer){axL-=3;ayL=shoulder+3;axR+=6;ayR=shoulder-9-surge*5;}
-    const restingGoron=id==='darunia'&&action==='idle'&&!back;
+    const restingGoron=id==='darunia'&&action==='idle';
     const holdsOcarina=id==='saria'&&action==='idle'&&!back;
     const foldedImpa=id==='impa'&&action==='idle'&&!back&&!profile;
     if(holdsOcarina){
@@ -331,21 +351,21 @@
       // Curl in midair. World elevation moves the sprite; local baseline stays under its body.
       const impact=frame===6,arc=frame-2,yt=[31,34,36,34,29][arc],xt=[31,34,35,35,41][arc],y=b-yt;
       const theta=[0,.84,2.2,3.7,5.2][arc]+(side%3)*.28;
-      O('#7c5c3a',0,y,xt,yt);O('#bb914c',-1,y-1,xt-3,yt-2);
+      O('#965c26',0,y,xt,yt);O('#f0a52a',-1,y-1,xt-3,yt-2);
       c.save();c.translate(0,y);c.scale(1,impact?.87:1);c.rotate(theta);
-      O('#a37240',0,0,29,29);O('#d5a34f',-1,-2,22,22);
+      O('#be7d29',0,0,29,29);O('#ffc442',-1,-2,22,22);
       for(let i=0;i<9;i++){
         const t=i*Math.PI*2/9,x=Math.sin(t)*23,yy=Math.cos(t)*23;
-        P('#7f513e',[[x-8,yy-1],[x-4,yy-8],[x+4,yy-8],[x+9,yy-3],[x+8,yy+5],[x+1,yy+9],[x-6,yy+6]]);
-        P(i%3===0?'#bf9b5e':'#ad8048',[[x-6,yy],[x-4,yy-6],[x+3,yy-7],[x+7,yy-2],[x+6,yy+4],[x-1,yy+7],[x-5,yy+3]]);
-        L('#e7bc76',x-5,yy-3,x+2,yy-6,2);
+        P('#965b28',[[x-8,yy-1],[x-4,yy-8],[x+4,yy-8],[x+9,yy-3],[x+8,yy+5],[x+1,yy+9],[x-6,yy+6]]);
+        P(i%3===0?'#f5bb4b':'#e5a037',[[x-6,yy],[x-4,yy-6],[x+3,yy-7],[x+7,yy-2],[x+6,yy+4],[x-1,yy+7],[x-5,yy+3]]);
+        L('#ffe3a0',x-5,yy-3,x+2,yy-6,2);
       }
       // The folded head and white beard keep the boulder legible as Darunia himself.
-      P('#87603b',[[-16,-10],[-9,-16],[5,-14],[12,-6],[10,6],[2,13],[-12,11],[-18,4]]);
-      P('#ddab58',[[-13,-9],[-9,-12],[4,-11],[9,-5],[7,6],[1,8],[-11,6],[-15,2]]);
-      P('#dcc5a5',[[-14,-10],[-13,-15],[-8,-13],[-6,-19],[-3,-14],[2,-15],[6,-11],[-1,-9],[-9,-9]]);
-      P('#d9c4a4',[[-15,1],[-8,5],[-1,4],[9,1],[6,8],[1,11],[-2,9],[-8,12],[-12,9]]);
-      L('#653838',-9,-4,-6,-3,2);L('#653838',0,-3,4,-4,2);
+      P('#ae6e25',[[-16,-10],[-9,-16],[5,-14],[12,-6],[10,6],[2,13],[-12,11],[-18,4]]);
+      P('#ffc33b',[[-13,-9],[-9,-12],[4,-11],[9,-5],[7,6],[1,8],[-11,6],[-15,2]]);
+      P('#fff1c9',[[-14,-10],[-13,-15],[-8,-13],[-6,-19],[-3,-14],[2,-15],[6,-11],[-1,-9],[-9,-9]]);
+      P('#ffe9b7',[[-15,1],[-8,5],[-1,4],[9,1],[6,8],[1,11],[-2,9],[-8,12],[-12,9]]);
+      L('#59311f',-9,-4,-6,-3,2);L('#59311f',0,-3,4,-4,2);
       P('#ab7946',[[10,-8],[20,-7],[21,2],[14,11],[8,8],[11,3]]);
       L('#dbb06d',12,-7,19,-4,2);L('#684c3e',11,7,15,9,2);
       c.restore();
@@ -453,73 +473,98 @@
       }
     }
     if(id==='darunia'){
-      // Warm golden rock, a low belly, massive biceps and long, lowered arms.
-      const stomp=Math.round(Math.abs(gait)*.35),mass=(glide?28:profile?28:33)+(defeat?lossKey*.45:0),by=waist-(defeat?13:7);
-      const massHeight=defeat?.83-.40*fallT**1.7:.83;
-      O('#865124',bx,by+2,mass,mass*massHeight);
+      // Supplied Darunia reference: standing golden mass, ivory mane, sun marking and oxblood cloth.
+      const stride=Math.round(Math.abs(gait)*.35),mass=(profile?27:quarter?32:34)+(defeat?lossKey*.35:0);
+      const by=waist-(defeat?14:16),massHeight=defeat?.72-.28*fallT**1.7:.72;
+      const ivory='#ffe9b7',cream='#fff3ce',hairShade='#d2a777',hairDark='#92633e';
       if(!glide){
-        for(const [x,y,i] of [[xL-7,yL-stomp,0],[xR+7,yR,4]]){
-          const knx=lossLeg?jointX(lossLeg[i]):x,kny=lossLeg?lossLeg[i+1]-7:y-11;
-          O('#945925',knx,kny,11,10);O('#c28a36',knx-1,kny-1,9,8);
-          if(lossLeg)L('#aa722e',knx,kny,x-1,y-7,10);
-          P('#8d5c2e',[[x-8,y-9],[x+7,y-9],[x+10,y-6],[x+13,y-3],[x+11,y+1],[x-9,y+1],[x-11,y-2]]);
-          P('#d7a74e',[[x-8,y-7],[x+6,y-8],[x+8,y-5],[x+12,y-3],[x+9,y-1],[x-9,y-1]]);
-          for(let j=0;j<3;j++){L('#a67436',x+2+j*3,y-3,x+3+j*3,y);R('#edc278',x+1+j*3,y-5,2,1);}
-          for(const j of [-13,-11,-9]){L('#4f3428',x-8,y+j,x+6,y+j+1,2);L('#88614b',x-7,y+j-1,x+5,y+j);}
+        for(const [x,y,i]of [[xL-7,yL-stride,0],[xR+7,yR,4]]){
+          const kneeX=lossLeg?jointX(lossLeg[i]):x,kneeY=lossLeg?lossLeg[i+1]-7:y-13;
+          goronSegment(bx+(i?1:-1)*half*.53,waist-1,kneeX,kneeY,14);
+          goronSegment(kneeX,kneeY,x,y-6,14);
+          O('#c47b20',kneeX,kneeY,9,8);O('#f4ad28',kneeX-2,kneeY-2,7,6);
+          L('#ffcd5e',kneeX-4,kneeY-4,kneeX,kneeY-5,2);
+          L('#98602b',kneeX+3,kneeY+3,x+2,y-5,2);
+          L('#7d332d',x-6,y-6,x+6,y-6,3);L('#b15b3e',x-5,y-7,x+5,y-7);
+          P('#8e542b',[[x-7,y-3],[x+5,y-4],[x+9,y-1],[x+13,y+2],[x+10,y+5],[x-8,y+5],[x-11,y+2]]);
+          P('#ed9e27',[[x-6,y-3],[x+4,y-3],[x+8,y],[x+11,y+2],[x+8,y+3],[x-8,y+3],[x-9,y+1]]);
+          L('#ffca61',x-6,y-2,x+3,y-2,2);
+          for(let j=0;j<4;j++){L('#a9692c',x-5+j*4,y+1,x-5+j*4,y+4);R('#ffe1a0',x-6+j*4,y,2,1);}
         }
       }
-      P('#b17b2e',[[bx-mass+4,by-15],[bx+mass-4,by-15],[bx+mass-6,by+6],[bx+mass-14,by+14],[bx-mass+12,by+16],[bx-mass+6,by+5]]);
-      O('#bd8131',bx,by-4,mass-3,mass*(massHeight-.10));
+      O('#97571d',bx,by+1,mass,mass*massHeight);
+      O('#d98b1b',bx-1,by-1,mass-2,mass*massHeight-1);
+      O('#f7ad20',bx-3,by-3,mass-5,mass*massHeight-3);
       if(!back){
-        const center=bx+(profile?6:1);
-        O('#d49e3e',center,by+1,mass*.78,mass*(massHeight-.16));O('#e0ad47',center-3,by-4,mass*.67,mass*(massHeight-.34));
-        P('#ebba58',[[center-20,by-4],[center-14,by-13],[center+1,by-16],[center+11,by-12],[center+7,by-8],[center-11,by-9]]);
-        L('#d9a144',center+17,by+5,center+14,by+11,2);
-        O('#815729',center+2,by+12,1.5,2);R('#b7823c',center+2,by+13,1,1);
+        const center=bx+(profile?5:0),sunX=center+1,sunY=by+10;
+        P('#ffc43a',[[center-25,by-6],[center-20,by-17],[center-9,by-21],[center+8,by-20],[center+21,by-10],[center+16,by+1],[center+1,by+7],[center-18,by+4]]);
+        P('#e4931c',[[center-27,by-5],[center-23,by+10],[center-12,by+18],[center+9,by+20],[center+22,by+12],[center+26,by+3],[center+23,by+15],[center+10,by+23],[center-12,by+22],[center-27,by+11]]);
+        L('#ffda6a',center-23,by-11,center-18,by-17,2);
+        // The open white sun wraps around the belly, with the navel inside its lower half.
+        for(let i=0;i<8;i++){
+          const angle=i*Math.PI/4-Math.PI/2,dx=Math.cos(angle),dy=Math.sin(angle);
+          P(ivory,[[sunX+dx*12-dy*3,sunY+dy*12+dx*3],[sunX+dx*17,sunY+dy*17],[sunX+dx*12+dy*3,sunY+dy*12-dx*3]]);
+        }
+        O(ivory,sunX,sunY,10,9);O('#ef9f24',sunX,sunY,8,7);
+        L(cream,sunX-7,sunY-5,sunX-4,sunY-7,1);
+        L('#ffe1a2',sunX+12,sunY-4,sunX+13,sunY+3,1);
+        L('#ffe1a2',sunX-13,sunY-2,sunX-12,sunY+4,1);
+        R('#a56526',sunX-1,sunY+3,3,1);R('#c78022',sunX,sunY+4,2,1);
       }else{
-        for(const [x,y]of [[-18,-9],[-5,-17],[10,-13],[16,0],[-14,3],[-2,4],[9,12]]){
-          const xx=bx+x,yy=waist+y;
-          P('#78502d',[[xx-7,yy+2],[xx-4,yy-5],[xx+4,yy-6],[xx+7,yy],[xx+4,yy+6],[xx-5,yy+6]]);
-          P('#af7941',[[xx-6,yy],[xx-3,yy-5],[xx+3,yy-5],[xx+6,yy-1],[xx+2,yy+2],[xx-4,yy+3]]);
-          L('#d2a25c',xx-3,yy-4,xx+2,yy-5,2);
+        // Rock plates stay on the back; the reference's white belly emblem stays on the front.
+        for(const[x,y]of [[-18,-9],[-5,-17],[10,-13],[18,0],[-14,4],[-1,3],[10,13]]){
+          const xx=bx+x,yy=by+y;
+          P('#9d6428',[[xx-7,yy+2],[xx-4,yy-5],[xx+4,yy-6],[xx+8,yy],[xx+4,yy+6],[xx-5,yy+6]]);
+          P('#df9a2d',[[xx-6,yy],[xx-3,yy-5],[xx+3,yy-5],[xx+6,yy-1],[xx+2,yy+3],[xx-4,yy+3]]);
+          L('#ffd16b',xx-3,yy-4,xx+2,yy-5,2);
         }
       }
+      // A short maroon V leaves two distinct sturdy legs visible below the belly.
+      P('#54262c',[[bx-18,waist+5],[bx-6,waist+9],[bx+8,waist+9],[bx+18,waist+4],[bx+10,waist+17],[bx+1,waist+22],[bx-10,waist+16]]);
+      P('#873332',[[bx-15,waist+7],[bx-4,waist+11],[bx+7,waist+11],[bx+14,waist+7],[bx+7,waist+17],[bx+1,waist+19],[bx-8,waist+14]]);
+      L('#b05c41',bx-12,waist+9,bx-3,waist+12,2);
       arm(-1,bx-18,shoulder,axL,ayL);arm(1,bx+19,shoulder,axR,ayR);
-      for(const [x,y] of [[shoulderX-2,shoulder+6],[opposite,shoulder+7]]){
-        O('#925c2c',x,y,13,12);O('#bc8132',x-1,y-1,11,10);O('#deaa4c',x-3,y-4,8,7);
-        L('#edbc5d',x-8,y-5,x-3,y-9,2);L('#a46c30',x+4,y-1,x+3,y+6,2);
-        if(x>bx&&!back){L('#7f3d2e',x-2,y-2,x+5,y,2);L('#7f3d2e',x+1,y-4,x+1,y+3,2);}
-      }
-      const head=topY+11,face=hx+(profile?6:quarter?3:0),wh=profile?13:17,shift=profile?12:quarter?8:3;
-      // Pointed swept-back mane, with a long and separate beard in front.
-      P('#705630',[[hx-18,head+6],[hx-25-shift,head+3],[hx-21,head-3],[hx-31-shift,head-8],[hx-23,head-9],[hx-30-shift,head-16],[hx-15,head-13],[hx-24-shift,head-25],[hx-10,head-16],[hx-17-shift,head-30],[hx-2,head-18],[hx+4,head-15],[hx+11,head-11],[hx+16,head-1],[hx+21,head+5],[hx+14,head+12],[hx-4,head+15],[hx-19,head+12]]);
-      P('#b09561',[[hx-21,head+9],[hx-25-shift,head+3],[hx-16,head],[hx-29-shift,head-8],[hx-18,head-8],[hx-28-shift,head-15],[hx-13,head-10],[hx-22-shift,head-23],[hx-8,head-13],[hx-15-shift,head-28],[hx-1,head-16],[hx+6,head-12],[hx+16,head-1],[hx+16,head+7],[hx+9,head+12]]);
-      for(const [rx,ry] of [[-15,-27],[-22,-22],[-27,-14],[-28,-7],[-24,4]]){
-        L('#d3bc85',hx+rx-shift,head+ry,hx-6+ry*.12,head+ry*.47+5,2);
-        L('#877048',hx+rx-shift+3,head+ry+1,hx-4+ry*.12,head+ry*.47+6);
-      }
-      if(!back){
-        O('#945f2b',face,head+2,wh,15);
-        O('#c89236',face+1,head-1,wh-1,12);O('#e3ad43',face-1,head-4,wh-4,9);
-        L('#f2c66a',face-10,head-7,face-3,head-10,2);
-        for(const e of(profile?[4]:[-7,7])){
-          const slant=e<0?1:-1;
-          P('#4f301e',[[face+e-5,head-3],[face+e+4,head-5*slant-3],[face+e+5,head],[face+e+2,head+3],[face+e-4,head+2]]);
-          P('#261b19',[[face+e-4,head-3],[face+e+4,head-3*slant-2],[face+e+4,head+1],[face+e+1,head+2],[face+e-3,head+1]]);
-          if(death&&deadFrame>=4)L('#925a34',face+e-3,head,face+e+2,head+1,2);
-          else{R('#a8393a',face+e-1,head-1,4,3);R('#e0775e',face+e,head,2,1);R('#f7ae82',face+e+1,head-1,1,1);}
+      for(const [x,y,sign]of [[shoulderX-2,shoulder+5,-1],[opposite,shoulder+6,1]]){
+        O('#b77620',x,y,13,12);O('#eea322',x-1,y-1,11,10);O('#ffc841',x-3,y-4,8,7);
+        L('#ffdb70',x-8,y-5,x-3,y-9,2);L('#d38a20',x+5,y,x+3,y+7,2);
+        if(!back&&sign<0){
+          P(ivory,[[x-7,y-3],[x-2,y-9],[x-1,y-3]]);P(ivory,[[x,y-4],[x+5,y-9],[x+5,y-3]]);
+          P(ivory,[[x-6,y-1],[x-1,y-1],[x-5,y+7]]);P(ivory,[[x+1,y-1],[x+7,y-1],[x+3,y+3]]);
         }
-        O('#94602d',face+2,head+4,6,4);O('#dcab4c',face+2,head+3,5,3);
-        P('#664224',[[face-10,head+8],[face-7,head+6],[face-1,head+7],[face+7,head+6],[face+12,head+8],[face+3,head+11],[face-5,head+10]]);
-        L('#d1a55b',face-6,head+8,face+5,head+8);
-        P('#69583b',[[face-14,head+12],[face-8,head+9],[face+5,head+9],[face+15,head+10],[face+13,head+20],[face+8,head+26],[face+5,head+33],[face,head+27],[face-6,head+35],[face-8,head+28],[face-16,head+36],[face-13,head+22],[face-19,head+27]]);
-        P('#b49c6a',[[face-13,head+12],[face-8,head+11],[face+3,head+11],[face+13,head+12],[face+10,head+22],[face+5,head+30],[face,head+24],[face-5,head+31],[face-7,head+25],[face-14,head+32],[face-10,head+20],[face-16,head+25]]);
-        L('#d1b983',face-9,head+12,face-14,head+29,2);L('#c9ae76',face-5,head+13,face-8,head+25,2);
-        L('#dfc58c',face,head+12,face-4,head+28,2);L('#d9be84',face+4,head+13,face+5,head+27,2);
-        L('#805f39',face+8,head+14,face+7,head+24,2);L('#755d3b',face-2,head+15,face-6,head+30);
+        if(sign>0){L('#78302c',x-8,y+7,x+8,y+8,4);L('#b25f45',x-7,y+6,x+7,y+7);R('#d99f77',x+3,y+7,3,2);}
+      }
+      const head=topY+11,face=hx+(profile?6:quarter?3:0),wh=profile?14:19,trail=profile?4:quarter?2:0;
+      // Ivory spikes form a continuous mane behind the broad brow and long layered beard.
+      P(hairDark,[[hx-21,head-6],[hx-28-trail,head-14],[hx-17,head-12],[hx-19,head-20],[hx-10,head-16],[hx-8,head-24],[hx-4,head-21],[hx,head-27],[hx+6,head-18],[hx+10,head-21],[hx+12,head-14],[hx+18,head-9],[hx+25,head-14],[hx+23,head-5],[hx+27,head-6],[hx+23,head+3],[hx+28,head+10],[hx+23,head+13],[hx+28,head+24],[hx+20,head+21],[hx+23,head+30],[hx+11,head+26],[hx-1,head+23],[hx-17,head+29],[hx-22-trail,head+23],[hx-28-trail,head+26],[hx-23,head+13],[hx-27-trail,head+13],[hx-23,head+4],[hx-27-trail,head+1]]);
+      P(hairShade,[[hx-19,head-6],[hx-25-trail,head-12],[hx-15,head-10],[hx-16,head-18],[hx-8,head-13],[hx-7,head-21],[hx-3,head-18],[hx,head-24],[hx+5,head-15],[hx+9,head-18],[hx+11,head-12],[hx+18,head-6],[hx+23,head-11],[hx+21,head-3],[hx+24,head-4],[hx+20,head+4],[hx+25,head+11],[hx+20,head+12],[hx+24,head+22],[hx+17,head+19],[hx+20,head+27],[hx+9,head+23],[hx-1,head+20],[hx-17,head+25],[hx-19-trail,head+21],[hx-25-trail,head+23],[hx-20,head+11],[hx-24-trail,head+11],[hx-20,head+3],[hx-24-trail,head]]);
+      P(ivory,[[hx-17,head-6],[hx-22-trail,head-11],[hx-13,head-8],[hx-14,head-15],[hx-7,head-11],[hx-6,head-18],[hx-2,head-15],[hx,head-21],[hx+4,head-13],[hx+8,head-15],[hx+9,head-10],[hx+17,head-4],[hx+21,head-8],[hx+19,head-1],[hx+22,head-2],[hx+18,head+4],[hx+23,head+11],[hx+17,head+10],[hx+22,head+20],[hx+15,head+17],[hx+17,head+24],[hx+8,head+20],[hx,head+16],[hx-17,head+23],[hx-17-trail,head+18],[hx-23-trail,head+20],[hx-18,head+10],[hx-23-trail,head+10],[hx-18,head+2],[hx-21-trail,head]]);
+      L(cream,hx,head-21,hx+3,head-10,2);L(cream,hx-6,head-17,hx-5,head-9,2);
+      L(cream,hx-20-trail,head-10,hx-12,head-5,2);L(cream,hx-21-trail,head+9,hx-13,head+5,2);
+      L('#b98a59',hx+5,head-14,hx+9,head-7,2);L('#b98a59',hx-20,head+15,hx-13,head+8,2);
+      if(!back){
+        O('#c07a21',face,head,wh,15);O('#f9b51f',face-1,head-2,wh-1,14);
+        P('#ffca35',[[face-13,head-8],[face-7,head-15],[face+7,head-15],[face+14,head-8],[face+11,head-3],[face-12,head-3]]);
+        for(const e of profile?[6]:[-9,9]){
+          O('#6c371f',face+e,head+1,5,4);O('#2c1714',face+e+1,head+2,4,3);
+          if(death&&deadFrame>=4)L('#a86c26',face+e-3,head+1,face+e+3,head+2,2);
+          else{R('#fff5dc',face+e,head-1,2,2);R('#c99c75',face+e-2,head+1,1,1);}
+          if(e<0)P('#713b20',[[face+e-9,head-3],[face+e-7,head-11],[face+e-3,head-13],[face+e+2,head-10],[face+e+8,head-5],[face+e+7,head-1],[face+e+2,head-3],[face+e-4,head-6],[face+e-8,head-1]]);
+          else P('#713b20',[[face+e-8,head-5],[face+e-3,head-8],[face+e+1,head-13],[face+e+6,head-13],[face+e+9,head-8],[face+e+8,head],[face+e+4,head-4],[face+e,head-4],[face+e-4,head-1],[face+e-8,head-2]]);
+          L('#945329',face+e-5,head-7,face+e,head-8,2);
+        }
+        R('#ba7524',face+1,head+2,2,1);R('#ba7524',face+5,head+2,2,1);
+        L('#9c5a21',face-12,head+8,face-7,head+10);L('#9c5a21',face-7,head+10,face+3,head+9);L('#9c5a21',face+3,head+9,face+13,head+7);
+        R('#ffda73',face-14,head+2,2,2);R(cream,face-12,head+4,2,1);
+        P(hairDark,[[face-17,head+10],[face-12,head+7],[face-6,head+15],[face,head+10],[face+7,head+9],[face+17,head+14],[face+21,head+23],[face+14,head+22],[face+17,head+30],[face+8,head+28],[face+1,head+39],[face-7,head+35],[face-12,head+29],[face-19,head+33],[face-17,head+22],[face-23,head+25]]);
+        P(hairShade,[[face-16,head+11],[face-12,head+9],[face-6,head+17],[face+1,head+12],[face+7,head+11],[face+15,head+16],[face+18,head+21],[face+12,head+20],[face+14,head+28],[face+7,head+26],[face+1,head+36],[face-6,head+32],[face-10,head+26],[face-17,head+30],[face-15,head+20],[face-20,head+23]]);
+        P(ivory,[[face-15,head+11],[face-12,head+10],[face-6,head+18],[face+1,head+12],[face+6,head+12],[face+13,head+17],[face+15,head+20],[face+9,head+18],[face+12,head+26],[face+6,head+24],[face+1,head+33],[face-5,head+29],[face-9,head+23],[face-14,head+27],[face-13,head+18],[face-18,head+21]]);
+        L(cream,face+1,head+14,face+2,head+25,3);L(cream,face-12,head+13,face-14,head+23,2);
+        L('#c3976a',face-5,head+20,face-7,head+28,2);L('#d2ac7e',face+5,head+19,face+8,head+25,2);
+        L(cream,face-2,head+25,face+1,head+31,2);
       }else{
-        P('#a88a56',[[hx-12,head-8],[hx+11,head-10],[hx+14,head-1],[hx+13,head+8],[hx+7,head+13],[hx+3,head+9],[hx-2,head+17],[hx-10,head+12],[hx-13,head+7]]);
-        L('#c8ad76',hx+2,head-8,hx-4,head+13,2);
+        P(hairShade,[[hx-15,head-10],[hx+13,head-12],[hx+19,head+1],[hx+15,head+16],[hx+7,head+23],[hx+2,head+18],[hx-7,head+28],[hx-18,head+19],[hx-22,head+8]]);
+        P(ivory,[[hx-13,head-10],[hx+11,head-11],[hx+16,head+1],[hx+12,head+13],[hx+6,head+19],[hx+2,head+14],[hx-7,head+24],[hx-15,head+16],[hx-19,head+7]]);
+        L(cream,hx-6,head-8,hx-11,head+14,3);L('#c39968',hx+3,head-5,hx-1,head+14,2);
       }
     }else{
       // Animate each costume around the shared walk cycle rather than reskinning a uniform.

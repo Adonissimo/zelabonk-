@@ -130,7 +130,7 @@
       ruto:    Object.freeze({width:2.44,height:2.92,foot:107}),
       nabooru: Object.freeze({width:2.57,height:2.93,foot:103}),
       impa:    Object.freeze({width:2.76,height:2.98,foot:110}),
-      darunia: Object.freeze({width:3.45,height:3.35,foot:106})
+      darunia: Object.freeze({width:3.95,height:3.85,foot:109})
     });
     heroModel(id){return WorldView.heroModels[id]||WorldView.heroModels.link;}
     standingFootAnchor(id){
